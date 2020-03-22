@@ -42,9 +42,18 @@ class DefaultLayout extends Component {
           </Suspense>
         </AppHeader>
         <div className="app-body">
+          <AppSidebar fixed display="lg">
+            <AppSidebarHeader />
+            <AppSidebarForm />
+            <Suspense>
+            <AppSidebarNav navConfig={navigation} {...this.props} router={router}/>
+            </Suspense>
+            <AppSidebarFooter />
+            <AppSidebarMinimizer />
+          </AppSidebar>
           <main className="main">
-            {/* <AppBreadcrumb appRoutes={routes} router={router}/> */}
-            <Container fluid style={{padding: "0px", background:"white"}}>
+            <AppBreadcrumb appRoutes={routes} router={router}/>
+            <Container fluid>
               <Suspense fallback={this.loading()}>
                 <Switch>
                   {routes.map((route, idx) => {
@@ -54,24 +63,27 @@ class DefaultLayout extends Component {
                         path={route.path}
                         exact={route.exact}
                         name={route.name}
-                        
                         render={props => (
                           <route.component {...props} />
                         )} />
                     ) : (null);
                   })}
-                  <Redirect from="/" to="/dashboard" />
+                  <Redirect from="/" to="/admin" />
                 </Switch>
               </Suspense>
             </Container>
           </main>
-
+          <AppAside fixed>
+            <Suspense fallback={this.loading()}>
+              <DefaultAside />
+            </Suspense>
+          </AppAside>
         </div>
-        {/* <AppFooter>
+        <AppFooter>
           <Suspense fallback={this.loading()}>
             <DefaultFooter />
           </Suspense>
-        </AppFooter> */}
+        </AppFooter>
       </div>
     );
   }
