@@ -1,4 +1,4 @@
-import React, { Component, useState } from "react";
+import React, { Component } from "react";
 
 import {
   Carousel,
@@ -74,7 +74,7 @@ class Slider extends Component {
         <style>
           {`.custom-tag {
               max-width: 100%;
-              height: 500px;
+              height: 30rem;
               background: black;
             }`}
         </style>
@@ -98,7 +98,7 @@ class Slider extends Component {
                 onExiting={() => this.setState({ animating: true })}
                 onExited={() => this.setState({ animating: false })}
               >
-                <img src={item.src} alt={item.altText} style={{opacity:0.5, width:"100%"}}/>
+                <img src={item.src} alt={item.altText} style={{opacity:0.5, width:"100%", height: "100%"}}/>
                 <div style={{ width:"100%", position:"absolute", top:"35%", zIndex:1,  textAlign:"center"}}>
                     <h2 style={{color:"#fff", marginBottom:"2rem"}}>{item.subCaption}</h2>
                     

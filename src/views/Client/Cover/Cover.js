@@ -35,21 +35,21 @@ class Cover extends Component {
             <Col xs="6" sm="4">
               <Card>
                 <CardBody>
-                  <img src="assets/img/avatars/1.jpg"></img>
+                  <img src="assets/img/avatars/1.jpg" alt=""></img>
                 </CardBody>
               </Card>
             </Col>
             <Col xs="6" sm="4">
               <Card>
                 <CardBody>
-                  <img src="assets/img/avatars/1.jpg"></img>
+                  <img src="assets/img/avatars/1.jpg" alt=""></img>
                 </CardBody>
               </Card>
             </Col>
             <Col xs="6" sm="4">
               <Card>
                 <CardBody>
-                  <img src="assets/img/avatars/1.jpg"></img>
+                  <img src="assets/img/avatars/1.jpg" alt=""></img>
                 </CardBody>
               </Card>
             </Col>
@@ -95,14 +95,14 @@ class Cover extends Component {
                   </p>
                   <ul style={{ listStyleType: "none" }}>
                     <li>
-                      <i class="fa fa-check"></i> Address transparency issue
+                      <i className="fa fa-check"></i> Address transparency issue
                     </li>
                     <li>
-                      <i class="fa fa-check"></i> Enhance accountability of
+                      <i className="fa fa-check"></i> Enhance accountability of
                       donors funds
                     </li>
                     <li>
-                      <i class="fa fa-check"></i> Aids audit trailing
+                      <i className="fa fa-check"></i> Aids audit trailing
                     </li>
                   </ul>
                 </Col>
@@ -135,7 +135,7 @@ class Cover extends Component {
                 </Col>
                 <Col xs="12" sm="4">
                     <div style={{textAlign:"center"}}>
-                      <i class="fa fa-envelope-o singleIcon"></i>
+                      <i className="fa fa-envelope-o singleIcon"></i>
                       <p>
                         Email: info@example.com
                         <br />
@@ -146,7 +146,7 @@ class Cover extends Component {
 
                 <Col xs="12" sm="4">
                     <div style={{textAlign:"center"}}>
-                      <i class="fa fa-map-marker singleIcon"></i>
+                      <i className="fa fa-map-marker singleIcon"></i>
                       <p>
                         Location: 21 Kent Ridge
                         <br />

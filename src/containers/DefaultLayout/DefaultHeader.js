@@ -43,11 +43,11 @@ class DefaultHeader extends Component {
             </DropdownToggle>
             <DropdownMenu right className="mt-2">
               <DropdownItem header tag="div" className="text-center"><strong>Donors</strong></DropdownItem>
-              <DropdownItem href="/login"><i className="fa fa-shield"></i> Donor Login</DropdownItem>
-              <DropdownItem><i className="fa fa-user"></i> Donor Register</DropdownItem>
+              <DropdownItem href="/login/donor"><i className="fa fa-shield"></i> Donor Login</DropdownItem>
+              <DropdownItem href="/register/donor"><i className="fa fa-user"></i> Donor Register</DropdownItem>
               <DropdownItem header tag="div" className="text-center"><strong>Charity</strong></DropdownItem>
-              <DropdownItem href="/login"><i className="icons icon-badge" ></i> Charity Login</DropdownItem>
-              <DropdownItem><i className="fa fa-envelope-o"></i> Charity Register</DropdownItem>
+              <DropdownItem href="/login/charity"><i className="icons icon-badge" ></i> Charity Login</DropdownItem>
+              <DropdownItem href="/register/charity"><i className="fa fa-envelope-o"></i> Charity Register</DropdownItem>
              {/* <DropdownItem divider /> */}
             </DropdownMenu>
           </UncontrolledDropdown>
