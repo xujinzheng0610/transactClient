@@ -48,7 +48,7 @@ export default {
         },
         {
           name: 'Cards',
-          url: '/base/cards',
+          url: '/admin/base/cards',
           icon: 'icon-puzzle',
         },
         {
