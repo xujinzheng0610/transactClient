@@ -35,7 +35,7 @@ class DefaultHeader extends Component {
             <Link to="/users" className="nav-link">About</Link>
           </NavItem>
           <NavItem className="px-3">
-            <NavLink to="#" className="nav-link">Projects</NavLink>
+            <NavLink to="/projects" className="nav-link">Projects</NavLink>
           </NavItem>
           <UncontrolledDropdown nav direction="down">
             <DropdownToggle nav>

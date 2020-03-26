@@ -1,4 +1,4 @@
-import React, { Component, Link } from "react";
+import React, { Component} from "react";
 import {
   Button,
   Card,
@@ -98,8 +98,8 @@ class Register extends Component {
       alertColor: "info",
       alertMessage: "I am an alert message",
       loading: false,
-      submitted: false
-    };
+      submitted: false,
+    }; 
   }
 
   checkType = () => {
