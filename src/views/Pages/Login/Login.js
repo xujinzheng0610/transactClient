@@ -1,29 +1,104 @@
-import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
-import { Button, Card, CardBody, CardGroup, Col, Container, Form, Input, InputGroup, InputGroupAddon, InputGroupText, Row } from 'reactstrap';
+import React, { Component } from "react";
+import { Link } from "react-router-dom";
+import {
+  Button,
+  Card,
+  CardBody,
+  CardGroup,
+  Col,
+  Container,
+  Form,
+  Input,
+  InputGroup,
+  InputGroupAddon,
+  InputGroupText,
+  Row,
+  Alert
+} from "reactstrap";
+import {
+  adminLogin,
+  donorLogin,
+  charityLogin
+} from "../../../services/axios_api";
 
 class Login extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      type: this.checkType()
+      type: this.checkType(),
+      username: "",
+      password: ""
     };
   }
 
   checkType = () => {
-    if (["donor","charity","admin"].indexOf(this.props.match.params.type) > -1){
-      console.log("valid route")
-      return this.props.match.params.type
-    } else{
-      console.log("invalid route")
+    if (
+      ["donor", "charity", "admin"].indexOf(this.props.match.params.type) > -1
+    ) {
+      console.log("valid route");
+      return this.props.match.params.type;
+    } else {
+      console.log("invalid route");
       window.location.replace("/home");
     }
-  }
+  };
 
-  componentDidMount(){
-      
-  }
+  componentDidMount() {}
+
+  updateValue = type => e => {
+    this.setState({
+      [type]: e.target.value
+    });
+  };
+
+  setCookie = (name, value, days) => {
+    var expires = "";
+    if (days) {
+      var date = new Date();
+      date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
+      expires = "; expires=" + date.toUTCString();
+    }
+    document.cookie = name + "=" + (value || "") + expires + "; path=/";
+  };
+
+  login = () => {
+    console.log("login!");
+    if (this.state.username !== "" && this.state.password !== "") {
+      if (this.state.type === "admin") {
+        adminLogin(this.state.username, this.state.password)
+          .then(response => {
+            if (response.data.code === 200) {
+              //set local key
+              this.setCookie("admin", "admin", 1);
+              window.location.replace("/admin");
+            } else {
+              this.triggerAlert("danger", response.data.message);
+            }
+          })
+          .catch(e => console.log(e));
+      } else if (this.state.type === "donor") {
+      } else if (this.state.type === "charity") {
+      } else {
+        window.location.replace("/home");
+      }
+    } else {
+      this.triggerAlert("danger", "Please key in both Username and Password.");
+    }
+  };
+
+  triggerAlert = (color, message) => {
+    this.setState({
+      alertColor: color,
+      alertMessage: message
+    });
+    this.onDismiss();
+    setTimeout(this.onDismiss, 3000);
+  };
+
+  onDismiss = () => {
+    this.setState({ alertVisible: !this.state.alertVisible });
+  };
 
   render() {
     return (
@@ -34,49 +109,84 @@ class Login extends Component {
               <CardGroup>
                 <Card className="p-4">
                   <CardBody>
-                    <Form>
+                    <Form
+                      onSubmit={e => {
+                        e.preventDefault();
+                        this.login();
+                      }}
+                    >
                       <h1>Login : {this.state.type}</h1>
                       <p className="text-muted">Sign In to your account</p>
                       <InputGroup className="mb-3">
                         <InputGroupAddon addonType="prepend">
                           <InputGroupText>
-                            <i className="icon-user"></i>
+                            <i className="icon-user"> Username</i>
                           </InputGroupText>
                         </InputGroupAddon>
-                        <Input type="text" placeholder="Username" autoComplete="username" />
+                        <Input
+                          type="text"
+                          onChange={this.updateValue("username")}
+                        />
                       </InputGroup>
                       <InputGroup className="mb-4">
                         <InputGroupAddon addonType="prepend">
                           <InputGroupText>
-                            <i className="icon-lock"></i>
+                            <i className="icon-lock"> Password</i>
                           </InputGroupText>
                         </InputGroupAddon>
-                        <Input type="password" placeholder="Password" autoComplete="current-password" />
+                        <Input
+                          type="password"
+                          onChange={this.updateValue("password")}
+                        />
                       </InputGroup>
                       <Row>
                         <Col xs="6">
-                          <Button color="primary" className="px-4">Login</Button>
+                          <Button
+                            color="primary"
+                            className="px-4"
+                            onClick={this.login}
+                          >
+                            Login
+                          </Button>
                         </Col>
                         <Col xs="6" className="text-right">
-                          <Button color="link" className="px-0">Forgot password?</Button>
+                          <Button color="link" className="px-0">
+                            Forgot password?
+                          </Button>
                         </Col>
                       </Row>
                     </Form>
                   </CardBody>
                 </Card>
-                {this.state.type === "admin" ? "" :
-                <Card className="text-white bg-primary py-5 d-md-down-none" style={{ width: '44%' }}>
-                  <CardBody className="text-center">
-                    <div>
-                      <h2>Sign up</h2>
-                      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut
-                        labore et dolore magna aliqua.</p>
-                      <Link to={("/register/").concat(this.state.type)}>
-                        <Button color="primary" className="mt-3" active tabIndex={-1}>Register Now!</Button>
-                      </Link>
-                    </div>
-                  </CardBody>
-                </Card>}
+                {this.state.type === "admin" ? (
+                  ""
+                ) : (
+                  <Card
+                    className="text-white bg-primary py-5 d-md-down-none"
+                    style={{ width: "44%" }}
+                  >
+                    <CardBody className="text-center">
+                      <div>
+                        <h2>Sign up</h2>
+                        <p>
+                          Lorem ipsum dolor sit amet, consectetur adipisicing
+                          elit, sed do eiusmod tempor incididunt ut labore et
+                          dolore magna aliqua.
+                        </p>
+                        <Link to={"/register/".concat(this.state.type)}>
+                          <Button
+                            color="primary"
+                            className="mt-3"
+                            active
+                            tabIndex={-1}
+                          >
+                            Register Now!
+                          </Button>
+                        </Link>
+                      </div>
+                    </CardBody>
+                  </Card>
+                )}
               </CardGroup>
             </Col>
           </Row>

@@ -23,6 +23,11 @@ export function charityLogin(){
 
 }
 
-export function adminLogin(){
-
+export function adminLogin(username, password){
+  return client.get("/admin/login", {
+    params: {
+      username: username,
+      password: password
+    }
+  })
 }
