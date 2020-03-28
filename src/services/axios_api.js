@@ -7,6 +7,14 @@ var client = axios.create({
 
 export default client 
 
+export function retrieveAllProjects(){
+  return client.get("/retrieveAllProjects")
+}
+
+export function retrieveProjectDetails(data){
+  return client.get("/retrieveProjectDetails?id="+data)
+}
+
 export function donorRegister(data){
   return client.post('/registerDonor',data)
 }
