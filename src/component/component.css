@@ -1,0 +1,13 @@
+.banner-img__wrapper {
+  position: absolute;
+  width: 1920px;
+  height: 500px;
+  left: 50%;
+  margin-left: -960px;
+}
+.bannerInner {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  height: 500px;
+}

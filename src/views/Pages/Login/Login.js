@@ -65,6 +65,12 @@ class Login extends Component {
     document.cookie = name + "=" + (value || "") + expires + "; path=/";
   };
 
+  getCookie = (name) => {
+    var value = "; " + document.cookie;
+    var parts = value.split("; " + name + "=");
+    if (parts.length == 2) return parts.pop().split(";").shift();
+  }
+
   login = () => {
     console.log("login!");
     if (this.state.username !== "" && this.state.password !== "") {
@@ -73,7 +79,7 @@ class Login extends Component {
           .then(response => {
             if (response.data.code === 200) {
               //set local key
-              this.setCookie("admin", "admin", 1);
+              this.setCookie("admin", response.data.eth_address, 1);
               window.location.replace("/admin");
             } else {
               this.triggerAlert("danger", response.data.message);
@@ -81,7 +87,29 @@ class Login extends Component {
           })
           .catch(e => console.log(e));
       } else if (this.state.type === "donor") {
+        donorLogin(this.state.username, this.state.password)
+        .then(response => {
+          if (response.data.code === 200) {
+            this.setCookie("donor_id", response.data._id, 1);
+            this.setCookie("donor_username", response.data.username, 1);
+            this.setCookie("donor_address", response.data.eth_address, 1);
+            window.history.back();
+          } else {
+            this.triggerAlert("danger", response.data.message);
+          }
+        })
       } else if (this.state.type === "charity") {
+        charityLogin(this.state.username, this.state.password)
+        .then(response => {
+          if (response.data.code === 200) {
+            this.setCookie("charity_id", response.data._id, 1);
+            this.setCookie("charity_username", response.data.username, 1);
+            this.setCookie("charity_address", response.data.eth_address, 1);
+            window.history.back();
+          } else {
+            this.triggerAlert("danger", response.data.message);
+          }
+        })
       } else {
         window.location.replace("/home");
       }

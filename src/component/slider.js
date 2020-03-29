@@ -8,6 +8,8 @@ import {
   CarouselCaption
 } from "reactstrap";
 
+import "./component.css"
+
 const items = [
   {
     id: 1,
@@ -98,7 +100,13 @@ class Slider extends Component {
                 onExiting={() => this.setState({ animating: true })}
                 onExited={() => this.setState({ animating: false })}
               >
-                <img src={item.src} alt={item.altText} style={{opacity:0.5, width:"100%", height: "100%"}}/>
+               
+                    <div class="bannerInner">
+                        <div class="banner-img__wrapper">
+                          <img src={item.src} alt={item.altText} style={{opacity:0.5, width:"100%", height: "100%"}}/>
+                        </div>
+                    </div>
+               
                 <div style={{ width:"100%", position:"absolute", top:"35%", zIndex:1,  textAlign:"center"}}>
                     <h2 style={{color:"#fff", marginBottom:"2rem"}}>{item.subCaption}</h2>
                     
