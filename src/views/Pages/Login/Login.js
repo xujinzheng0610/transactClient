@@ -28,7 +28,10 @@ class Login extends Component {
     this.state = {
       type: this.checkType(),
       username: "",
-      password: ""
+      password: "",
+      alertVisible: false,
+      alertColor: "info",
+      alertMessage: "I am an alert message",
     };
   }
 
@@ -103,6 +106,14 @@ class Login extends Component {
   render() {
     return (
       <div className="app flex-row align-items-center">
+        <Alert
+          color={this.state.alertColor}
+          isOpen={this.state.alertVisible}
+          toggle={this.onDismiss}
+          style={{ position: "fixed", top: "2rem", right: "1rem" }}
+        >
+          {this.state.alertMessage}
+        </Alert>
         <Container>
           <Row className="justify-content-center">
             <Col md="8">
