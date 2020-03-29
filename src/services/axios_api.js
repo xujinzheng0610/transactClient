@@ -31,3 +31,25 @@ export function adminLogin(username, password){
     }
   })
 }
+
+export function pendingDonorRetrieval(){
+  return client.get("/getAllPendingDonors")
+}
+
+export function pendingCharityRetrieval(){
+  return client.get("/getAllPendingOrganizations")
+}
+
+export function charityApproval(data){
+  return client.post('/approveOrganization',data)
+}
+
+export function donorApproval(data){
+  return client.post('/approveDonor',data)
+}
+
+export function charityReject(data){
+  return client.post('/rejectOrganization',data)
+}
+
+
