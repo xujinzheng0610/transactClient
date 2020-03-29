@@ -15,6 +15,10 @@ export function retrieveProjectDetails(data){
   return client.get("/retrieveProjectDetails?id="+data)
 }
 
+export function retrieveDonorsByProject(data){
+  return client.get("/retrieveDonorsByProject?id="+data)
+}
+
 export function donorRegister(data){
   return client.post('/registerDonor',data)
 }
