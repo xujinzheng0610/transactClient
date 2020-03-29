@@ -19,6 +19,21 @@ export default {
       class: ''             // optional class names space delimited list for title item ex: "text-center"
     },
     {
+      name: 'Manage Records',
+      url: '/admin/managerecords',
+      icon: 'icon-drop',
+    },
+    // {
+    //   name: 'Manage Organizations',
+    //   url: '/pages/Admin/pendingCharity',
+    //   icon: 'icon-drop',
+    // },
+    // {
+    //   name: 'Manage Projects',
+    //   url: '/pages/Admin/pendingProjects',
+    //   icon: 'icon-drop',
+    // },
+    {
       name: 'Colors',
       url: '/theme/colors',
       icon: 'icon-drop',
@@ -74,6 +89,11 @@ export default {
         {
           name: 'Jumbotrons',
           url: '/base/jumbotrons',
+          icon: 'icon-puzzle',
+        },
+        {
+          name: 'List groups',
+          url: '/base/list-groups',
           icon: 'icon-puzzle',
         },
         {
