@@ -31,11 +31,17 @@ class ManageRecords extends Component {
       approveCharity: false,
       rejectCharity: false, 
 
-      inspectorAddress: '0x17cdE956d17e885Bb5D59F9addA34AD4cb530E7e', 
+      inspectorAddress: this.getCookie("admin"), 
       donorAddress: null,
       charityOrganizationAddress: null 
     };
   }
+  getCookie = (name) => {
+    var value = "; " + document.cookie;
+    var parts = value.split("; " + name + "=");
+    if (parts.length === 2) return parts.pop().split(";").shift();
+  }
+
   onEntering() {
     this.setState({ status: 'Opening...' });
   }
@@ -148,7 +154,7 @@ class ManageRecords extends Component {
   approveDonor = approvingDonor => {
     var data = new FormData();
     data.set("donorAddress", approvingDonor.eth_address);
-    data.set("inspectorAddress", "0x17cdE956d17e885Bb5D59F9addA34AD4cb530E7e"); 
+    data.set("inspectorAddress", this.state.inspectorAddress); 
     console.log("Donor Address");
     console.log(approvingDonor.eth_address);
     this.setState({ isLoaded: true });
@@ -176,7 +182,7 @@ class ManageRecords extends Component {
   approveCharity = approvingCharity => {
     var data = new FormData();
     data.set("charityAddress", approvingCharity.eth_address);
-    data.set("inspectorAddress", "0x17cdE956d17e885Bb5D59F9addA34AD4cb530E7e"); 
+    data.set("inspectorAddress", this.state.inspectorAddress); 
     console.log("charityAddress");
     console.log(approvingCharity.eth_address);
     this.setState({ isLoaded: true });
@@ -203,7 +209,7 @@ class ManageRecords extends Component {
   rejectCharity = rejectingCharity => {
     var data = new FormData();
     data.set("charityAddress", rejectingCharity.eth_address);
-    data.set("inspectorAddress", "0x17cdE956d17e885Bb5D59F9addA34AD4cb530E7e"); 
+    data.set("inspectorAddress", this.state.inspectorAddress); 
     console.log("charityAddress");
     console.log(rejectingCharity.eth_address);
     this.setState({ isLoaded: true });

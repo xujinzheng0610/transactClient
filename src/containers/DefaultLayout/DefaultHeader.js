@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import { Link, NavLink } from "react-router-dom";
 import {
-  Badge,
   UncontrolledDropdown,
   DropdownItem,
   DropdownMenu,
@@ -10,14 +9,6 @@ import {
   NavItem
 } from "reactstrap";
 import PropTypes from "prop-types";
-
-import {
-  AppAsideToggler,
-  AppNavbarBrand,
-  AppSidebarToggler
-} from "@coreui/react";
-import logo from "../../assets/img/brand/logo.svg";
-import sygnet from "../../assets/img/brand/sygnet.svg";
 
 import "../style.css";
 
@@ -33,7 +24,7 @@ class DefaultHeader extends Component {
 
     this.state = {
       donorLogin: this.checkDonorLogin(),
-      charityLogin: true
+      charityLogin: this.checkCharityLogin()
     };
   }
 
