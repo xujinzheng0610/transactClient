@@ -44,13 +44,19 @@ class ManageDonors extends Component {
       isLoaded: false,
       approveDonor: false,
       rejectDonor: false,
-      inspectorAddress: "0xc3D2b233F2238Af0c0c01430b2582FBBA583b67C",
+      inspectorAddress: this.getCookie("admin"),
       donorAddress: null,
 
       alertVisible: false,
       alertColor: "info",
       alertMessage: "I am an alert message"
     };
+  }
+
+  getCookie = (name) => {
+    var value = "; " + document.cookie;
+    var parts = value.split("; " + name + "=");
+    if (parts.length === 2) return parts.pop().split(";").shift();
   }
 
   triggerAlert = (color, message) => {

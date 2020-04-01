@@ -72,7 +72,6 @@ class Login extends Component {
   }
 
   login = () => {
-    console.log("login!");
     if (this.state.username !== "" && this.state.password !== "") {
       if (this.state.type === "admin") {
         adminLogin(this.state.username, this.state.password)
@@ -89,8 +88,9 @@ class Login extends Component {
       } else if (this.state.type === "donor") {
         donorLogin(this.state.username, this.state.password)
         .then(response => {
+          console.log(response.data)
           if (response.data.code === 200) {
-            this.setCookie("donor_id", response.data._id, 1);
+            this.setCookie("donor_id", response.data.id, 1);
             this.setCookie("donor_username", response.data.username, 1);
             this.setCookie("donor_address", response.data.eth_address, 1);
             window.history.back();
@@ -102,7 +102,7 @@ class Login extends Component {
         charityLogin(this.state.username, this.state.password)
         .then(response => {
           if (response.data.code === 200) {
-            this.setCookie("charity_id", response.data._id, 1);
+            this.setCookie("charity_id", response.data.id, 1);
             this.setCookie("charity_username", response.data.username, 1);
             this.setCookie("charity_address", response.data.eth_address, 1);
             window.history.back();
