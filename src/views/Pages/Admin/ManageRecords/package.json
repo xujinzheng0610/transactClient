@@ -1,6 +1,0 @@
-{
-  "name": "ManageRecords",
-  "version": "0.0.0",
-  "private": true,
-  "main": "./ManageRecords.js"
-}

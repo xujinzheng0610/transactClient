@@ -1,5 +1,6 @@
 import React from 'react';
-const ManageRecords = React.lazy(() => import('./views/Pages/Admin/ManageRecords'));
+const ManageDonors = React.lazy(() => import('./views/Pages/Admin/ManageDonors'));
+const ManageCharities = React.lazy(() => import('./views/Pages/Admin/ManageCharities'));
 
 const Breadcrumbs = React.lazy(() => import('./views/Base/Breadcrumbs'));
 const Cards = React.lazy(() => import('./views/Base/Cards'));
@@ -41,7 +42,8 @@ const Cover = React.lazy(() => import('./views/Client/Cover'))
 const Project = React.lazy( () => import("./views/Project"))
 // https://github.com/ReactTraining/react-router/tree/master/packages/react-router-config
 const routes = [
-  { path: '/admin/managerecords', name: 'Manage Records', component: ManageRecords },
+  { path: '/admin/managedonors', name: 'Manage Donors', component: ManageDonors },
+  { path: '/admin/managecharities', name: 'Manage Charities', component: ManageCharities },
   { path: '/', exact: true, name: 'Home' },
   { path: '/dashboard', name: 'Dashboard', component: Dashboard },
   { path: '/theme', exact: true, name: 'Theme', component: Colors },
