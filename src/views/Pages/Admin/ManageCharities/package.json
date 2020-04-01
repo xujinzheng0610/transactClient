@@ -1,0 +1,6 @@
+{
+  "name": "ManageCharities",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./ManageCharities.js"
+}

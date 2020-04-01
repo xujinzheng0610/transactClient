@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import ListGroups from './ManageRecords';
+import ListGroups from './ManageDonors';
 import {mount} from 'enzyme/build';
 
 it('renders without crashing', () => {

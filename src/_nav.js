@@ -20,19 +20,26 @@ export default {
     },
     {
       name: 'Manage Records',
-      url: '/admin/managerecords',
+      url: '/admin',
       icon: 'icon-drop',
+      children: [
+        {
+          name:'Donors',
+          url: '/admin/managedonors',
+          icon: 'icon-puzzle',
+        },
+        {
+          name:'Charity Organizations',
+          url: '/admin/managecharities',
+          icon: 'icon-puzzle',
+        },
+        {
+          name:'Charity Projects',
+          url: '/admin/manageprojects',
+          icon: 'icon-puzzle',
+        },
+      ]
     },
-    // {
-    //   name: 'Manage Organizations',
-    //   url: '/pages/Admin/pendingCharity',
-    //   icon: 'icon-drop',
-    // },
-    // {
-    //   name: 'Manage Projects',
-    //   url: '/pages/Admin/pendingProjects',
-    //   icon: 'icon-drop',
-    // },
     {
       name: 'Colors',
       url: '/theme/colors',
