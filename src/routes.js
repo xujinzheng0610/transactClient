@@ -46,7 +46,7 @@ const ProjectDetails = React.lazy( () => import("./views/Project/ProjectDetails"
 const routes = [
   { path: '/admin/managedonors', name: 'Manage Donors', component: ManageDonors },
   { path: '/admin/managecharities', name: 'Manage Charities', component: ManageCharities },
-  { path: '/', exact: true, name: 'Home' },
+  { path: '/', exact: true, name: 'Home' , component: Cover},
   { path: '/dashboard', name: 'Dashboard', component: Dashboard },
   { path: '/theme', exact: true, name: 'Theme', component: Colors },
   { path: '/theme/colors', name: 'Colors', component: Colors },
