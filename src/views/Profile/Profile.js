@@ -7,7 +7,7 @@ class Profile extends Component {
     super(props);
 
     this.state = {
-      address: "0xC7544Fc36895bd4cb7366582775D039dEc3389cd",
+      address: "0x0b37411a8b028DCCB0c93fa34441305d809c0823",
       username: "",
       email: "",
       password: "",
@@ -68,13 +68,13 @@ class Profile extends Component {
             type: "password",
             logo: "icon-key",
             display: "Password", 
-            value: data["password"]
+            value: "*****"
             },
             {
             type: "repeatPassword",
             logo: "icon-key",
             display: "Repeat Password", 
-            value: data["password"]
+            value: "*****"
             },
             {
             type: "bank_account",
@@ -146,13 +146,13 @@ class Profile extends Component {
             type: "password",
             logo: "icon-key",
             display: "Password", 
-            value: data["password"]
+            value: "*****"
             },
             {
             type: "repeatPassword",
             logo: "icon-key",
             display: "Repeat Password", 
-            value: data["password"]
+            value: "*****"
             },
             {
             type: "bank_account",
@@ -191,7 +191,9 @@ class Profile extends Component {
             value: data["registration_hash"]
             }
         ] 
-        this.setState({userData: charity_attributes});
+        this.setState({userData: charity_attributes, username:data["username"],email:data["email"], eth_address:this.state.address
+        , password:data["password"], repeatPassword:data["repeatPassword"], bank_account:data["bank_account"], physical_address:data["physical_address"],
+        full_name:data["name"],contact_number:data["contact_number"], description:data["description"]});
         },      
         error => {
         this.setState({
@@ -225,13 +227,14 @@ class Profile extends Component {
       data.set("full_name", this.state.full_name);
       data.set("contact_number", this.state.contact_number);
     // data.set("financial_info", this.state.financial_info);
-      if (this.state.type === "charity") {
+      if (this.state.type === "charity") { 
         data.set("description", this.state.description);
         this.setState({ loading: true });
         charityUpdate(data)
           .then(response => {
             if (response.data["code"] === 200) {
               this.setState({ updated: true });
+              window.location.reload(true);
             } else {
               this.triggerAlert("danger", response.data["message"]);
             }
