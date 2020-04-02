@@ -9,12 +9,14 @@
     "url": "git@github.com/xujinzheng0610/transactClient.git"
   },
   "dependencies": {
+    "2.4.2": "^1.0.0",
     "@coreui/coreui": "^2.1.12",
     "@coreui/coreui-plugin-chartjs-custom-tooltips": "^1.3.1",
     "@coreui/icons": "0.3.0",
     "@coreui/react": "^2.5.1",
     "axios": "^0.19.2",
     "bootstrap": "^4.4.1",
+    "chalk": "^3.0.0",
     "chart.js": "^2.8.0",
     "classnames": "^2.2.6",
     "core-js": "^3.1.4",
