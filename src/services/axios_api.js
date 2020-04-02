@@ -57,6 +57,14 @@ export function charityUpdate(data){
   return client.post('/updateOrganization',data)
 }
 
+export function getProjectByCharity(address){
+  return client.get("/getProjectsByOrganization", {
+    params: {
+      charityAddress: address
+    }
+  })
+}
+
 export function adminLogin(username, password){
   return client.get("/admin/login", {
     params: {

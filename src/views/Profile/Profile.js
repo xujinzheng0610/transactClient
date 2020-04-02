@@ -1,13 +1,13 @@
 import React, { Component, Suspense } from "react";
-import { Alert, Container, Row, Col, Card, CardBody, Form, InputGroup, InputGroupAddon, InputGroupText, Input, Button } from "reactstrap";
-import { charityProfile, donorProfile, charityUpdate, donorUpdate } from "../../services/axios_api";
+import { CardHeader, Alert, Container, Row, Col, Card, CardBody, Form, InputGroup, InputGroupAddon, InputGroupText, Input, Button } from "reactstrap";
+import { charityProfile, donorProfile, charityUpdate, donorUpdate, getProjectByCharity } from "../../services/axios_api";
 
 class Profile extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      address: "0x0b37411a8b028DCCB0c93fa34441305d809c0823",
+      address: "0xC1CC7090f73bA00052b26A9eaC4759D8A0c689D7",
       username: "",
       email: "",
       password: "",
@@ -110,6 +110,15 @@ class Profile extends Component {
         this.setState({userData: donor_attributes, username:data["username"],email:data["email"], eth_address:this.state.address
     , password:data["password"], repeatPassword:data["password"], bank_account:data["bank_account"], physical_address:data["physical_address"],
     full_name:data["full_name"],contact_number:data["contact_number"]});
+
+      getProjectByCharity(this.state.address).then(
+      result => {
+      console.log("checking charity");
+      let data = result.data;
+      console.log(data);
+      this.setState({projectData: data["items"]});    
+      })
+
         },      
         error => {
         this.setState({
@@ -194,7 +203,15 @@ class Profile extends Component {
         this.setState({userData: charity_attributes, username:data["username"],email:data["email"], eth_address:this.state.address
         , password:data["password"], repeatPassword:data["password"], bank_account:data["bank_account"], physical_address:data["physical_address"],
         full_name:data["name"],contact_number:data["contact_number"], description:data["description"]});
-        },      
+       
+        getProjectByCharity(this.state.address).then(
+          result => {
+          console.log("checking charity");
+          let data = result.data;
+          console.log(data);
+          this.setState({projectData: data["items"]});    
+          })
+      },      
         error => {
         this.setState({
             isLoaded: true,
@@ -306,6 +323,13 @@ class Profile extends Component {
     if (!userData) {
       return [];
     }  
+
+    const { projectData } = this.state;
+
+    if (!projectData) {
+      return [];
+    } 
+
     return (<div>
       <Suspense fallback={this.loading()}>
       </Suspense>
@@ -354,6 +378,45 @@ class Profile extends Component {
           </Button>
         </Form>
       </Container>
+
+      <div className="animated fadeIn">
+        <Card>
+          <CardHeader>
+            Your Projects
+          </CardHeader>
+          <CardBody>
+            {projectData.map(project => {
+              return (
+                <Card className="mb-0" key={project.project_name}>
+                  <CardBody>
+                    <h3>{project.project_name}</h3>
+                    <ul>
+                      <li key={project.description}>
+                        Project Description: {project.description}
+                      </li>
+                      <li key={project.expire_date}>Expiry Date: {project.expire_date}</li>
+                      <li key={project.target_amount}>
+                        Target Amount: {project.target_amount}
+                      </li>
+                    </ul>
+                    <Row>
+                      <Col sm="6" style={{ textAlign: "centre" }}>
+                        <Button
+                          outline
+                          color="success"
+                          // onClick={() => this.rejectDonor(donor)}
+                        >
+                          View More
+                        </Button>
+                      </Col>
+                    </Row>
+                  </CardBody>
+                </Card>
+              );
+            })}
+          </CardBody>
+        </Card>
+      </div>
       
       <Container className="mt-3 mb-3">
         <Card>
