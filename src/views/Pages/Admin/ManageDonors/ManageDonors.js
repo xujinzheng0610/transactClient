@@ -47,16 +47,11 @@ class ManageDonors extends Component {
       inspectorAddress: this.getCookie("admin"),
       donorAddress: null,
 
-      alertVisible: false,
+      visible: false,
       alertColor: "info",
       alertMessage: "I am an alert message"
     };
-  }
-
-  getCookie = (name) => {
-    var value = "; " + document.cookie;
-    var parts = value.split("; " + name + "=");
-    if (parts.length === 2) return parts.pop().split(";").shift();
+    this.onDismiss = this.onDismiss.bind(this);
   }
 
   triggerAlert = (color, message) => {
@@ -65,12 +60,18 @@ class ManageDonors extends Component {
       alertMessage: message
     });
     this.onDismiss();
-    setTimeout(this.onDismiss, 3000);
   };
 
-  onDismiss = () => {
-    this.setState({ alertVisible: !this.state.alertVisible });
-  };
+  onDismiss() {
+    this.setState({ visible: !this.state.visible });
+    
+  }
+
+  getCookie = (name) => {
+    var value = "; " + document.cookie;
+    var parts = value.split("; " + name + "=");
+    if (parts.length === 2) return parts.pop().split(";").shift();
+  }
 
   toggle(i) {
     const newArray = this.state.dropdownOpen.map((element, index) => {
@@ -194,6 +195,7 @@ class ManageDonors extends Component {
         } else {
           console.log("approving donor What's wrong with you");
           console.log(response.data["code"]);
+          console.log(response.data["message"]);
           this.triggerAlert("danger", response.data["message"]);
         }
       })
@@ -243,19 +245,14 @@ class ManageDonors extends Component {
     }
     return (
       <div className="animated fadeIn">
-        <Alert
-          color={this.state.alertColor}
-          isOpen={this.state.alertVisible}
-          toggle={this.onDismiss}
-          style={{ position: "fixed", top: "10rem", right: "5rem" }}
-        >
-          {this.state.alertMessage}
-        </Alert>
         <Card>
           <CardHeader>
             <i className="fa fa-align-justify"></i> Pending Donors
           </CardHeader>
           <CardBody>
+            <Alert color={this.state.alertColor} isOpen={this.state.visible} toggle={this.onDismiss}>
+              {this.state.alertMessage}
+            </Alert>
             {pendingDonors.map(donor => {
               return (
                 <Card className="mb-0" key={donor.username}>
