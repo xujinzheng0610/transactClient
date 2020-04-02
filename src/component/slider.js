@@ -101,8 +101,8 @@ class Slider extends Component {
                 onExited={() => this.setState({ animating: false })}
               >
                
-                    <div class="bannerInner">
-                        <div class="banner-img__wrapper">
+                    <div className="bannerInner">
+                        <div className="banner-img__wrapper">
                           <img src={item.src} alt={item.altText} style={{opacity:0.5, width:"100%", height: "100%"}}/>
                         </div>
                     </div>
