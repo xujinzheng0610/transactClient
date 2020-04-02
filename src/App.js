@@ -14,6 +14,7 @@ const Login = React.lazy(() => import('./views/Pages/Login'));
 const Register = React.lazy(() => import('./views/Pages/Register'));
 const Page404 = React.lazy(() => import('./views/Pages/Page404'));
 const Page500 = React.lazy(() => import('./views/Pages/Page500'));
+const Profile = React.lazy(() => import('./views/Profile'));
 
 function getCookie(name) {
   var nameEQ = name + "=";
@@ -34,6 +35,7 @@ class App extends Component {
       <BrowserRouter>
           <React.Suspense fallback={loading()}>
             <Switch>
+              <Route exact path="/profile/:type" name="Profile Page" render={props => <Profile {...props}/>} /> 
               <Route exact path="/login/:type" name="Login Page" render={props => <Login {...props}/>} />
               <Route exact path="/register/:type" name="Register Page" render={props => <Register {...props}/>} />
               <Route exact path="/404" name="Page 404" render={props => <Page404 {...props}/>} />

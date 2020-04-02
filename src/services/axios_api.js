@@ -33,6 +33,22 @@ export function charityLogin(username, password){
   })
 }
 
+export function donorProfile(address){
+  return client.get("/getDonorDetails", {
+    params: {
+      donorAddress: address
+    }
+  })
+}
+
+export function charityProfile(address){
+  return client.get("/getCharityDetails", {
+    params: {
+      donorAddress: address
+    }
+  })
+}
+
 export function adminLogin(username, password){
   return client.get("/admin/login", {
     params: {
