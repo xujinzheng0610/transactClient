@@ -35,7 +35,7 @@ class App extends Component {
       <BrowserRouter>
           <React.Suspense fallback={loading()}>
             <Switch>
-              <Route exact path="/profile/:type" name="Profile Page" render={props => <Profile {...props}/>} /> 
+              {/* <Route exact path="/profile/:type" name="Profile Page" render={props => <Profile {...props}/>} />  */}
               <Route exact path="/login/:type" name="Login Page" render={props => <Login {...props}/>} />
               <Route exact path="/register/:type" name="Register Page" render={props => <Register {...props}/>} />
               <Route exact path="/404" name="Page 404" render={props => <Page404 {...props}/>} />

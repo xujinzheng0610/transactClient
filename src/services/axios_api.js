@@ -45,6 +45,15 @@ export function donorUpdate(data){
   return client.post('/updateDonor',data)
 }
 
+export function getProjectByDonor(address){
+  return client.get("/getProjectsByDonor", {
+    params: {
+      donorAddress: address
+    }
+  })
+}
+
+
 export function charityProfile(address){
   return client.get("/getCharityDetails", {
     params: {

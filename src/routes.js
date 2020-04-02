@@ -40,6 +40,7 @@ const User = React.lazy(() => import('./views/Users/User'));
 
 const Cover = React.lazy(() => import('./views/Client/Cover'))
 const Project = React.lazy( () => import("./views/Project"))
+const Profile = React.lazy(() => import('./views/Profile'));
 // https://github.com/ReactTraining/react-router/tree/master/packages/react-router-config
 const routes = [
   { path: '/admin/managedonors', name: 'Manage Donors', component: ManageDonors },
@@ -86,7 +87,8 @@ const routes = [
   { path: '/users', exact: true,  name: 'Users', component: Users },
   { path: '/users/:id', exact: true, name: 'User Details', component: User },
   { path: '/home', name: 'PublicHome', component: Cover},
-  { path: '/projects', name: 'PublicHome', component: Project}
+  { path: '/projects', name: 'PublicHome', component: Project},
+  { path: '/profile/:type/:address', name: 'Profile Page', component: Profile}
 ];
 
 export default routes;

@@ -1,13 +1,13 @@
 import React, { Component, Suspense } from "react";
 import { CardHeader, Alert, Container, Row, Col, Card, CardBody, Form, InputGroup, InputGroupAddon, InputGroupText, Input, Button } from "reactstrap";
-import { charityProfile, donorProfile, charityUpdate, donorUpdate, getProjectByCharity } from "../../services/axios_api";
+import { charityProfile, donorProfile, charityUpdate, donorUpdate, getProjectByCharity, getProjectByDonor  } from "../../services/axios_api";
 
 class Profile extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      address: "0xC1CC7090f73bA00052b26A9eaC4759D8A0c689D7",
+      address: this.checkAddress(),
       username: "",
       email: "",
       password: "",
@@ -111,9 +111,9 @@ class Profile extends Component {
     , password:data["password"], repeatPassword:data["password"], bank_account:data["bank_account"], physical_address:data["physical_address"],
     full_name:data["full_name"],contact_number:data["contact_number"]});
 
-      getProjectByCharity(this.state.address).then(
+      getProjectByDonor(this.state.address).then(
       result => {
-      console.log("checking charity");
+      console.log("checking donor");
       let data = result.data;
       console.log(data);
       this.setState({projectData: data["items"]});    
@@ -310,6 +310,12 @@ class Profile extends Component {
       window.location.replace("/home");
     }
   };
+
+  checkAddress = () => {
+      console.log("valid route");
+      return this.props.match.params.address;
+  };
+
 
   updateValue = type => e => {
     this.setState({

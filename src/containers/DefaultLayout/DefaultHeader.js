@@ -39,6 +39,16 @@ class DefaultHeader extends Component {
     return false;
   };
 
+  getCharityProfile = () => {
+    let address = "/profile/charity/" + this.getCookie("charity_address")
+    return address
+  };
+  
+  getDonorProfile = () => {
+    let address = "/profile/donor/" + this.getCookie("donor_address");
+    return address
+  };
+
   checkDonorLogin = () => {
     if (this.getCookie("donor_address")) {
       return true;
@@ -119,7 +129,7 @@ class DefaultHeader extends Component {
             <DropdownMenu right className="mt-2">
               {this.state.donorLogin ? (
                 <div>
-                  <DropdownItem href="">
+                  <DropdownItem href={this.getDonorProfile()}>
                     <i className="fa fa-shield"></i> Donor Profile
                   </DropdownItem>
                   <DropdownItem onClick={this.donorLogout}>
@@ -128,7 +138,7 @@ class DefaultHeader extends Component {
                 </div>
               ) : this.state.charityLogin ? (
                 <div>
-                  <DropdownItem href="">
+                  <DropdownItem href={this.getCharityProfile()}>
                     <i className="fa fa-shield"></i> Charity Profile
                   </DropdownItem>
                   <DropdownItem href="">
