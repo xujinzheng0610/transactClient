@@ -28,7 +28,10 @@ class Login extends Component {
     this.state = {
       type: this.checkType(),
       username: "",
-      password: ""
+      password: "",
+      alertVisible: false,
+      alertColor: "info",
+      alertMessage: "I am an alert message",
     };
   }
 
@@ -62,15 +65,20 @@ class Login extends Component {
     document.cookie = name + "=" + (value || "") + expires + "; path=/";
   };
 
+  getCookie = (name) => {
+    var value = "; " + document.cookie;
+    var parts = value.split("; " + name + "=");
+    if (parts.length === 2) return parts.pop().split(";").shift();
+  }
+
   login = () => {
-    console.log("login!");
     if (this.state.username !== "" && this.state.password !== "") {
       if (this.state.type === "admin") {
         adminLogin(this.state.username, this.state.password)
           .then(response => {
             if (response.data.code === 200) {
               //set local key
-              this.setCookie("admin", "admin", 1);
+              this.setCookie("admin", response.data.eth_address, 1);
               window.location.replace("/admin");
             } else {
               this.triggerAlert("danger", response.data.message);
@@ -78,7 +86,30 @@ class Login extends Component {
           })
           .catch(e => console.log(e));
       } else if (this.state.type === "donor") {
+        donorLogin(this.state.username, this.state.password)
+        .then(response => {
+          console.log(response.data)
+          if (response.data.code === 200) {
+            this.setCookie("donor_id", response.data.id, 1);
+            this.setCookie("donor_username", response.data.username, 1);
+            this.setCookie("donor_address", response.data.eth_address, 1);
+            window.history.back();
+          } else {
+            this.triggerAlert("danger", response.data.message);
+          }
+        })
       } else if (this.state.type === "charity") {
+        charityLogin(this.state.username, this.state.password)
+        .then(response => {
+          if (response.data.code === 200) {
+            this.setCookie("charity_id", response.data.id, 1);
+            this.setCookie("charity_username", response.data.username, 1);
+            this.setCookie("charity_address", response.data.eth_address, 1);
+            window.history.back();
+          } else {
+            this.triggerAlert("danger", response.data.message);
+          }
+        })
       } else {
         window.location.replace("/home");
       }
@@ -103,6 +134,14 @@ class Login extends Component {
   render() {
     return (
       <div className="app flex-row align-items-center">
+        <Alert
+          color={this.state.alertColor}
+          isOpen={this.state.alertVisible}
+          toggle={this.onDismiss}
+          style={{ position: "fixed", top: "2rem", right: "1rem" }}
+        >
+          {this.state.alertMessage}
+        </Alert>
         <Container>
           <Row className="justify-content-center">
             <Col md="8">
