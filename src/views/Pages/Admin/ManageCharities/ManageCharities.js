@@ -1,8 +1,25 @@
 import React, { Component } from 'react';
-import { Badge, Button, Card, CardBody, CardFooter, CardHeader, Col, Row, Collapse, Fade, Alert } from 'reactstrap';
+import { 
+  Badge, 
+  Button, 
+  Card, 
+  CardBody, 
+  CardFooter, 
+  CardHeader, 
+  Col, 
+  Row, 
+  Collapse, 
+  Fade, 
+  Alert 
+} from 'reactstrap';
 import { AppSwitch } from '@coreui/react'
 
-import client, { pendingDonorRetrieval, donorApproval, pendingCharityRetrieval, charityApproval, charityReject } from "../../../../services/axios_api";
+import client, { 
+  pendingCharityRetrieval, 
+  charityApproval, 
+  charityReject 
+} from "../../../../services/axios_api";
+
 class ManageCharities extends Component {
   constructor(props) {
     super(props);
@@ -29,10 +46,10 @@ class ManageCharities extends Component {
       pendingOrganizations: null,
       approveCharity: false,
       rejectCharity: false, 
-      inspectorAddress: '0xc3D2b233F2238Af0c0c01430b2582FBBA583b67C', 
+      inspectorAddress: this.getCookie("admin"),
       charityOrganizationAddress: null,
 
-      alertVisible: false,
+      visible: false,
       alertColor: "info",
       alertMessage: "I am an alert message",
     };
@@ -44,12 +61,17 @@ class ManageCharities extends Component {
       alertMessage: message
     });
     this.onDismiss();
-    setTimeout(this.onDismiss, 3000);
   };
 
   onDismiss = () => {
-    this.setState({ alertVisible: !this.state.alertVisible });
+    this.setState({ visible: !this.state.visible });
   };
+
+  getCookie = (name) => {
+    var value = "; " + document.cookie;
+    var parts = value.split("; " + name + "=");
+    if (parts.length === 2) return parts.pop().split(";").shift();
+  }
 
   onEntering() {
     this.setState({ status: 'Opening...' });
@@ -148,7 +170,6 @@ class ManageCharities extends Component {
       )
       }
 
-
   approveCharity = approvingCharity => {
     var data = new FormData();
     data.set("charityAddress", approvingCharity.eth_address);
@@ -213,62 +234,56 @@ class ManageCharities extends Component {
     if (!pendingOrganizations) { return [] }
     return (
       <div className="animated fadeIn">
-        <Alert
-          color={this.state.alertColor}
-          isOpen={this.state.alertVisible}
-          toggle={this.onDismiss}
-          style={{ position: "fixed", top: "10rem", right: "5rem" }}
-        >
-          {this.state.alertMessage}
-        </Alert>
-        <Row>
-          {
-          pendingOrganizations.map( organization => {return(
-          <Col md="12" lg="1l2" xl="12">
-            <Card>
-              <CardHeader>
-                <i className="fa fa-align-justify"></i> Pending Charity Organizations  
-                <div className="card-header-actions">
-                  <Badge>NEW</Badge>
-                </div>
-              </CardHeader>
-              <CardBody>
-                <div id="accordion">
-                  <Card className="mb-0">
-                    <CardHeader id="headingOne">
-                      <Button block color="link" className="text-left m-0 p-0" onClick={() => this.toggleAccordion(0)} aria-expanded={this.state.accordion[0]} aria-controls="collapseOne">
-                        <h5 className="m-0 p-0">
-                          <ul>
-                            <li key={organization.username}>Username: {organization.username}</li>
-                          </ul>
-                        </h5>
-                      </Button>
-                    </CardHeader>
-                    <Collapse isOpen={this.state.accordion[0]} data-parent="#accordion" id="collapseOne" aria-labelledby="headingOne">
-                      <CardBody>
+        <Card>
+          <CardHeader>
+            <i className="fa fa-align-justify"></i> Pending Charity Organizations  
+          </CardHeader>
+          <CardBody>
+            <Alert color={this.state.alertColor} isOpen={this.state.visible} toggle={this.onDismiss}>
+              {this.state.alertMessage}
+            </Alert>
+            {pendingOrganizations.map( organization => {
+              return(
+                <Card className="mb-0" key = {organization.username}>
+                  <CardBody>
+                    <h3>Username: {organization.username}</h3>
                       <ul>
-                          <li key={organization.username}>Email Address: {organization.email}</li>
-                          <li key={organization.username}>Eth Address: {organization.eth_address}</li>
-                          <li key={organization.username}>Bank Account: {organization.bank_account}</li>
-                          <li key={organization.username}>Physical Address: {organization.physical_address}</li>
-                          <li key={organization.username}>Full Name: {organization.name}</li>
-                          <li key={organization.username}>Contact Number: {organization.contact_number}</li>
-                          <li key={organization.username}>Financial Information: {organization.financial_info}</li>
-                          <li key={organization.username}>Description: {organization.description}</li>
-                          <li key={organization.username}>Registration Hash: {organization.registration_hash}</li>
-                        </ul>
-                      </CardBody>
-                      <Button block outline color="success" onClick={() => this.approveCharity(organization)} >Approve</Button>
-                      <Button block outline color="danger" onClick={() => this.rejectCharity(organization)} >Reject</Button>
-                    </Collapse>
-                  </Card>
-                </div>
-              </CardBody>
-            </Card>
-          </Col>
-          )})
-          }
-        </Row>
+                        <li key={organization.username}>Email Address: {organization.email}</li>
+                        <li key={organization.username}>Eth Address: {organization.eth_address}</li>
+                        <li key={organization.username}>Bank Account: {organization.bank_account}</li>
+                        <li key={organization.username}>Physical Address: {organization.physical_address}</li>
+                        <li key={organization.username}>Full Name: {organization.name}</li>
+                        <li key={organization.username}>Contact Number: {organization.contact_number}</li>
+                        <li key={organization.username}>Financial Information: {organization.financial_info}</li>
+                        <li key={organization.username}>Description: {organization.description}</li>
+                        <li key={organization.username}>Registration Hash: {organization.registration_hash}</li>
+                      </ul>
+                      <Row>
+                      <Col sm="6" style={{ textAlign: "center" }}>
+                        <Button
+                          outline
+                          color="success"
+                          onClick={() => this.approveCharity(organization)}
+                        >
+                          Approve
+                        </Button>
+                      </Col>
+                      <Col sm="6" style={{ textAlign: "center" }}>
+                        <Button
+                          outline
+                          color="danger"
+                          onClick={() => this.rejectCharity(organization)}
+                        >
+                          Reject
+                        </Button>
+                      </Col>
+                    </Row>
+                  </CardBody>
+                </Card>
+              );
+            })}
+          </CardBody>
+        </Card>
       </div>
     )
   }
