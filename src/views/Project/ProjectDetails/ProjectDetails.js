@@ -18,6 +18,7 @@ import {
   Table
 } from "reactstrap";
 import { Bar, Doughnut, Line, Pie, Polar, Radar } from 'react-chartjs-2';
+import Moment from 'react-moment';
 
 import { retrieveProjectDetails, retrieveDonorsByProject } from "../../../services/axios_api";
 
@@ -57,11 +58,14 @@ class ProjectDetails extends Component{
     constructor(props) {
       super(props);
       const project_id = this.props.match.params.projectId
+      var tempDate = new Date()
+      var date = tempDate.getFullYear() + '-' + (tempDate.getMonth()+1) + '-' + tempDate.getDate()
   
       this.state = {
         project_id : this.props.match.params.projectId,
         project: {},
-        donors: []
+        donors: [],
+        today: date
       };
     }
   
@@ -111,31 +115,52 @@ class ProjectDetails extends Component{
                                 <img src='../../assets/img/slider/background1.jpg' alt="project photo" style={{opacity:0.5, width:"100%", height: "100%"}}/>
                             </div>
                             <h1>About This Project</h1>
-                            <h2>
-                                {this.state.project.description}    
-                            </h2>
                             <p>
-                            Some descroption about this projectSome descroption about this projectSome descroption about this projectSome descroption about this projectSome descroption about this projectSome descroption about this projectSome descroption about this projectSome descroption about this projectSome descroption about this projectSome descroption about this projectSome descroption about this project
+                                {this.state.project.description}    
                             </p>
+                            <p style={{ marginLeft: '2rem', borderLeft: "6px solid", borderLeftColor: "SkyBlue"}}>
+                            <p className = 'mt-3 mb-3' style={{ marginLeft: '.5rem', fontStyle: 'italic', fontSize:'15px'}}>Some descroption about this projectSome descroption about this projectSome descroption about this projectSome descroption about this projectSome descroption about this projectSome descroption about this projectSome descroption about this projectSome descroption about this projectSome descroption about this projectSome descroption about this projectSome descroption about this project</p>
+                            </p>
+                            <hr
+                                style={{
+                                    color: "primary",
+                                    backgroundColor: "primary",
+                                    height: 5
+                                }}
+                            />
                             <h1>About This Charity</h1>
-                            <h2>
+                            <p style={{ marginLeft: '2rem', fontSize: "20px", }}>
                                 {this.state.project.charity_description}    
-                            </h2>
+                            </p>
+                            <hr
+                                style={{
+                                    color: "primary",
+                                    backgroundColor: "primary",
+                                    height: 5
+                                }}
+                            />
                             <h1>
                                 Money Allocation
                             </h1>
                             <div className="chart-wrapper">
                                 <Pie data={pie} />
                             </div>
+                            <hr
+                                style={{
+                                    color: "primary",
+                                    backgroundColor: "primary",
+                                    height: 5
+                                }}
+                            />
                             <h1>
                                 Recent Donors
                             </h1>
                                 <Card>
                                     <CardHeader>
-                                        <i className="fa fa-align-justify"></i> Donors <small className="text-muted">example</small>
+                                        <i className="fa fa-align-justify"></i> Donors <small className="text-muted">latest 10 donors</small>
                                     </CardHeader>
                                     <CardBody>
-                                        <Table responsive hover>
+                                        <Table responsive hover className="table table-striped">
                                         <thead>
                                             <tr>
                                             <th scope="col">Name</th>
@@ -167,14 +192,14 @@ class ProjectDetails extends Component{
                             >
                                 {project_id}                                  
                             </h2> */}
-                            <h1
+                            <p
                                 style={{
+                                fontSize: "40px",
+                                fontFamily: "Arial",
                                 width: "fit-content",
                                 marginBottom: "20px"
                                 }}
-                            >                                 
-                                {this.state.project.project_name}
-                            </h1>
+                            ><strong>{this.state.project.project_name}</strong></p>
                             <h3 style={{
                                 width: "fit-content",
                                 marginBottom: "20px"
@@ -199,18 +224,28 @@ class ProjectDetails extends Component{
                                     color:"grey"
                                 }}>Expiry Date: </span>  {this.state.project.expiry_date}
                             </h3>
-                            <h2
+                            <p className = "mt-3 mb-0"
                                 style={{
                                 width: "fit-content",
-                                margin: "auto",
-                                fontFamily:"'Gill Sans', sans-serif"
+                                fontFamily:"monospace",
+                                fontSize: "35px"
                                 }}
                             >
-                                ${dummy_Project.actual_amount}/${this.state.project.target_amount}
-                            </h2>
-                            <Progress animated color="info" value={dummy_Project.actual_amount/dummy_Project.target_amount*100} className="mb-3" >
-                                {dummy_Project.actual_amount/this.state.project.target_amount*100}%
+                                <strong>${this.state.project.actual_amount}/${this.state.project.target_amount}</strong>
+                            </p>
+                            <h6 className = 'mt-0'><strong>raised from {Object.keys(this.state.donors).length} donations</strong></h6>
+                            <Progress animated color="info" value={this.state.project.actual_amount/this.state.project.target_amount*100} className="mb-3" >
+                                {this.state.project.actual_amount/this.state.project.target_amount*100}%
                             </Progress>
+                            <h6 className = 'mt-0' style={{textAlign: "right"}}><strong><Moment diff={this.state.today} unit="days">{this.state.project.expiry_date}</Moment> more days</strong></h6>
+                            <hr
+                                style={{
+                                    color: "primary",
+                                    backgroundColor: "primary",
+                                    height: 5
+                                }}
+                            />
+                            <h2>Donate Now!</h2>
                             <Row className="align-items-center">
                                 <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
                                     <Button block outline color="dark" disabled>$10</Button>
@@ -235,6 +270,13 @@ class ProjectDetails extends Component{
                                     <Button block color="primary">Donate</Button>
                                 </Col>
                             </Row>
+                            <hr
+                                style={{
+                                    color: "primary",
+                                    backgroundColor: "primary",
+                                    height: 5
+                                }}
+                            />
                             {/* <Card className="mt-3">
                                 <CardHeader>
                                     <i className="fa fa-align-justify"></i><strong>Contact Us</strong>
@@ -242,10 +284,10 @@ class ProjectDetails extends Component{
                                 <CardBody> */}
                                     <ListGroup className="mt-3">
                                         <ListGroupItemHeading><h2>Contact Us</h2></ListGroupItemHeading>
-                                        <ListGroupItem><strong>Organization: </strong> {this.state.project.charity_name}</ListGroupItem>
-                                        <ListGroupItem><strong>Phone: </strong> {this.state.project.charity_number}</ListGroupItem>
-                                        <ListGroupItem><strong>Email: </strong> {this.state.project.charity_email}</ListGroupItem>
-                                        <ListGroupItem><strong>Address: </strong> {this.state.project.charity_address}</ListGroupItem>
+                                        <ListGroupItem style={{backgroundColor: "#F8F8FF"}}><strong>Organization: </strong> {this.state.project.charity_name}</ListGroupItem>
+                                        <ListGroupItem style={{backgroundColor: "#F8F8FF"}}><strong>Phone: </strong> {this.state.project.charity_number}</ListGroupItem>
+                                        <ListGroupItem style={{backgroundColor: "#F8F8FF"}}><strong>Email: </strong> {this.state.project.charity_email}</ListGroupItem>
+                                        <ListGroupItem style={{backgroundColor: "#F8F8FF"}}><strong>Address: </strong> {this.state.project.charity_address}</ListGroupItem>
                                     </ListGroup>
                                 {/* </CardBody>
                             </Card> */}

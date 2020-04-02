@@ -13,10 +13,11 @@ import {
   InputGroupText,
   Row,
   Col,
-  Alert
+  Alert,
+  Progress
 } from "reactstrap";
 import { retrieveAllProjects } from "../../services/axios_api";
-
+import { FaCalendar } from 'react-icons/fa';
 
 let dummy_projects =[
   {
@@ -109,9 +110,14 @@ class Project extends Component{
   render(){
     
     return<div>
-      <h1>Projects</h1>
+      <p style={{
+              width: "fit-content",
+              margin: "auto",
+              fontSize: "50px",
+              fontFamily: "Anton"
+            }}><strong>Projects</strong></p>
       <Container className="mt-3 mb-3">
-          <h2
+          <h1
             style={{
               borderBottom: "2px solid #000",
               width: "fit-content",
@@ -119,20 +125,25 @@ class Project extends Component{
             }}
           >
             Latest Projects
-          </h2>
-          <Row>
+          </h1>
+          <Row className="mt-3 mb-3">
             {this.state.projects.map(item =>{
             return (
               <Col xs="12" sm="6" md="4">
                 <Card  className="card-accent-primary">
+                    <div className="custome-tag">
+                      <img src='../../assets/img/slider/background1.jpg' alt="project photo" style={{opacity:0.5, width:"100%", height: "100%"}}/>
+                    </div>
                     <CardHeader>
                       <h2>{item.project_name}</h2>
                     </CardHeader>
                     <CardBody>
-                      <p>{item.target_amount}</p>
-                      <p>{item.expiry_date}</p>
+                      <p><strong>Target: </strong>${item.target_amount}<FaCalendar style={{ marginLeft: '5rem' }}/><strong>Due: </strong>{item.expiry_date}</p>
+                      <Progress animated color="info" value={item.actual_amount/item.target_amount*100} className="mb-3" >
+                        {item.actual_amount/item.target_amount*100}%
+                      </Progress>
                       <p>{item.description}</p>
-                      <Link to={`/projects/${item._id}`}><p>--To find more details </p></Link>
+                      <Link to={`/projects/${item._id}`}><Button block outline color="primary">KNOW PROJECT BETTER</Button></Link>
                     </CardBody>
                   </Card>   
                 </Col>  
