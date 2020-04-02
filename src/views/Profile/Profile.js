@@ -2,107 +2,13 @@ import React, { Component, Suspense } from "react";
 import { Container, Row, Col, Card, CardBody, Form, InputGroup, InputGroupAddon, InputGroupText, Input, Button } from "reactstrap";
 import { charityProfile, donorProfile } from "../../services/axios_api";
 
-let donor_attributes = [
-  {
-    type: "username",
-    logo: "icon-user",
-    display: "Username", 
-    value: "Donor 1"
-  },
-  {
-    type: "email",
-    logo: "icon-envelope",
-    display: "Email",
-    value: "Donor1@gmail.com"
-  },
-  {
-    type: "eth_address",
-    logo: "icon-key",
-    display: "ETH Address", 
-    value: "0xf7FE66d3F2512B035b674De9D084889bCB5f7897"
-  },
-  {
-    type: "bank_account",
-    logo: "icon-credit-card",
-    display: "Bank Account",
-    value: "DBS 123-4567-890"
-  },
-  {
-    type: "physical_address",
-    logo: "icon-location-pin",
-    display: "Address",
-    value: "Lol avenue 1, S12345"
-  },
-  {
-    type: "full_name",
-    logo: "icon-notebook",
-    display: "Full Name",
-    value: "John Wick"
-  },
-  {
-    type: "contact_number",
-    logo: "icon-phone",
-    display: "Contact Number",
-    value: "+65-93211665"
-  }
-];
-
-let charity_attributes = [
-  {
-    type: "username",
-    logo: "icon-user",
-    display: "Username", 
-    value: "Charity 1"
-  },
-  {
-    type: "email",
-    logo: "icon-envelope",
-    display: "Email",
-    value: "charity1@gmail.com"
-  },
-  {
-    type: "eth_address",
-    logo: "icon-key",
-    display: "ETH Address", 
-    value: "0xf7FE66d3F2512B035b674De9D084889bCB5f7897"
-  },
-  {
-    type: "bank_account",
-    logo: "icon-credit-card",
-    display: "Bank Account",
-    value: "DBS 123-4567-890"
-  },
-  {
-    type: "physical_address",
-    logo: "icon-location-pin",
-    display: "Address",
-    value: "Lol avenue 1, S12345"
-  },
-  {
-    type: "full_name",
-    logo: "icon-notebook",
-    display: "Full Name",
-    value: "John Wick"
-  },
-  {
-    type: "contact_number",
-    logo: "icon-phone",
-    display: "Contact Number",
-    value: "+65-93211665"
-  },
-  {
-    type: "description",
-    logo: "icon-grid",
-    display: "Description",
-    value:"we save animals"
-  }
-];
-
 class Profile extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
+      address: "0xC7544Fc36895bd4cb7366582775D039dEc3389cd",
+      isLoaded: false,
       type: this.checkType(),
       disabled: true,
       alertVisible: false,
@@ -122,21 +28,159 @@ class Profile extends Component {
   }
 
   getUsersData() {
-    this.state.type === "donor" ?
-    donorProfile("0xcd1c56335D7b6c93345aeBD05Ea348a2f2526a0E") : charityProfile()
-        .then(res => {
-            const data = res.data
-            console.log(data)
-
-        })
-        .catch((error) => {
-            console.log(error)
-        })
+    this.state.type === "donor" ? 
+    donorProfile(this.state.address).then(
+        result => {
+        console.log("checkinginging");
+        let data = result.data;
+        console.log(data);
+        let donor_attributes = [
+            {
+              type: "username",
+              logo: "icon-user",
+              display: "Username", 
+              value: data["username"]
+            },
+            {
+              type: "email",
+              logo: "icon-envelope",
+              display: "Email",
+              value: data["email"]
+            },
+            {
+              type: "eth_address",
+              logo: "icon-key",
+              display: "ETH Address", 
+              value: data["eth_address"]
+            },
+            {
+            type: "password",
+            logo: "icon-key",
+            display: "Password", 
+            value: data["password"]
+            },
+            {
+            type: "bank_account",
+            logo: "icon-credit-card",
+            display: "Bank Account",
+            value: data["bank_account"]
+            },
+            {
+            type: "physical_address",
+            logo: "icon-location-pin",
+            display: "Address",
+            value: data["physical_address"]
+            },
+            {
+            type: "full_name",
+            logo: "icon-notebook",
+            display: "Full Name",
+            value: data["full_name"]
+            },
+            {
+            type: "contact_number",
+            logo: "icon-phone",
+            display: "Contact Number",
+            value: data["contact_number"]
+            },
+            {
+            type: "registration_hash",
+            logo: "icon-phone",
+            display: "Registration Hash",
+            value: data["registration_hash"]
+            }
+        ] 
+        this.setState({userData: donor_attributes});
+        },      
+        error => {
+        this.setState({
+            isLoaded: true,
+            error
+        });
+        }
+    ) : 
+    charityProfile(this.state.address).then(
+        result => {
+        console.log("checkinginging");
+        let data = result.data;
+        console.log(data);
+        let charity_attributes = [
+            {
+              type: "username",
+              logo: "icon-user",
+              display: "Username", 
+              value: data["username"]
+            },
+            {
+              type: "email",
+              logo: "icon-envelope",
+              display: "Email",
+              value: data["email"]
+            },
+            {
+              type: "eth_address",
+              logo: "icon-key",
+              display: "ETH Address", 
+              value: data["eth_address"]
+            },
+            {
+            type: "password",
+            logo: "icon-key",
+            display: "Password", 
+            value: data["password"]
+            },
+            {
+            type: "bank_account",
+            logo: "icon-credit-card",
+            display: "Bank Account",
+            value: data["bank_account"]
+            },
+            {
+            type: "physical_address",
+            logo: "icon-location-pin",
+            display: "Address",
+            value: data["physical_address"]
+            },
+            {
+            type: "name",
+            logo: "icon-notebook",
+            display: "Full Name",
+            value: data["name"]
+            },
+            {
+            type: "contact_number",
+            logo: "icon-phone",
+            display: "Contact Number",
+            value: data["contact_number"]
+            },
+            {
+            type: "description",
+            logo: "icon-phone",
+            display: "Description",
+            value: data["description"]
+            },
+            {
+            type: "registration_hash",
+            logo: "icon-phone",
+            display: "Registration Hash",
+            value: data["registration_hash"]
+            }
+        ] 
+        this.setState({userData: charity_attributes});
+        },      
+        error => {
+        this.setState({
+            isLoaded: true,
+            error
+        });
+        }
+    ); 
   }
   
   componentDidMount(){
     this.getUsersData();
   }
+
 
   checkType = () => {
     if (["donor", "charity"].indexOf(this.props.match.params.type) > -1) {
@@ -149,8 +193,11 @@ class Profile extends Component {
   };
 
   render() {
-    const attributes =
-      this.state.type === "donor" ? donor_attributes : charity_attributes;
+    const { userData } = this.state;
+
+    if (!userData) {
+      return [];
+    }  
     return (<div>
       <Suspense fallback={this.loading()}>
       </Suspense>
@@ -160,7 +207,7 @@ class Profile extends Component {
             {/* element style - float right */}
           <Button  onClick = {this.allowEdit.bind(this)} className="fa fa-edit"></Button></h1>
           <p className="text-muted"></p>
-          {attributes.map(item => {
+          {userData.map(item => {
             return (
               <InputGroup className="mb-3" key={item.type}>
                 <InputGroupAddon addonType="prepend">

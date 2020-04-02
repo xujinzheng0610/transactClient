@@ -44,7 +44,7 @@ export function donorProfile(address){
 export function charityProfile(address){
   return client.get("/getCharityDetails", {
     params: {
-      donorAddress: address
+      charityAddress: address
     }
   })
 }
