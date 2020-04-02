@@ -76,7 +76,7 @@ class ProjectDetails extends Component{
             console.log(typeof response['data'])
             // console.log(response['data'])
             this.setState({
-              project:response['data']
+              project:response.data.result
             })
           })
           .catch(e => {
@@ -88,7 +88,7 @@ class ProjectDetails extends Component{
             console.log(typeof response['data'])
             // console.log(response['data'])
             this.setState({
-              donors:response['data']
+              donors:response.data.latestDonors
             })
           })
           .catch(e => {
@@ -108,11 +108,11 @@ class ProjectDetails extends Component{
                         background: black;
                         }`}
                 </style>
-                <Container className="mt-3 mb-3">
-                    <Row>
-                        <Col xs="12" sm="12" md="8" >
+                <Container fluid className="mt-3 mb-3 ml-5">
+                    <Row style={{width:"95%", alignContent:"center"}}>
+                        <Col xs="40" sm="12" md="8">
                             <div className="custome-tag">
-                                <img src='../../assets/img/slider/background1.jpg' alt="project photo" style={{opacity:0.5, width:"100%", height: "100%"}}/>
+                                <img src='../../assets/img/slider/background1.jpg' alt="project photo" style={{width:"100%", height: "100%"}}/>
                             </div>
                             <h1>About This Project</h1>
                             <p>
