@@ -1,6 +1,6 @@
 import React, { Component, Suspense } from "react";
 import { Container, Row, Col, Card, CardBody, Form, InputGroup, InputGroupAddon, InputGroupText, Input, Button } from "reactstrap";
-import { charityProfile, donorProfile } from "../../services/axios_api";
+import { charityProfile, donorProfile, charityUpdate, donorUpdate } from "../../services/axios_api";
 
 class Profile extends Component {
   constructor(props) {
@@ -8,6 +8,17 @@ class Profile extends Component {
 
     this.state = {
       address: "0xC7544Fc36895bd4cb7366582775D039dEc3389cd",
+      username: "",
+      email: "",
+      password: "",
+      repeatPassword: "",
+      eth_address: "",
+      bank_account: "",
+      physical_address: "",
+      full_name: "",
+      contact_number: "",
+      financial_info: "",
+      description: "",
       isLoaded: false,
       type: this.checkType(),
       disabled: true,
@@ -60,6 +71,12 @@ class Profile extends Component {
             value: data["password"]
             },
             {
+            type: "repeatPassword",
+            logo: "icon-key",
+            display: "Repeat Password", 
+            value: data["password"]
+            },
+            {
             type: "bank_account",
             logo: "icon-credit-card",
             display: "Bank Account",
@@ -90,7 +107,9 @@ class Profile extends Component {
             value: data["registration_hash"]
             }
         ] 
-        this.setState({userData: donor_attributes});
+        this.setState({userData: donor_attributes, username:data["username"],email:data["email"], eth_address:this.state.address
+    , password:data["password"], repeatPassword:data["repeatPassword"], bank_account:data["bank_account"], physical_address:data["physical_address"],
+    full_name:data["full_name"],contact_number:data["contact_number"]});
         },      
         error => {
         this.setState({
@@ -127,6 +146,12 @@ class Profile extends Component {
             type: "password",
             logo: "icon-key",
             display: "Password", 
+            value: data["password"]
+            },
+            {
+            type: "repeatPassword",
+            logo: "icon-key",
+            display: "Repeat Password", 
             value: data["password"]
             },
             {
@@ -176,10 +201,84 @@ class Profile extends Component {
         }
     ); 
   }
+
+  updateProfile = () => {
+    // if (this.state.password !== this.state.repeatPassword) {
+    //   this.triggerAlert("danger", "Password unmatched!");
+    // } else if (this.state.username === "") {
+    //   this.triggerAlert("danger", "Username is required!");
+    // } else if (this.state.email === "") {
+    //   this.triggerAlert("danger", "Email is required!");
+    // } else if (this.state.password === "") {
+    //   this.triggerAlert("danger", "Paasword is required!");
+    // } else if (this.state.eth_address === "") {
+    //   this.triggerAlert("danger", "ETH Address is required!");
+    // } else {
+      var data = new FormData();
+      data.set("username", this.state.username);
+      data.set("eth_address", this.state.address);
+      data.set("email", this.state.email);
+      data.set("password", this.state.password);
+      data.set("eth_address", this.state.eth_address);
+      data.set("bank_account", this.state.bank_account);
+      data.set("physical_address", this.state.physical_address);
+      data.set("full_name", this.state.full_name);
+      data.set("contact_number", this.state.contact_number);
+    // data.set("financial_info", this.state.financial_info);
+      if (this.state.type === "charity") {
+        data.set("description", this.state.description);
+        this.setState({ loading: true });
+        charityUpdate(data)
+          .then(response => {
+            if (response.data["code"] === 200) {
+              this.setState({ updated: true });
+            } else {
+              this.triggerAlert("danger", response.data["message"]);
+            }
+          })
+          .catch(e => {
+            console.log(e);
+          })
+          .then(() => {
+            this.setState({ loading: false });
+          });
+      } else {
+        this.setState({ loading: true });
+        donorUpdate(data)
+          .then(response => {
+            if (response.data["code"] === 200) {
+              this.setState({ updated: true });
+              window.location.reload(true);
+            } else {
+              this.triggerAlert("danger", response.data["message"]);
+            }
+          })
+          .catch(e => {
+            console.log(e);
+          })
+          .then(() => {
+            this.setState({ loading: false });
+          });
+    //   }
+    }
+  };
+
+  triggerAlert = (color, message) => {
+    this.setState({
+      alertColor: color,
+      alertMessage: message
+    });
+    this.onDismiss();
+    setTimeout(this.onDismiss, 3000);
+  };
+
+  onDismiss = () => {
+    this.setState({ alertVisible: !this.state.alertVisible });
+  };
   
   componentDidMount(){
     this.getUsersData();
-  }
+  };
 
 
   checkType = () => {
@@ -190,6 +289,12 @@ class Profile extends Component {
       console.log("invalid route");
       window.location.replace("/home");
     }
+  };
+
+  updateValue = type => e => {
+    this.setState({
+      [type]: e.target.value
+    });
   };
 
   render() {
@@ -224,7 +329,7 @@ class Profile extends Component {
                       ? "password"
                       : "text"
                   }
-                  // onChange={this.updateValue(item.type)}
+                  onChange={this.updateValue(item.type)}
                 placeholder={item.value}>
                 </Input>
               </InputGroup>
@@ -233,7 +338,7 @@ class Profile extends Component {
           <Button
             color="success"
             block
-            onClick={this.updateAccount}>
+            onClick={this.updateProfile}>
             Update Account
           </Button>
         </Form>

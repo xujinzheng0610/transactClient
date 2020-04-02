@@ -41,12 +41,20 @@ export function donorProfile(address){
   })
 }
 
+export function donorUpdate(data){
+  return client.post('/updateDonor',data)
+}
+
 export function charityProfile(address){
   return client.get("/getCharityDetails", {
     params: {
       charityAddress: address
     }
   })
+}
+
+export function charityUpdate(data){
+  return client.post('/updateOrganization',data)
 }
 
 export function adminLogin(username, password){
