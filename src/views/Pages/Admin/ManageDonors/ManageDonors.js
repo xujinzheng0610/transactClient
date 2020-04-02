@@ -28,7 +28,7 @@ class ManageDonors extends Component {
       isLoaded: false, 
       approveDonor: false, 
       rejectDonor: false, 
-      inspectorAddress: '0xc3D2b233F2238Af0c0c01430b2582FBBA583b67C', 
+      inspectorAddress: '0x87E730eedaA75012e4ec7e6269760E59e15E6C9F', 
       donorAddress: null,
 
       alertVisible: false,
