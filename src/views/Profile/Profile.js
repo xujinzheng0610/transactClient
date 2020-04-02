@@ -1,5 +1,5 @@
 import React, { Component, Suspense } from "react";
-import { Container, Row, Col, Card, CardBody, Form, InputGroup, InputGroupAddon, InputGroupText, Input, Button } from "reactstrap";
+import { Alert, Container, Row, Col, Card, CardBody, Form, InputGroup, InputGroupAddon, InputGroupText, Input, Button } from "reactstrap";
 import { charityProfile, donorProfile, charityUpdate, donorUpdate } from "../../services/axios_api";
 
 class Profile extends Component {
@@ -108,7 +108,7 @@ class Profile extends Component {
             }
         ] 
         this.setState({userData: donor_attributes, username:data["username"],email:data["email"], eth_address:this.state.address
-    , password:data["password"], repeatPassword:data["repeatPassword"], bank_account:data["bank_account"], physical_address:data["physical_address"],
+    , password:data["password"], repeatPassword:data["password"], bank_account:data["bank_account"], physical_address:data["physical_address"],
     full_name:data["full_name"],contact_number:data["contact_number"]});
         },      
         error => {
@@ -192,7 +192,7 @@ class Profile extends Component {
             }
         ] 
         this.setState({userData: charity_attributes, username:data["username"],email:data["email"], eth_address:this.state.address
-        , password:data["password"], repeatPassword:data["repeatPassword"], bank_account:data["bank_account"], physical_address:data["physical_address"],
+        , password:data["password"], repeatPassword:data["password"], bank_account:data["bank_account"], physical_address:data["physical_address"],
         full_name:data["name"],contact_number:data["contact_number"], description:data["description"]});
         },      
         error => {
@@ -205,17 +205,17 @@ class Profile extends Component {
   }
 
   updateProfile = () => {
-    // if (this.state.password !== this.state.repeatPassword) {
-    //   this.triggerAlert("danger", "Password unmatched!");
-    // } else if (this.state.username === "") {
-    //   this.triggerAlert("danger", "Username is required!");
-    // } else if (this.state.email === "") {
-    //   this.triggerAlert("danger", "Email is required!");
-    // } else if (this.state.password === "") {
-    //   this.triggerAlert("danger", "Paasword is required!");
-    // } else if (this.state.eth_address === "") {
-    //   this.triggerAlert("danger", "ETH Address is required!");
-    // } else {
+    if (this.state.password !== this.state.repeatPassword) {
+      this.triggerAlert("danger", "Password unmatched!");
+    } else if (this.state.username === "") {
+      this.triggerAlert("danger", "Username is required!");
+    } else if (this.state.email === "") {
+      this.triggerAlert("danger", "Email is required!");
+    } else if (this.state.password === "") {
+      this.triggerAlert("danger", "Paasword is required!");
+    } else if (this.state.eth_address === "") {
+      this.triggerAlert("danger", "ETH Address is required!");
+    } else {
       var data = new FormData();
       data.set("username", this.state.username);
       data.set("eth_address", this.state.address);
@@ -262,7 +262,7 @@ class Profile extends Component {
           .then(() => {
             this.setState({ loading: false });
           });
-    //   }
+      }
     }
   };
 
@@ -310,6 +310,14 @@ class Profile extends Component {
       <Suspense fallback={this.loading()}>
       </Suspense>
       <Container className="mt-3 mb-3">
+      <Alert
+          color={this.state.alertColor}
+          isOpen={this.state.alertVisible}
+          toggle={this.onDismiss}
+          style={{ position: "fixed", top: "2rem", right: "1rem" }}
+        >
+          {this.state.alertMessage}
+        </Alert>
         <Form>
           <h1>My TransACT Profile
             {/* element style - float right */}
