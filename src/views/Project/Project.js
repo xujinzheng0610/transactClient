@@ -13,74 +13,11 @@ import {
   InputGroupText,
   Row,
   Col,
-  Alert
+  Alert,
+  Progress
 } from "reactstrap";
 import { retrieveAllProjects } from "../../services/axios_api";
-
-
-let dummy_projects =[
-  {
-    project_id:"1",
-    project_name: "project1",
-    target_amout:"10000",
-    expiry_data: "2020-05-20",
-    project_description:"This is a good project",
-  },{
-    project_id:"2",
-    project_name: "project2",
-    target_amout:"10000",
-    expiry_data: "2020-05-20",
-    project_description:"This is a good project",
-  },{
-    project_id:"3",
-    project_name: "project3",
-    target_amout:"10000",
-    expiry_data: "2020-05-20",
-    project_description:"This is a good project",
-  },{
-    project_id:"4",
-    project_name: "project4",
-    target_amout:"10000",
-    expiry_data: "2020-05-20",
-    project_description:"This is a good project",
-  },{
-    project_id:"5",
-    project_name: "project5",
-    target_amout:"10000",
-    expiry_data: "2020-05-20",
-    project_description:"This is a good project",
-  },{
-    project_id:"6",
-    project_name: "project6",
-    target_amout:"10000",
-    expiry_data: "2020-05-20",
-    project_description:"This is a good project",
-  },{
-    project_id:"7",
-    project_name: "project7",
-    target_amout:"10000",
-    expiry_data: "2020-05-20",
-    project_description:"This is a good project",
-  },{
-    project_id:"8",
-    project_name: "project8",
-    target_amout:"10000",
-    expiry_data: "2020-05-20",
-    project_description:"This is a good project",
-  },{
-    project_id:"9",
-    project_name: "project9",
-    target_amout:"10000",
-    expiry_data: "2020-05-20",
-    project_description:"This is a good project",
-  },{
-    project_id:"10",
-    project_name: "project10",
-    target_amout:"10000",
-    expiry_data: "2020-05-20",
-    project_description:"This is a good project",
-  }
-];
+import { FaCalendar } from 'react-icons/fa';
 
 
 class Project extends Component{
@@ -98,7 +35,7 @@ class Project extends Component{
       console.log(typeof response['data'])
       // console.log(response['data'])
       this.setState({
-        projects:response['data']
+        projects:response.data.result
       })
     })
     .catch(e => {
@@ -109,9 +46,14 @@ class Project extends Component{
   render(){
     
     return<div>
-      <h1>Projects</h1>
+      <p style={{
+              width: "fit-content",
+              marginLeft: "180px",
+              fontSize: "50px",
+              fontFamily: "Anton"
+            }}><strong>Projects</strong></p>
       <Container className="mt-3 mb-3">
-          <h2
+          {/* <h1
             style={{
               borderBottom: "2px solid #000",
               width: "fit-content",
@@ -119,20 +61,23 @@ class Project extends Component{
             }}
           >
             Latest Projects
-          </h2>
-          <Row>
+          </h1> */}
+          <Row className="mt-3 mb-3">
             {this.state.projects.map(item =>{
             return (
-              <Col xs="12" sm="6" md="4">
+              <Col xs="12" sm="8" md="4">
                 <Card  className="card-accent-primary">
-                    <CardHeader>
-                      <h2>{item.project_name}</h2>
-                    </CardHeader>
+                    <div className="custome-tag">
+                      <img src='../../assets/img/slider/background1.jpg' alt="project photo" style={{width:"100%", height: "100%"}}/>
+                    </div>
                     <CardBody>
-                      <p>{item.target_amount}</p>
-                      <p>{item.expiry_date}</p>
+                      <h2 className = 'mt-0 mb-3'>{item.project_name}</h2>
+                      <p><strong>Target: </strong>${item.target_amount}<FaCalendar style={{ marginLeft: '5rem' }}/><strong>Due: </strong>{item.expiry_date}</p>
+                      <Progress animated color="info" value={item.actual_amount/item.target_amount*100} className="mb-3" >
+                        {item.actual_amount/item.target_amount*100}%
+                      </Progress>
                       <p>{item.description}</p>
-                      <Link to={`/projects/${item._id}`}><p>--To find more details </p></Link>
+                      <Col style = {{textAlign: "center"}}><Link to={`/projects/${item._id}`}><Button outline color="primary">KNOW PROJECT BETTER</Button></Link></Col>
                     </CardBody>
                   </Card>   
                 </Col>  

@@ -14,14 +14,15 @@ const Login = React.lazy(() => import('./views/Pages/Login'));
 const Register = React.lazy(() => import('./views/Pages/Register'));
 const Page404 = React.lazy(() => import('./views/Pages/Page404'));
 const Page500 = React.lazy(() => import('./views/Pages/Page500'));
+const Profile = React.lazy(() => import('./views/Profile'));
 
 function getCookie(name) {
   var nameEQ = name + "=";
   var ca = document.cookie.split(';');
   for(var i=0;i < ca.length;i++) {
       var c = ca[i];
-      while (c.charAt(0)==' ') c = c.substring(1,c.length);
-      if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+      while (c.charAt(0)===' ') c = c.substring(1,c.length);
+      if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length,c.length);
   }
   return false;
 }
@@ -34,6 +35,7 @@ class App extends Component {
       <BrowserRouter>
           <React.Suspense fallback={loading()}>
             <Switch>
+              {/* <Route exact path="/profile/:type" name="Profile Page" render={props => <Profile {...props}/>} />  */}
               <Route exact path="/login/:type" name="Login Page" render={props => <Login {...props}/>} />
               <Route exact path="/register/:type" name="Register Page" render={props => <Register {...props}/>} />
               <Route exact path="/404" name="Page 404" render={props => <Page404 {...props}/>} />

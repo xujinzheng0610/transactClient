@@ -1,4 +1,6 @@
 import React from 'react';
+const ManageDonors = React.lazy(() => import('./views/Pages/Admin/ManageDonors'));
+const ManageCharities = React.lazy(() => import('./views/Pages/Admin/ManageCharities'));
 
 const Breadcrumbs = React.lazy(() => import('./views/Base/Breadcrumbs'));
 const Cards = React.lazy(() => import('./views/Base/Cards'));
@@ -38,10 +40,13 @@ const User = React.lazy(() => import('./views/Users/User'));
 
 const Cover = React.lazy(() => import('./views/Client/Cover'))
 const Project = React.lazy( () => import("./views/Project"))
+const Profile = React.lazy(() => import('./views/Profile'));
 const ProjectDetails = React.lazy( () => import("./views/Project/ProjectDetails"))
 // https://github.com/ReactTraining/react-router/tree/master/packages/react-router-config
 const routes = [
-  { path: '/', exact: true, name: 'Home' },
+  { path: '/admin/managedonors', name: 'Manage Donors', component: ManageDonors },
+  { path: '/admin/managecharities', name: 'Manage Charities', component: ManageCharities },
+  { path: '/', exact: true, name: 'Home' , component: Cover},
   { path: '/dashboard', name: 'Dashboard', component: Dashboard },
   { path: '/theme', exact: true, name: 'Theme', component: Colors },
   { path: '/theme/colors', name: 'Colors', component: Colors },
@@ -83,6 +88,7 @@ const routes = [
   { path: '/users', exact: true,  name: 'Users', component: Users },
   { path: '/users/:id', exact: true, name: 'User Details', component: User },
   { path: '/home', name: 'PublicHome', component: Cover},
+  { path: '/profile/:type/:address', name: 'Profile Page', component: Profile},
   { path: '/projects',exact: true, name: 'Projects', component: Project},
   { path: '/projects/:projectId', exact: true, name: 'Project Details', component: ProjectDetails}
 ];
