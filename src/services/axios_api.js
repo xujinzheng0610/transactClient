@@ -7,6 +7,18 @@ var client = axios.create({
 
 export default client 
 
+export function retrieveAllProjects(){
+  return client.get("/retrieveAllProjects")
+}
+
+export function retrieveProjectDetails(data){
+  return client.get("/retrieveProjectDetails?id="+data)
+}
+
+export function retrieveDonorsByProject(data){
+  return client.get("/retrieveDonorsByProject?id="+data)
+}
+
 export function donorRegister(data){
   return client.post('/registerDonor',data)
 }
@@ -45,6 +57,15 @@ export function donorUpdate(data){
   return client.post('/updateDonor',data)
 }
 
+export function getProjectByDonor(address){
+  return client.get("/getProjectsByDonor", {
+    params: {
+      donorAddress: address
+    }
+  })
+}
+
+
 export function charityProfile(address){
   return client.get("/getCharityDetails", {
     params: {
@@ -55,6 +76,14 @@ export function charityProfile(address){
 
 export function charityUpdate(data){
   return client.post('/updateOrganization',data)
+}
+
+export function getProjectByCharity(address){
+  return client.get("/getProjectsByOrganization", {
+    params: {
+      charityAddress: address
+    }
+  })
 }
 
 export function adminLogin(username, password){
