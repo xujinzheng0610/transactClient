@@ -247,8 +247,10 @@ class Register extends Component {
                                     item.type
                                   ) > -1
                                     ? "password"
-                                    : "text"
+                                    : item.type === "description" ? "textarea" : "text"
                                 }
+
+                                rows="9"
                                 onChange={this.updateValue(item.type)}
                                 // placeholder={item.display}
                               />

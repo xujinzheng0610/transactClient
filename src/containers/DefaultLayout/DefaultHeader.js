@@ -39,6 +39,16 @@ class DefaultHeader extends Component {
     return false;
   };
 
+  getCharityProfile = () => {
+    let address = "/profile/charity/" + this.getCookie("charity_address")
+    return address
+  };
+  
+  getDonorProfile = () => {
+    let address = "/profile/donor/" + this.getCookie("donor_address");
+    return address
+  };
+
   checkDonorLogin = () => {
     if (this.getCookie("donor_address")) {
       return true;
@@ -54,6 +64,12 @@ class DefaultHeader extends Component {
       return false;
     }
   };
+
+  getCharityProfileUrl = () => {
+    let address = "/profile/charity/" + this.getCookie("charity_address")
+    console.log(address)
+    return address
+  }
 
   donorLogout = () => {
     document.cookie = 'donor_id=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/';
@@ -76,23 +92,26 @@ class DefaultHeader extends Component {
     return (
       <React.Fragment>
         {/* <AppSidebarToggler className="d-lg-none" display="md" mobile /> */}
-        <h3 className="logo">
-          {" "}
-          <span style={{ color: "#3ec1d5" }}>Trans</span>ACT
-        </h3>
+        <a href="/home">
+          <h3 className="logo" >
+            {" "}
+            <span style={{ color: "#3ec1d5" }}>Trans</span>ACT
+          </h3>
+        </a>
+
         {/* <AppSidebarToggler className="d-md-down-none" display="lg" /> */}
 
         <Nav className="ml-auto" navbar>
           <NavItem className="px-3">
-            <NavLink to="/" className="nav-link">
+            <NavLink to="/home" className="nav-link">
               Home
             </NavLink>
           </NavItem>
-          <NavItem className="px-3">
-            <Link to="/users" className="nav-link">
+          {/* <NavItem className="px-3">
+            <Link to="/home/#about" className="nav-link">
               About
             </Link>
-          </NavItem>
+          </NavItem> */}
           <NavItem className="px-3">
             <NavLink to="/projects" className="nav-link">
               Projects
@@ -119,7 +138,7 @@ class DefaultHeader extends Component {
             <DropdownMenu right className="mt-2">
               {this.state.donorLogin ? (
                 <div>
-                  <DropdownItem href="">
+                  <DropdownItem href={this.getDonorProfile()}>
                     <i className="fa fa-shield"></i> Donor Profile
                   </DropdownItem>
                   <DropdownItem onClick={this.donorLogout}>
@@ -128,7 +147,7 @@ class DefaultHeader extends Component {
                 </div>
               ) : this.state.charityLogin ? (
                 <div>
-                  <DropdownItem href="">
+                  <DropdownItem href={this.getCharityProfile()}>
                     <i className="fa fa-shield"></i> Charity Profile
                   </DropdownItem>
                   <DropdownItem href="">
