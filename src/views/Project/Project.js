@@ -33,7 +33,7 @@ class Project extends Component{
     retrieveAllProjects().then(response =>{
       console.log(response['data']);
       console.log(typeof response['data'])
-      // console.log(response['data'])
+      console.log(response['data'].result)
       this.setState({
         projects:response.data.result
       })

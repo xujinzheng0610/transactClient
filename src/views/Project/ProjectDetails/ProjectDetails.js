@@ -15,12 +15,17 @@ import {
   Alert,
   Progress,
   ListGroup, ListGroupItem, ListGroupItemHeading, ListGroupItemText,
-  Table
+  Table,
+  Modal, ModalBody, ModalFooter, ModalHeader
 } from "reactstrap";
 import { Bar, Doughnut, Line, Pie, Polar, Radar } from 'react-chartjs-2';
 import Moment from 'react-moment';
+import { PaymentInputsContainer ,PaymentInputsWrapper } from 'react-payment-inputs';
+import images from 'react-payment-inputs/images';
 
-import { retrieveProjectDetails, retrieveDonorsByProject } from "../../../services/axios_api";
+
+import { retrieveProjectDetails, retrieveDonorsByProject,makeDonation } from "../../../services/axios_api";
+
 
 let dummy_Project = {
     project_id:"1",
@@ -54,6 +59,8 @@ const pie = {
       }],
   };
 
+
+
 class ProjectDetails extends Component{
     constructor(props) {
       super(props);
@@ -65,10 +72,50 @@ class ProjectDetails extends Component{
         project_id : this.props.match.params.projectId,
         project: {},
         donors: [],
-        today: date
+        today: date,
+        modal: false,
+        large: false,
+        primary: false,
+        amount:'0',
+        custom:false,
+        donationFinished:false,
+        cardNumber:'',
+        expiryDate:'',
+        cvc:'',
+        alertVisible: false,
+        alertColor: "info",
+        alertMessage: "I am an alert message",
+        
       };
+      this.togglePrimary = this.togglePrimary.bind(this);
     }
-  
+    setAmount(amt) {
+        console.log(amt);
+        this.setState({
+          primary: !this.state.primary,
+          amount:amt,
+          custom:false,
+          donationFinished:false,
+          cardNumber:'',
+          expiryDate:'',
+          cvc:'',
+        });
+      }
+      togglePrimary() {
+        this.setState({
+          primary: !this.state.primary,
+          amount:'0',
+          custom:true,
+          donationFinished:false,
+          cardNumber:'',
+          expiryDate:'',
+          cvc:'',
+        });
+      }
+    // setAmount(amt){
+    //     this.setState({amount:amt});
+    // }
+
     componentDidMount(){
   
         retrieveProjectDetails(this.state.project_id).then(response =>{
@@ -78,6 +125,13 @@ class ProjectDetails extends Component{
             this.setState({
               project:response.data.result
             })
+
+
+            console.log(this.state.project.actual_amount>=this.state.project.target_amount)
+            // console.log(parseInt(this.state.project.actual_amount))
+            // console.log(parseInt(this.state.project.target_amount))
+            // console.log(typeof parseInt(this.state.project.actual_amount))
+            // console.log(typeof parseInt(this.state.project.target_amount))
           })
           .catch(e => {
             console.log(e);
@@ -97,8 +151,77 @@ class ProjectDetails extends Component{
 
     }
 
+    handleChangeCardNumber=e =>{
+        console.log(e);
+        this.setState({ cardNumber: e.target.value });
+    }
+    handleChangeExpiryDate=e =>{
+        console.log(e);
+        this.setState({ expiryDate: e.target.value });
+    }
+    handleChangeCVC=e =>{
+        console.log(e);
+        this.setState({ cvc: e.target.value });
+    }
+    triggerAlert = (color, message) => {
+        this.setState({
+          alertColor: color,
+          alertMessage: message
+        });
+        this.onDismiss();
+        setTimeout(this.onDismiss, 3000);
+      };
+    onDismiss = () => {
+    this.setState({ alertVisible: !this.state.alertVisible });
+    };
+
+    getCookie(name) {
+        var nameEQ = name + "=";
+        var ca = document.cookie.split(';');
+        for(var i=0;i < ca.length;i++) {
+            var c = ca[i];
+            while (c.charAt(0)===' ') c = c.substring(1,c.length);
+            if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length,c.length);
+        }
+        return false;
+      }
+
+    updateValue = type => e => {
+        this.setState({
+          [type]: e.target.value
+        });
+      };
+
+    makeDonation =() =>{
+
+        var data = new FormData();
+        data.set("amount", this.state.amount);
+        data.set("project_id", this.state.project_id);
+        data.set("donor_id", this.getCookie("donor_id"));
+
+        console.log(data.get('amount'));
+        console.log(this.getCookie("donor_id"))
+
+        if(this.state.cardNumber==''){
+            this.triggerAlert("danger", "Card Number Required!");
+            return;
+        }
+        makeDonation(data).then(response=>{
+            console.log(response)
+            this.triggerAlert("success", "Donation will be processed!");
+            this.setState({
+                // primary: false
+                donationFinished:true
+            });
+            this.componentDidMount();
+            
+        }).catch(e => {
+            this.triggerAlert("danger", "Error!");
+          })
+
+    }
+
     render(){
-        
         return(
             <div style={{height:"100%"}}>
                 <style>
@@ -108,6 +231,10 @@ class ProjectDetails extends Component{
                         background: black;
                         }`}
                 </style>
+                <style type="text/css">
+                    {'.hidden { display:none; }'}
+                </style>
+                
                 <Container fluid className="mt-3 mb-3 ml-5">
                     <Row style={{width:"95%", alignContent:"center"}}>
                         <Col xs="40" sm="12" md="8">
@@ -245,31 +372,105 @@ class ProjectDetails extends Component{
                                     height: 5
                                 }}
                             />
-                            <h2>Donate Now!</h2>
-                            <Row className="align-items-center">
-                                <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                                    <Button block outline color="dark" disabled>$10</Button>
+                            <div className={this.state.project.actual_amount>=this.state.project.target_amount?'hidden':''}>
+                                <h2>Donate Now!</h2>
+                                <Row className="align-items-center">
+                                    <Col col="6" className="mb-3 mb-xl-0">
+                                        <Button block outline color="dark" disabled>$10</Button>
+                                    </Col>
+                                    <Col col="6"className="mb-3 mb-xl-0">
+                                        <Button block color="primary" onClick={()=>this.setAmount("10")}>Donate</Button>
+                                    </Col>
+                                </Row>
+                                <Row className="align-items-center mt-3">
+                                    <Col col="6"  className="mb-3 mb-xl-0">
+                                        <Button block outline color="dark" disabled>$20</Button>
+                                    </Col>
+                                    <Col col="6" className="mb-3 mb-xl-0">
+                                        <Button block color="primary" onClick={()=>this.setAmount("20")}>Donate</Button>
+                                    </Col>
+                                </Row>
+                                <Row className="align-items-center mt-3">
+                                    <Col col="6" className="mb-3 mb-xl-0">
+                                        <Button block outline color="dark" disabled>$30</Button>
+                                    </Col>
+                                    <Col col="6" className="mb-3 mb-xl-0">
+                                        <Button block color="primary" onClick={()=>this.setAmount("30")}>Donate</Button>
+                                    </Col>
+                                </Row>
+                                <Row className="align-items-center mt-3">
+                                    <Col col="6" className="mb-3 mb-xl-0">
+                                        <Button block outline color="dark" disabled>Customised Amount</Button>
+                                    </Col>
+                                    <Col col="6" className="mb-3 mb-xl-0">
+                                        {/* <Button block color="primary">Donate</Button> */}
+                                        <Button block color="primary" onClick={this.togglePrimary} className="mr-1">Donate</Button>
+                                    </Col>
+                                </Row>
+                                
+                            </div>
+                            <div className={this.state.project.actual_amount>=this.state.project.target_amount?'':'hidden'}>
+                                <h2>Donation Closed</h2>
+                                <h3 style={{color:"gray"}} >Thanks For Your Interest!</h3>
+                            </div>
+                            
+                            
+                            <Modal isOpen={this.state.primary} toggle={this.togglePrimary} 
+                                className={'modal-primary ' +'modal-lg ' +this.props.className} 
+                                style={{height:"80vh"}}>
+                            <ModalHeader toggle={this.togglePrimary}>Modal title</ModalHeader>
+                            <ModalBody>
+                                <div className={this.state.donationFinished?'hidden':''}>
+                                    <div className={this.state.custom?'hidden':''}>
+                                        <h2 >Your donation amount will be {this.state.amount} $</h2>
+                                        <br></br>
+                                        <h3 style={{color:"gray"}}>Please type in your bank card information</h3>
+                                    </div>
+                                    
+                                    <div className={this.state.custom?'':'hidden'}>
+                                        <h3>Please type in your donation Amount and bank card information</h3>
+                                        <Input style={{width:"50%"}} type="number" placeholder="100" value={this.state.amount} onChange={this.updateValue('amount')} ></Input>
+                                    </div>
+                                    <br></br>
+                                    <br></br>
+                                    <PaymentInputsContainer>
+                                        {({ meta,wrapperProps,getCardImageProps, getCardNumberProps, getExpiryDateProps, getCVCProps }) => (
+                                            <PaymentInputsWrapper {...wrapperProps}>
+                                            <svg {...getCardImageProps({ images })} />
+                                            <input {...getCardNumberProps({ onChange: this.handleChangeCardNumber })} value={this.state.cardNumber} />
+                                            <input {...getExpiryDateProps({ onChange: this.handleChangeExpiryDate })} value={this.state.expiryDate} />
+                                            <input {...getCVCProps({ onChange: this.handleChangeCVC })} value={this.state.cvc} />
+                                        </PaymentInputsWrapper>
+                                        )}
+                                    </PaymentInputsContainer>
+                                    <br></br>
+                                    <br></br>
+                                </div>
+
+                                <div className={this.state.donationFinished?'':'hidden'}>
+
+                                <Col md="12" style={{textAlign:"center",fontSize:"100px",color:"green"}}>
+                                    <i className="cui-check icons d-block mt-4"></i>
+                                    <br></br>
+                                    <h2>Donation finished!</h2>
                                 </Col>
-                                <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                                    <Button block color="primary">Donate</Button>
-                                </Col>
-                            </Row>
-                            <Row className="align-items-center mt-3">
-                                <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                                    <Button block outline color="dark" disabled>$20</Button>
-                                </Col>
-                                <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                                    <Button block color="primary">Donate</Button>
-                                </Col>
-                            </Row>
-                            <Row className="align-items-center mt-3">
-                                <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                                    <Button block outline color="dark" disabled>$30</Button>
-                                </Col>
-                                <Col col="6" sm="4" md="2" xl className="mb-3 mb-xl-0">
-                                    <Button block color="primary">Donate</Button>
-                                </Col>
-                            </Row>
+                                
+                                </div>
+                                
+                                <Alert
+                                    color={this.state.alertColor}
+                                    isOpen={this.state.alertVisible}
+                                    toggle={this.onDismiss}
+                                    style={{ position: "fixed", top: "2rem", right: "1rem" }}
+                                >
+                                    {this.state.alertMessage}
+                                </Alert>
+                            </ModalBody>
+                            <ModalFooter>
+                                <Button className={this.state.donationFinished?'hidden':''} color="primary" onClick={this.makeDonation}>Donate!</Button>
+                                <Button color="secondary" onClick={this.togglePrimary}>Cancel</Button>
+                            </ModalFooter>
+                            </Modal>
                             <hr
                                 style={{
                                     color: "primary",
@@ -293,6 +494,7 @@ class ProjectDetails extends Component{
                             </Card> */}
                         </Col>
                     </Row>
+                    
                 </Container>
             </div>
             
