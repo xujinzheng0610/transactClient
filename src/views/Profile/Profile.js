@@ -22,7 +22,8 @@ class Profile extends Component {
       description: "",
       isLoaded: false,
       type: this.checkType(),
-      disabled: true,
+      editMode: false,
+      updatedValue: false,
       alertVisible: false,
       alertColor: "info",
       alertMessage: "I am an alert message",
@@ -36,7 +37,7 @@ class Profile extends Component {
   );
 
   allowEdit() {
-    this.setState( {disabled: !this.state.disabled} )
+    this.setState( {editMode: !this.state.editMode} )
   }
 
   getUsersData() {
@@ -320,7 +321,8 @@ class Profile extends Component {
 
   updateValue = type => e => {
     this.setState({
-      [type]: e.target.value
+      [type]: e.target.value,
+      updatedValue: true
     });
   };
 
@@ -341,7 +343,7 @@ class Profile extends Component {
     return (<div>
       <Suspense fallback={this.loading()}>
       </Suspense>
-      <Container className="mt-3 mb-3">
+      <Container className="mt-3 mb-3" hidden={!this.state.editMode}>
       <Alert
           color={this.state.alertColor}
           isOpen={this.state.alertVisible}
@@ -352,8 +354,8 @@ class Profile extends Component {
         </Alert>
         <Form>
           <br></br>
-    <h1>{this.state.username}'s Profile
-          <Button  onClick = {this.allowEdit.bind(this)} className="fa fa-edit" style={{float: 'right'}}> Edit Profile</Button></h1>
+    <h3>Edit Profile
+          <Button  onClick = {this.allowEdit.bind(this)} className="fa fa-edit" style={{float: 'right'}}> Cancel </Button> </h3>
           <p className="text-muted"></p>
           {userData.map(item => {
             return (
@@ -384,14 +386,15 @@ class Profile extends Component {
           })}
           <Button
             color="success"
-            // block
+            disabled={!this.state.updatedValue}
             onClick={this.updateProfile}>
             Update Account
           </Button>
         </Form>
       </Container>
 
-      <div className="animated fadeIn">
+      <div className="mt-3 mb-3 container" hidden={this.state.editMode}>
+      <br></br>
         <Card>
           <CardHeader>
             Your Profile
@@ -430,7 +433,7 @@ class Profile extends Component {
                 <Button
                   outline
                   color="success"
-                  // onClick={() => this.rejectDonor(donor)}
+                  onClick={() => this.allowEdit()}
                 >
                   Edit Profile
                 </Button>
@@ -440,7 +443,7 @@ class Profile extends Component {
         </Card>
       </div>
 
-      <div className="animated fadeIn">
+      <div className="mt-3 mb-3 container">
         <Card>
           <CardHeader>
             Involved Projects
@@ -448,7 +451,7 @@ class Profile extends Component {
           <CardBody>
             {projectData.map(project => {
               return (
-                <Card className="mb-0" key={project.project_name}>
+                <Card className="mt-3" key={project.project_name}>
                   <CardBody>
                     <h3>{project.project_name}</h3>
                     <ul >
