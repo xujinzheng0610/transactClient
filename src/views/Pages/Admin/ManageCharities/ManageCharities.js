@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import OverlayLoader from 'react-overlay-loading/lib/OverlayLoader';
+import LoadingOverlay from "react-loading-overlay";
 import { 
   Badge, 
   Button, 
@@ -234,7 +234,7 @@ class ManageCharities extends Component {
   
     if (!pendingOrganizations) { return [] }
     return (
-      <OverlayLoader 
+      <LoadingOverlay 
         color={'blue'} // default is white
         loader="RingLoader" 
         text="Loading... Please wait!" 
@@ -295,7 +295,7 @@ class ManageCharities extends Component {
           </CardBody>
         </Card>
       </div>
-      </OverlayLoader>
+      </LoadingOverlay>
     )
   }
 }

@@ -1,11 +1,9 @@
 import React, { Component } from "react";
-import OverlayLoader from 'react-overlay-loading/lib/OverlayLoader';
+import LoadingOverlay from "react-loading-overlay";
 import {
-  Badge,
   Button,
   Card,
   CardBody,
-  CardFooter,
   CardHeader,
   Col,
   Row,
@@ -245,7 +243,7 @@ class ManageDonors extends Component {
       return [];
     }
     return (
-      <OverlayLoader 
+      <LoadingOverlay 
         color={'blue'} // default is white
         loader="RingLoader" 
         text="Loading... Please wait!" 
@@ -316,7 +314,7 @@ class ManageDonors extends Component {
           </CardBody>
         </Card>
       </div>
-      </OverlayLoader>
+      </LoadingOverlay>
     );
   }
 }
