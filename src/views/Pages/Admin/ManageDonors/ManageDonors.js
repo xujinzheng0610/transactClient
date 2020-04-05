@@ -254,7 +254,7 @@ class ManageDonors extends Component {
         opacity=".4" // default is .9  
       >
       <div className="animated fadeIn">
-        <Card>
+        <Card >
           <CardHeader>
             <i className="fa fa-align-justify"></i> Pending Donors
           </CardHeader>
@@ -264,7 +264,7 @@ class ManageDonors extends Component {
             </Alert>
             {pendingDonors.map(donor => {
               return (
-                <Card className="mb-0" key={donor.username}>
+                <Card className="mx-auto my-2" key={donor.username}>
                   <CardBody>
                     <h3>Username: {donor.username}</h3>
                     <ul>

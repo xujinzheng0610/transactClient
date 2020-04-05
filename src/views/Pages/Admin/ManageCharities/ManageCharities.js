@@ -253,7 +253,8 @@ class ManageCharities extends Component {
             </Alert>
             {pendingOrganizations.map( organization => {
               return(
-                <Card className="mb-0" key = {organization.username}>
+                // <Card className="mb-0" key = {organization.username} >
+                <Card className="mx-auto my-2" key = {organization.username} >
                   <CardBody>
                     <h3>Username: {organization.username}</h3>
                       <ul>
