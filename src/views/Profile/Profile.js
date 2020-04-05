@@ -1,4 +1,5 @@
 import React, { Component, Suspense } from "react";
+import { Link } from 'react-router-dom';
 import { CardHeader, Alert, Container, Row, Col, Card, CardBody, Form, InputGroup, InputGroupAddon, InputGroupText, Input, Button } from "reactstrap";
 import { charityProfile, donorProfile, charityUpdate, donorUpdate, getProjectByCharity, getProjectByDonor  } from "../../services/axios_api";
 
@@ -21,7 +22,8 @@ class Profile extends Component {
       description: "",
       isLoaded: false,
       type: this.checkType(),
-      disabled: true,
+      editMode: false,
+      updatedValue: false,
       alertVisible: false,
       alertColor: "info",
       alertMessage: "I am an alert message",
@@ -35,7 +37,7 @@ class Profile extends Component {
   );
 
   allowEdit() {
-    this.setState( {disabled: !this.state.disabled} )
+    this.setState( {editMode: !this.state.editMode} )
   }
 
   getUsersData() {
@@ -319,9 +321,11 @@ class Profile extends Component {
 
   updateValue = type => e => {
     this.setState({
-      [type]: e.target.value
+      [type]: e.target.value,
+      updatedValue: true
     });
   };
+
 
   render() {
     const { userData } = this.state;
@@ -339,7 +343,7 @@ class Profile extends Component {
     return (<div>
       <Suspense fallback={this.loading()}>
       </Suspense>
-      <Container className="mt-3 mb-3">
+      <Container className="mt-3 mb-3" hidden={!this.state.editMode}>
       <Alert
           color={this.state.alertColor}
           isOpen={this.state.alertVisible}
@@ -349,9 +353,9 @@ class Profile extends Component {
           {this.state.alertMessage}
         </Alert>
         <Form>
-          <h1>My TransACT Profile
-            {/* element style - float right */}
-          <Button  onClick = {this.allowEdit.bind(this)} className="fa fa-edit"></Button></h1>
+          <br></br>
+    <h3>Edit Profile
+          <Button  onClick = {this.allowEdit.bind(this)} className="fa fa-edit" style={{float: 'right'}}> Cancel </Button> </h3>
           <p className="text-muted"></p>
           {userData.map(item => {
             return (
@@ -362,7 +366,11 @@ class Profile extends Component {
                   </InputGroupText>
                 </InputGroupAddon>
                 <Input
-                  disabled = {(this.state.disabled)}
+                  disabled = {["eth_address", "registration_hash", "full_name", "name"].indexOf(
+                    item.type
+                  ) > -1
+                    ? true
+                    : (this.state.disabled)}
                   type={
                     ["password", "repeatPassword"].indexOf(
                       item.type
@@ -378,42 +386,93 @@ class Profile extends Component {
           })}
           <Button
             color="success"
-            block
+            disabled={!this.state.updatedValue}
             onClick={this.updateProfile}>
             Update Account
           </Button>
         </Form>
       </Container>
 
-      <div className="animated fadeIn">
+      <div className="mt-3 mb-3 container" hidden={this.state.editMode}>
+      <br></br>
         <Card>
           <CardHeader>
-            Your Projects
+            Your Profile
+          </CardHeader>
+          <CardBody>
+            <h3>Hi {this.state.username}, welcome to your profile</h3>
+            <ul>
+            <li>
+                Username: {this.state.username}
+              </li>
+              <li>
+                Email: {this.state.email}
+              </li>
+              <li>Eth Address: {this.state.eth_address}</li>
+              <li>
+                Password: *********
+              </li>
+              <li>
+                Bank Account: {this.state.bank_account}
+              </li>
+              <li>
+                Physical Address: {this.state.physical_address}
+              </li>
+              <li>
+                Full Name: {this.state.full_name}
+              </li>
+              <li>
+                Contact Number: {this.state.contact_number}
+              </li>
+              <li>
+                Description: {this.state.description}
+              </li>
+            </ul>
+            <Row>
+              <Col sm="6" style={{ textAlign: "centre" }}>
+                <Button
+                  outline
+                  color="success"
+                  onClick={() => this.allowEdit()}
+                >
+                  Edit Profile
+                </Button>
+              </Col>
+            </Row>
+          </CardBody>
+        </Card>
+      </div>
+
+      <div className="mt-3 mb-3 container">
+        <Card>
+          <CardHeader>
+            Involved Projects
           </CardHeader>
           <CardBody>
             {projectData.map(project => {
               return (
-                <Card className="mb-0" key={project.project_name}>
+                <Card className="mt-3" key={project.project_name}>
                   <CardBody>
                     <h3>{project.project_name}</h3>
-                    <ul>
-                      <li key={project.description}>
-                        Project Description: {project.description}
-                      </li>
-                      <li key={project.expire_date}>Expiry Date: {project.expire_date}</li>
-                      <li key={project.target_amount}>
-                        Target Amount: {project.target_amount}
-                      </li>
+                    <ul >
+                      <li key={project.target_amount}>Target Amount: {project.target_amount}</li>
+                      <li key={project.actual_amount}>Received Amount: {project.actual_amount}</li> 
+                      {/* <li key={project.expire_date}>Expiry Date: {project.expire_date}</li> */}
+                      {this.state.type === "donor" ? 
+                      <li key={project.amount}>Donated Amount: {project.amount}</li> 
+                      : <li key={project.num_donors}>Number of Donors: {project.num_donors}</li> }
                     </ul>
                     <Row>
-                      <Col sm="6" style={{ textAlign: "centre" }}>
+                      <Col sm="4" style={{ textAlign: "centre" }}>
+                 
+                        <Link to={`/projects/${project._id}`}>
                         <Button
                           outline
                           color="success"
-                          // onClick={() => this.rejectDonor(donor)}
                         >
                           View More
                         </Button>
+                        </Link>     
                       </Col>
                     </Row>
                   </CardBody>
