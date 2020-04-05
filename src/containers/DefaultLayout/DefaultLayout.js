@@ -33,6 +33,19 @@ class DefaultLayout extends Component {
     this.props.history.push('/login')
   }
 
+  checkRoute = (route, props) => {
+    if( route.path.includes("/projectnew") && this.getCookie("charity_address") === undefined){
+      window.history.back()
+    }
+    return <route.component {...props} />
+  }
+
+  getCookie = (name) => {
+    var value = "; " + document.cookie;
+    var parts = value.split("; " + name + "=");
+    if (parts.length === 2) return parts.pop().split(";").shift();
+  }
+
   render() {
     return (
       <div className="app">
@@ -55,12 +68,13 @@ class DefaultLayout extends Component {
                         exact={route.exact}
                         name={route.name}
                         
-                        render={props => (
-                          <route.component {...props} />
-                        )} />
-                    ) : (null);
+                        render={props => 
+                          this.checkRoute(route, props)
+                          // <route.component {...props} />
+                        } />
+                    ) : <Redirect from="/" to="/home" />;
                   })}
-                  {/* <Redirect from="/" to="/home" /> */}
+                  <Redirect from="/" to="/home" />
                 </Switch>
               </Suspense>
             </Container>

@@ -119,4 +119,8 @@ export function donorReject(data){
   return client.post('/rejectDonor', data)
 }
 
+export function saveProject(data){
+  return client.post('/registerProject', data)
+}
+
 

@@ -150,7 +150,7 @@ class DefaultHeader extends Component {
                   <DropdownItem href={this.getCharityProfile()}>
                     <i className="fa fa-shield"></i> Charity Profile
                   </DropdownItem>
-                  <DropdownItem href="">
+                  <DropdownItem href="/projectnew/0">
                     <i className="fa fa-shield"></i> New Funding Project
                   </DropdownItem>
                   <DropdownItem onClick={this.charityLogout}>
