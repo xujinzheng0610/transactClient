@@ -16,7 +16,7 @@ import {
   Alert,
 } from "reactstrap";
 import LoadingOverlay from "react-loading-overlay";
-import { saveProject } from "../../services/axios_api";
+import { saveProject, downloadBeneficiaryFormat} from "../../services/axios_api";
 import "./project.css";
 
 class NewProject extends Component {
@@ -324,7 +324,10 @@ class NewProject extends Component {
                     <FormGroup row>
                       <Col md="3">
                         <Label htmlFor="text-input">
-                          Beneficiary List File (.xlsx)
+                          Beneficiary List File (.xlsx)   
+                          <span style={{color: "royalblue", textDecoration: "underline", cursor: "pointer", marginLeft:"1rem"}} onClick={() => downloadBeneficiaryFormat()}> 
+                           Sample
+                          </span> 
                         </Label>
                       </Col>
                       <Col xs="12" md="6">
@@ -402,13 +405,13 @@ class NewProject extends Component {
                     <FormGroup row>
                       <Col md="3">
                         <Label htmlFor="text-input">
-                          Project Cover Image (jpg, png)
+                          Project Cover Image (.jpg)
                         </Label>
                       </Col>
                       <Col xs="12" md="9">
                         <Input
                           type="file"
-                          accept=".png,.jpg"
+                          accept=".jpg"
                           onChange={this.updateImage()}
                         />
                         <img
