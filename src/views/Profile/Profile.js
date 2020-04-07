@@ -431,10 +431,20 @@ class Profile extends Component {
                           outline
                           color="success"
                           onClick={() => {
-                            window.location.replace(`/projects/${project._id}`);
+                            window.location.replace(`/project/${project._id}`);
                           }}
                         >
                           View More
+                        </Button>
+                        <Button
+                          outline
+                          color="primary"
+                          className="ml-3"
+                          onClick={() => {
+                            window.location.replace(`/projectNew/${project._id}`);
+                          }}
+                        >
+                          Edit
                         </Button>
                       </CardBody>
                     </Card>

@@ -97,7 +97,7 @@ const routes = [
   { path: '/projects', name: 'ProjectList', component: Project},
   { path: '/projectnew/:id', name: 'Modify Project', component: NewProject},
   { path: '/profile/:type/:address', name: 'Profile Page', component: Profile},
-  { path: '/projects/:projectId', exact: true, name: 'Project Details', component: ProjectDetails}
+  { path: '/project/:projectId', exact: true, name: 'Project Details', component: ProjectDetails}
 ];
 
 export default routes;

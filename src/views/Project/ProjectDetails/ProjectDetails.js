@@ -112,7 +112,8 @@ class ProjectDetails extends Component{
                     <Row style={{width:"95%", alignContent:"center"}}>
                         <Col xs="40" sm="12" md="8">
                             <div className="custome-tag">
-                                <img src='../../assets/img/slider/background1.jpg' alt="project photo" style={{width:"100%", height: "100%"}}/>
+                                {/* <img src='../../assets/img/slider/background1.jpg' alt="project photo" style={{width:"100%", height: "100%"}}/> */}
+                                <img src={"data:image/jpeg;charset=utf-8;base64," + this.state.project.image} alt="project cover" style={{width:"100%", height: "100%"}}/>
                             </div>
                             <h1>About This Project</h1>
                             <p>

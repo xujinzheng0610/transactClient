@@ -16,7 +16,12 @@ import {
   Alert,
 } from "reactstrap";
 import LoadingOverlay from "react-loading-overlay";
-import { saveProject, downloadBeneficiaryFormat} from "../../services/axios_api";
+import {
+  saveProject,
+  downloadBeneficiaryFormat,
+  retrieveProjectDetails,
+  downloadBeneficiaryList
+} from "../../services/axios_api";
 import "./project.css";
 
 class NewProject extends Component {
@@ -47,7 +52,31 @@ class NewProject extends Component {
 
   componentDidMount() {
     if (this.state.projectId !== "0") {
-      //TODO: fetch current project info
+      retrieveProjectDetails(this.state.projectId).then((response) => {
+        let data = response.data;
+        if (data.code === 200) {
+          console.log(data);
+          data = data.result
+          let breakdownList = []
+          JSON.parse(data.breakdownList).map( item => {
+            breakdownList.push({
+              category: item.category,
+              value: item.value /data.fundTarget * 100
+            })
+            return null
+          })
+          this.setState({
+            projectName: data.projectName,
+            projectCategory: data.projectCategory,
+            fundTarget: data.fundTarget,
+            expirationDate: data.expirationDate,
+            description: data.description,
+            beneficiaryList: "",
+            breakdownList: breakdownList,
+            imagePreviewUrl:"data:image/jpeg;charset=utf-8;base64," + data.image,
+          });
+        }
+      }).catch(e => console.log(e));
     }
   }
 
@@ -97,11 +126,11 @@ class NewProject extends Component {
       }
       return null;
     });
-    console.log(budgetAmountList)
+    console.log(budgetAmountList);
 
-    if (this.state.newImage === "") {
+    if (this.state.projectId === "0" && this.state.newImage === "") {
       this.triggerAlert("danger", "Please upload project image.");
-    } else if (this.state.beneficiaryList === "") {
+    } else if (this.state.projectId === "0" && this.state.beneficiaryList === "") {
       this.triggerAlert("danger", "Please upload beneficiary list excel file.");
     } else if (percentage !== 100) {
       this.triggerAlert("danger", "Please sum the breakdown to 100.");
@@ -119,7 +148,8 @@ class NewProject extends Component {
       this.triggerAlert("danger", "Please fill in all values");
     } else {
       let data = new FormData();
-      data.set("charityAddress", this.getCookie("charity_address"));
+      data.set("charity_id", this.getCookie("charity_id"));
+      data.set("charityAddress", this.state.charityAddress);
       data.set("projectId", this.state.projectId);
       data.set("projectName", this.state.projectName);
       data.set("projectCategory", this.state.projectCategory);
@@ -128,24 +158,28 @@ class NewProject extends Component {
       data.set("description", this.state.description);
       data.set("breakdownList", JSON.stringify(budgetAmountList));
       data.set("beneficiaryGainedRatio", beneficiaryGainedRatio);
-
-      data.append(
-        "beneficiaryList",
-        this.state.beneficiaryList,
-        this.state.beneficiaryList.name
-      );
-      data.append(
-        "projectCover",
-        this.state.newImage,
-        this.state.newImage.name
-      );
+      if (this.state.beneficiaryList !== ""){
+        data.append(
+          "beneficiaryList",
+          this.state.beneficiaryList,
+          this.state.beneficiaryList.name
+        );
+      }
+      if (this.state.newImage !== ""){
+        data.append(
+          "projectCover",
+          this.state.newImage,
+          this.state.newImage.name
+        );
+      }
 
       this.setState({ loading: true });
       saveProject(data)
         .then((response) => {
           if (response.data.code === 200) {
             this.setState({ submitted: true });
-            let message = this.state.projectName + " has been successfullt created.";
+            let message =
+              this.state.projectName + " has been successfullt created.";
             this.triggerAlert("success", message);
           } else {
             this.triggerAlert("danger", response.data.message);
@@ -325,10 +359,31 @@ class NewProject extends Component {
                     <FormGroup row>
                       <Col md="3">
                         <Label htmlFor="text-input">
-                          Beneficiary List File (.xlsx)   
-                          <span style={{color: "royalblue", textDecoration: "underline", cursor: "pointer", marginLeft:"1rem"}} onClick={() => downloadBeneficiaryFormat()}> 
-                           Sample
-                          </span> 
+                          Beneficiary List File (.xlsx)
+                          {this.state.projectId === "0" ?
+                          <span
+                            style={{
+                              color: "royalblue",
+                              textDecoration: "underline",
+                              cursor: "pointer",
+                              marginLeft: "1rem",
+                            }}
+                            onClick={() => downloadBeneficiaryFormat()}
+                          >
+                            Sample
+                          </span>
+                          :<span
+                          style={{
+                            color: "royalblue",
+                            textDecoration: "underline",
+                            cursor: "pointer",
+                            marginLeft: "1rem",
+                          }}
+                          onClick={() => downloadBeneficiaryList(this.state.projectId)}
+                        >
+                          Current file
+                        </span>
+                          }
                         </Label>
                       </Col>
                       <Col xs="12" md="6">
