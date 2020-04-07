@@ -97,6 +97,7 @@ class NewProject extends Component {
       }
       return null;
     });
+    console.log(budgetAmountList)
 
     if (this.state.newImage === "") {
       this.triggerAlert("danger", "Please upload project image.");
@@ -107,7 +108,7 @@ class NewProject extends Component {
     } else if (beneficiaryGainedRatio <= 0) {
       this.triggerAlert(
         "danger",
-        "Please assign beficiary ratio in budget breakdown."
+        "Please assign Beneficiary ratio in budget breakdown."
       );
     } else if (
       this.state.projectName === "" ||
@@ -125,7 +126,7 @@ class NewProject extends Component {
       data.set("fundTarget", this.state.fundTarget);
       data.set("expirationDate", this.state.expirationDate);
       data.set("description", this.state.description);
-      data.set("breakdownList", budgetAmountList);
+      data.set("breakdownList", JSON.stringify(budgetAmountList));
       data.set("beneficiaryGainedRatio", beneficiaryGainedRatio);
 
       data.append(

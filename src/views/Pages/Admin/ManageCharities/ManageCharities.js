@@ -238,7 +238,7 @@ class ManageCharities extends Component {
         color={'blue'} // default is white
         loader="RingLoader" 
         text="Loading... Please wait!" 
-        active={true} 
+        active={false} 
         backgroundColor={'black'} // default is black
         opacity=".4" // default is .9  
       >
