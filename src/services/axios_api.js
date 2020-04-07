@@ -123,6 +123,14 @@ export function pendingProjectRetrieval(){
   return client.get("/getAllPendingProjects")
 }
 
+export function projectApproval(data){
+  return client.post('/approveProject',data)
+}
+
+export function projectReject(data){
+  return client.post('/rejectProject', data)
+}
+
 export function saveProject(data){
   return client.post('/registerProject', data)
 }

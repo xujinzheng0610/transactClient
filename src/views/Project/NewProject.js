@@ -24,7 +24,7 @@ class NewProject extends Component {
     super(props);
 
     this.state = {
-      charityAddress: this.getCookie("donor_address"),
+      charityAddress: this.getCookie("charity_address"),
       projectId: this.props.match.params.id,
       projectName: "",
       projectCategory: "Education",

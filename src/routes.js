@@ -2,6 +2,7 @@ import React from 'react';
 const ManageDonors = React.lazy(() => import('./views/Pages/Admin/ManageDonors'));
 const ManageCharities = React.lazy(() => import('./views/Pages/Admin/ManageCharities'));
 const ManageProjects = React.lazy(() => import('./views/Pages/Admin/ManageProjects'));
+const ManageActiveProjects = React.lazy(() => import('./views/Pages/Admin/ManageActiveProjects'));
 
 const Breadcrumbs = React.lazy(() => import('./views/Base/Breadcrumbs'));
 const Cards = React.lazy(() => import('./views/Base/Cards'));
@@ -48,7 +49,9 @@ const ProjectDetails = React.lazy( () => import("./views/Project/ProjectDetails"
 const routes = [
   { path: '/admin/managedonors', name: 'Manage Donors', component: ManageDonors },
   { path: '/admin/managecharities', name: 'Manage Charities', component: ManageCharities },
-  { path: '/admin/manageprojects', name: 'Manage Projects', component: ManageProjects },
+  { path: '/admin/manageprojects', name: 'Manage Pending Projects', component: ManageProjects },
+  { path: '/admin/manageactiveprojects', name: 'Manage Active Projects', component: ManageActiveProjects },
+
   { path: '/', exact: true, name: 'Home' , component: Cover},
   { path: '/dashboard', name: 'Dashboard', component: Dashboard },
   { path: '/theme', exact: true, name: 'Theme', component: Colors },
