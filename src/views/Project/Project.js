@@ -46,22 +46,24 @@ class Project extends Component{
   render(){
     
     return<div>
-      <p style={{
+      {/* <p style={{
               width: "fit-content",
               marginLeft: "180px",
               fontSize: "50px",
               fontFamily: "Anton"
-            }}><strong>Projects</strong></p>
+            }}><strong>Projects</strong></p> */}
+      
       <Container className="mt-3 mb-3">
-          {/* <h1
+          <Row style={{textAlign:"center"}}>
+            <h1
             style={{
-              borderBottom: "2px solid #000",
               width: "fit-content",
               margin: "auto"
             }}
           >
-            Latest Projects
-          </h1> */}
+           Projects
+          </h1>
+          </Row>
           <Row className="mt-3 mb-3">
             {this.state.projects.map(item =>{
             return (

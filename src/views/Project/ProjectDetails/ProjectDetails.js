@@ -22,6 +22,7 @@ import { Bar, Doughnut, Line, Pie, Polar, Radar } from 'react-chartjs-2';
 import Moment from 'react-moment';
 import { PaymentInputsContainer ,PaymentInputsWrapper } from 'react-payment-inputs';
 import images from 'react-payment-inputs/images';
+import {withRouter} from 'react-router-dom';
 
 
 import { retrieveProjectDetails, retrieveDonorsByProject,makeDonation } from "../../../services/axios_api";
@@ -90,6 +91,10 @@ class ProjectDetails extends Component{
       this.togglePrimary = this.togglePrimary.bind(this);
     }
     setAmount(amt) {
+        if(!this.state.primary&&!this.getCookie("donor_id")){
+            this.props.history.push('/login/donor');
+            return;
+        }
         console.log(amt);
         this.setState({
           primary: !this.state.primary,
@@ -102,6 +107,10 @@ class ProjectDetails extends Component{
         });
       }
       togglePrimary() {
+          if(!this.state.primary&&!this.getCookie("donor_id")){
+            this.props.history.push('/login/donor');
+            return;
+        }
         this.setState({
           primary: !this.state.primary,
           amount:'0',
@@ -126,12 +135,6 @@ class ProjectDetails extends Component{
               project:response.data.result
             })
 
-
-            console.log(this.state.project.actual_amount>=this.state.project.target_amount)
-            // console.log(parseInt(this.state.project.actual_amount))
-            // console.log(parseInt(this.state.project.target_amount))
-            // console.log(typeof parseInt(this.state.project.actual_amount))
-            // console.log(typeof parseInt(this.state.project.target_amount))
           })
           .catch(e => {
             console.log(e);
@@ -194,6 +197,7 @@ class ProjectDetails extends Component{
 
     makeDonation =() =>{
 
+        
         var data = new FormData();
         data.set("amount", this.state.amount);
         data.set("project_id", this.state.project_id);
@@ -241,12 +245,9 @@ class ProjectDetails extends Component{
                             <div className="custome-tag">
                                 <img src='../../assets/img/slider/background1.jpg' alt="project photo" style={{width:"100%", height: "100%"}}/>
                             </div>
-                            <h1>About This Project</h1>
-                            <p>
-                                {this.state.project.description}    
-                            </p>
+                            <h2>About This Project</h2>
                             <p style={{ marginLeft: '2rem', borderLeft: "6px solid", borderLeftColor: "SkyBlue"}}>
-                            <p className = 'mt-3 mb-3' style={{ marginLeft: '.5rem', fontStyle: 'italic', fontSize:'15px'}}>Some descroption about this projectSome descroption about this projectSome descroption about this projectSome descroption about this projectSome descroption about this projectSome descroption about this projectSome descroption about this projectSome descroption about this projectSome descroption about this projectSome descroption about this projectSome descroption about this project</p>
+                            <p className = 'mt-3 mb-3' style={{ marginLeft: '.5rem', fontStyle: 'italic', fontSize:'15px'}}>{this.state.project.description}</p>
                             </p>
                             <hr
                                 style={{
@@ -255,7 +256,7 @@ class ProjectDetails extends Component{
                                     height: 5
                                 }}
                             />
-                            <h1>About This Charity</h1>
+                            <h2>About This Charity</h2>
                             <p style={{ marginLeft: '2rem', fontSize: "20px", }}>
                                 {this.state.project.charity_description}    
                             </p>
@@ -266,9 +267,9 @@ class ProjectDetails extends Component{
                                     height: 5
                                 }}
                             />
-                            <h1>
+                            <h2>
                                 Money Allocation
-                            </h1>
+                            </h2>
                             <div className="chart-wrapper">
                                 <Pie data={pie} />
                             </div>
@@ -279,9 +280,9 @@ class ProjectDetails extends Component{
                                     height: 5
                                 }}
                             />
-                            <h1>
+                            <h2>
                                 Recent Donors
-                            </h1>
+                            </h2>
                                 <Card>
                                     <CardHeader>
                                         <i className="fa fa-align-justify"></i> Donors <small className="text-muted">latest 10 donors</small>
@@ -290,8 +291,9 @@ class ProjectDetails extends Component{
                                         <Table responsive hover className="table table-striped">
                                         <thead>
                                             <tr>
-                                            <th scope="col">Name</th>
+                                            <th scope="col">User Name</th>
                                             <th scope="col">Amount</th>
+                                            <th scope="col">Time</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -299,7 +301,8 @@ class ProjectDetails extends Component{
                                                 return(
                                                     <tr>
                                                         <td>{item.donor}</td>
-                                                        <td>{item.amount}</td>
+                                                        <td>${item.amount}</td>
+                                                        <td>{item.donation_time}</td>
                                                     </tr>
                                                 );
                                             })}
@@ -372,6 +375,7 @@ class ProjectDetails extends Component{
                                     height: 5
                                 }}
                             />
+                            
                             <div className={this.state.project.actual_amount>=this.state.project.target_amount?'hidden':''}>
                                 <h2>Donate Now!</h2>
                                 <Row className="align-items-center">
@@ -414,26 +418,25 @@ class ProjectDetails extends Component{
                                 <h3 style={{color:"gray"}} >Thanks For Your Interest!</h3>
                             </div>
                             
-                            
                             <Modal isOpen={this.state.primary} toggle={this.togglePrimary} 
                                 className={'modal-primary ' +'modal-lg ' +this.props.className} 
                                 style={{height:"80vh"}}>
-                            <ModalHeader toggle={this.togglePrimary}>Modal title</ModalHeader>
+                            <ModalHeader toggle={this.togglePrimary}>Donation</ModalHeader>
                             <ModalBody>
                                 <div className={this.state.donationFinished?'hidden':''}>
                                     <div className={this.state.custom?'hidden':''}>
                                         <h2 >Your donation amount will be {this.state.amount} $</h2>
                                         <br></br>
-                                        <h3 style={{color:"gray"}}>Please type in your bank card information</h3>
+                                        <h4 style={{color:"gray"}}>Please type in your bank card information</h4>
                                     </div>
                                     
                                     <div className={this.state.custom?'':'hidden'}>
-                                        <h3>Please type in your donation Amount and bank card information</h3>
-                                        <Input style={{width:"50%"}} type="number" placeholder="100" value={this.state.amount} onChange={this.updateValue('amount')} ></Input>
+                                        <h4>Please type in your donation Amount and bank card information</h4>
+                                        <br></br>
+                                        <p style={{color:"gray"}}>Donation Amount:</p><Input style={{width:"40%"}} type="number" placeholder="100($)" value={this.state.amount} onChange={this.updateValue('amount')} ></Input>
                                     </div>
                                     <br></br>
-                                    <br></br>
-                                    <PaymentInputsContainer>
+                                    <p style={{color:"gray"}}>Bank Card Info:</p><PaymentInputsContainer >
                                         {({ meta,wrapperProps,getCardImageProps, getCardNumberProps, getExpiryDateProps, getCVCProps }) => (
                                             <PaymentInputsWrapper {...wrapperProps}>
                                             <svg {...getCardImageProps({ images })} />
