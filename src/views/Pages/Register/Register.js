@@ -56,7 +56,7 @@ let donor_attributes = [
   {
     type: "full_name",
     logo: "icon-notebook",
-    display: "Full Name"
+    display: "Display Name"
   },
   {
     type: "contact_number",
@@ -70,7 +70,7 @@ let donor_attributes = [
   }
 ];
 
-var charity_attributes = [...donor_attributes];
+let charity_attributes = [...donor_attributes];
 charity_attributes.push({
   type: "description",
   logo: "icon-grid",

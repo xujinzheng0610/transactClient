@@ -1,6 +1,88 @@
-import React, { Component, Suspense } from "react";
-import { CardHeader, Alert, Container, Row, Col, Card, CardBody, Form, InputGroup, InputGroupAddon, InputGroupText, Input, Button } from "reactstrap";
-import { charityProfile, donorProfile, charityUpdate, donorUpdate, getProjectByCharity, getProjectByDonor  } from "../../services/axios_api";
+import React, { Component } from "react";
+import {
+  Alert,
+  Container,
+  Row,
+  Col,
+  Card,
+  CardBody,
+  Label,
+  Form,
+  FormGroup,
+  Input,
+  Button,
+  Progress
+} from "reactstrap";
+import {
+  charityProfile,
+  donorProfile,
+  charityUpdate,
+  donorUpdate,
+  getProjectByCharity,
+  getProjectByDonor,
+} from "../../services/axios_api";
+import LoadingOverlay from "react-loading-overlay";
+import "./profile.css";
+
+let donor_attributes = [
+  {
+    type: "username",
+    logo: "icon-user",
+    display: "Username",
+  },
+  {
+    type: "email",
+    logo: "icon-envelope",
+    display: "Email",
+  },
+  {
+    type: "password",
+    logo: "icon-lock",
+    display: "Password",
+  },
+  {
+    type: "repeatPassword",
+    logo: "icon-lock",
+    display: "Repeat Password",
+  },
+  {
+    type: "eth_address",
+    logo: "icon-key",
+    display: "ETH Address",
+  },
+  {
+    type: "bank_account",
+    logo: "icon-credit-card",
+    display: "Bank Account",
+  },
+  {
+    type: "physical_address",
+    logo: "icon-location-pin",
+    display: "Address",
+  },
+  {
+    type: "full_name",
+    logo: "icon-notebook",
+    display: "Display Name",
+  },
+  {
+    type: "contact_number",
+    logo: "icon-phone",
+    display: "Contact Number",
+  },
+  {
+    type: "financial_info",
+    logo: "icon-handbag",
+    display: "Financial Info",
+  },
+];
+
+let charity_attributes = [...donor_attributes];
+charity_attributes.push({
+  type: "description",
+  logo: "icon-grid",
+  display: "Description",
+});
 
 class Profile extends Component {
   constructor(props) {
@@ -19,9 +101,12 @@ class Profile extends Component {
       contact_number: "",
       financial_info: "",
       description: "",
+      projectData: [],
       isLoaded: false,
       type: this.checkType(),
-      disabled: true,
+      userData: [],
+      editMode: false,
+      updatedValue: false,
       alertVisible: false,
       alertColor: "info",
       alertMessage: "I am an alert message",
@@ -30,195 +115,73 @@ class Profile extends Component {
     };
   }
 
-  loading = () => (
-    <div className="animated fadeIn pt-1 text-center">Loading...</div>
-  );
-
   allowEdit() {
-    this.setState( {disabled: !this.state.disabled} )
+    this.setState({ editMode: true });
   }
 
   getUsersData() {
-    this.state.type === "donor" ? 
-    donorProfile(this.state.address).then(
-        result => {
-        console.log("checkinginging");
-        let data = result.data;
-        console.log(data);
-        let donor_attributes = [
-            {
-              type: "username",
-              logo: "icon-user",
-              display: "Username", 
-              value: data["username"]
-            },
-            {
-              type: "email",
-              logo: "icon-envelope",
-              display: "Email",
-              value: data["email"]
-            },
-            {
-              type: "eth_address",
-              logo: "icon-key",
-              display: "ETH Address", 
-              value: data["eth_address"]
-            },
-            {
-            type: "password",
-            logo: "icon-key",
-            display: "Password", 
-            value: "*****"
-            },
-            {
-            type: "repeatPassword",
-            logo: "icon-key",
-            display: "Repeat Password", 
-            value: "*****"
-            },
-            {
-            type: "bank_account",
-            logo: "icon-credit-card",
-            display: "Bank Account",
-            value: data["bank_account"]
-            },
-            {
-            type: "physical_address",
-            logo: "icon-location-pin",
-            display: "Address",
-            value: data["physical_address"]
-            },
-            {
-            type: "full_name",
-            logo: "icon-notebook",
-            display: "Full Name",
-            value: data["full_name"]
-            },
-            {
-            type: "contact_number",
-            logo: "icon-phone",
-            display: "Contact Number",
-            value: data["contact_number"]
-            },
-            {
-            type: "registration_hash",
-            logo: "icon-phone",
-            display: "Registration Hash",
-            value: data["registration_hash"]
+    this.state.type === "donor"
+      ? donorProfile(this.state.address).then(
+          (result) => {
+            let data = result.data;
+            if (data.code[0] === 200) {
+              this.setState({
+                username: data["username"],
+                email: data["email"],
+                eth_address: this.state.address,
+                password: data["password"],
+                repeatPassword: data["password"],
+                bank_account: data["bank_account"],
+                physical_address: data["physical_address"],
+                full_name: data["name"],
+                financial_info: data["financial_info"],
+                contact_number: data["contact_number"],
+              });
+              getProjectByDonor(this.state.address).then((result) => {
+                let data = result.data;
+                this.setState({ projectData: data["items"] });
+              });
+            } else {
+              //window.history.back()
             }
-        ] 
-        this.setState({userData: donor_attributes, username:data["username"],email:data["email"], eth_address:this.state.address
-    , password:data["password"], repeatPassword:data["password"], bank_account:data["bank_account"], physical_address:data["physical_address"],
-    full_name:data["full_name"],contact_number:data["contact_number"]});
-
-      getProjectByDonor(this.state.address).then(
-      result => {
-      console.log("checking donor");
-      let data = result.data;
-      console.log(data);
-      this.setState({projectData: data["items"]});    
-      })
-
-        },      
-        error => {
-        this.setState({
-            isLoaded: true,
-            error
-        });
-        }
-    ) : 
-    charityProfile(this.state.address).then(
-        result => {
-        console.log("checkinginging");
-        let data = result.data;
-        console.log(data);
-        let charity_attributes = [
-            {
-              type: "username",
-              logo: "icon-user",
-              display: "Username", 
-              value: data["username"]
-            },
-            {
-              type: "email",
-              logo: "icon-envelope",
-              display: "Email",
-              value: data["email"]
-            },
-            {
-              type: "eth_address",
-              logo: "icon-key",
-              display: "ETH Address", 
-              value: data["eth_address"]
-            },
-            {
-            type: "password",
-            logo: "icon-key",
-            display: "Password", 
-            value: "*****"
-            },
-            {
-            type: "repeatPassword",
-            logo: "icon-key",
-            display: "Repeat Password", 
-            value: "*****"
-            },
-            {
-            type: "bank_account",
-            logo: "icon-credit-card",
-            display: "Bank Account",
-            value: data["bank_account"]
-            },
-            {
-            type: "physical_address",
-            logo: "icon-location-pin",
-            display: "Address",
-            value: data["physical_address"]
-            },
-            {
-            type: "name",
-            logo: "icon-notebook",
-            display: "Full Name",
-            value: data["name"]
-            },
-            {
-            type: "contact_number",
-            logo: "icon-phone",
-            display: "Contact Number",
-            value: data["contact_number"]
-            },
-            {
-            type: "description",
-            logo: "icon-phone",
-            display: "Description",
-            value: data["description"]
-            },
-            {
-            type: "registration_hash",
-            logo: "icon-phone",
-            display: "Registration Hash",
-            value: data["registration_hash"]
+          },
+          (error) => {
+            console.log(error);
+            //window.history.back()
+          }
+        )
+      : charityProfile(this.state.address).then(
+          (result) => {
+            let data = result.data;
+            console.log(data);
+            if (data.code[0] === 200) {
+              this.setState({
+                username: data["username"],
+                email: data["email"],
+                eth_address: this.state.address,
+                password: data["password"],
+                repeatPassword: data["password"],
+                bank_account: data["bank_account"],
+                physical_address: data["physical_address"],
+                full_name: data["name"],
+                financial_info: data["financial_info"],
+                contact_number: data["contact_number"],
+                description: data["description"],
+              });
+              getProjectByCharity(this.state.address).then((result) => {
+                let data = result.data;
+                console.log(data);
+                this.setState({ projectData: data["items"] });
+              });
+            } else {
+              //window.history.back()
             }
-        ] 
-        this.setState({userData: charity_attributes, username:data["username"],email:data["email"], eth_address:this.state.address
-        , password:data["password"], repeatPassword:data["password"], bank_account:data["bank_account"], physical_address:data["physical_address"],
-        full_name:data["name"],contact_number:data["contact_number"], description:data["description"]});
-       
-        getProjectByCharity(this.state.address).then(
-          result => {
-          console.log("checking charity");
-          let data = result.data;
-          console.log(data);
-          this.setState({projectData: data["items"]});    
-          })
-      },      
-        error => {
-        this.setState({
-            isLoaded: true,
-            error
-        });
-        }
-    ); 
+          },
+          (error) => {
+            console.log(error);
+            //window.history.back()
+          }
+        );
   }
 
   updateProfile = () => {
@@ -242,13 +205,13 @@ class Profile extends Component {
       data.set("bank_account", this.state.bank_account);
       data.set("physical_address", this.state.physical_address);
       data.set("full_name", this.state.full_name);
+      data.set("financial_info", this.state.financial_info);
       data.set("contact_number", this.state.contact_number);
-    // data.set("financial_info", this.state.financial_info);
-      if (this.state.type === "charity") { 
+      if (this.state.type === "charity") {
         data.set("description", this.state.description);
         this.setState({ loading: true });
         charityUpdate(data)
-          .then(response => {
+          .then((response) => {
             if (response.data["code"] === 200) {
               this.setState({ updated: true });
               window.location.reload(true);
@@ -256,7 +219,7 @@ class Profile extends Component {
               this.triggerAlert("danger", response.data["message"]);
             }
           })
-          .catch(e => {
+          .catch((e) => {
             console.log(e);
           })
           .then(() => {
@@ -265,7 +228,7 @@ class Profile extends Component {
       } else {
         this.setState({ loading: true });
         donorUpdate(data)
-          .then(response => {
+          .then((response) => {
             if (response.data["code"] === 200) {
               this.setState({ updated: true });
               window.location.reload(true);
@@ -273,7 +236,7 @@ class Profile extends Component {
               this.triggerAlert("danger", response.data["message"]);
             }
           })
-          .catch(e => {
+          .catch((e) => {
             console.log(e);
           })
           .then(() => {
@@ -286,7 +249,7 @@ class Profile extends Component {
   triggerAlert = (color, message) => {
     this.setState({
       alertColor: color,
-      alertMessage: message
+      alertMessage: message,
     });
     this.onDismiss();
     setTimeout(this.onDismiss, 3000);
@@ -295,11 +258,16 @@ class Profile extends Component {
   onDismiss = () => {
     this.setState({ alertVisible: !this.state.alertVisible });
   };
-  
-  componentDidMount(){
-    this.getUsersData();
-  };
 
+  componentDidMount() {
+    if (this.state.type === "donor") {
+      this.setState({ userData: donor_attributes });
+    } else {
+      this.setState({ userData: charity_attributes });
+    }
+
+    this.getUsersData();
+  }
 
   checkType = () => {
     if (["donor", "charity"].indexOf(this.props.match.params.type) > -1) {
@@ -312,35 +280,21 @@ class Profile extends Component {
   };
 
   checkAddress = () => {
-      console.log("valid route");
-      return this.props.match.params.address;
+    console.log("valid route");
+    return this.props.match.params.address;
   };
 
-
-  updateValue = type => e => {
+  updateValue = (type) => (e) => {
     this.setState({
-      [type]: e.target.value
+      [type]: e.target.value,
+      updatedValue: true,
     });
   };
 
   render() {
-    const { userData } = this.state;
-
-    if (!userData) {
-      return [];
-    }  
-
-    const { projectData } = this.state;
-
-    if (!projectData) {
-      return [];
-    } 
-
-    return (<div>
-      <Suspense fallback={this.loading()}>
-      </Suspense>
-      <Container className="mt-3 mb-3">
-      <Alert
+    return (
+      <div>
+        <Alert
           color={this.state.alertColor}
           isOpen={this.state.alertVisible}
           toggle={this.onDismiss}
@@ -348,136 +302,151 @@ class Profile extends Component {
         >
           {this.state.alertMessage}
         </Alert>
-        <Form>
-          <h1>My TransACT Profile
-            {/* element style - float right */}
-          <Button  onClick = {this.allowEdit.bind(this)} className="fa fa-edit"></Button></h1>
-          <p className="text-muted"></p>
-          {userData.map(item => {
-            return (
-              <InputGroup className="mb-3" key={item.type}>
-                <InputGroupAddon addonType="prepend">
-                  <InputGroupText>
-                    <i className={item.logo}> {item.display}</i>
-                  </InputGroupText>
-                </InputGroupAddon>
-                <Input
-                  disabled = {(this.state.disabled)}
-                  type={
-                    ["password", "repeatPassword"].indexOf(
-                      item.type
-                    ) > -1
-                      ? "password"
-                      : "text"
-                  }
-                  onChange={this.updateValue(item.type)}
-                placeholder={item.value}>
-                </Input>
-              </InputGroup>
-            );
-          })}
-          <Button
-            color="success"
-            block
-            onClick={this.updateProfile}>
-            Update Account
-          </Button>
-        </Form>
-      </Container>
+        <LoadingOverlay
+          active={this.state.loading}
+          spinner
+          text="Loading..."
+          backgroundColor={"gray"}
+          opacity="0.4"
+          style={{ width: "100%" }}
+        >
+          <Container className="pt-4">
+            <Card style={{ border: "none" }} className="mb-0">
+              <CardBody>
+                {this.state.editMode ? (
+                  <h2>
+                    Hi {this.state.full_name}! Edit your profile.
+                    <Button
+                      outline
+                      color="primary"
+                      disabled={!this.state.updatedValue}
+                      onClick={this.updateProfile}
+                      style={{ float: "right" }}
+                    >
+                      Update Account
+                    </Button>
+                  </h2>
+                ) : (
+                  <h2>
+                    Hi {this.state.full_name}! Welcome to your profile.
+                    <Button
+                      outline
+                      color="primary"
+                      onClick={this.allowEdit.bind(this)}
+                      style={{ float: "right" }}
+                    >
+                      Edit Profile
+                    </Button>
+                  </h2>
+                )}
+                <Form
+                  encType="multipart/form-data"
+                  className="form-horizontal mt-4 ml-5 mr-5"
+                  style={{ width: "80%" }}
+                >
+                  {this.state.userData.map((item) => {
+                    if (
+                      !this.state.editMode &&
+                      ["password", "repeatPassword"].indexOf(item.type) > -1
+                    )
+                      return null
+                    return (
+                      <FormGroup
+                        row
+                        className={
+                          this.state.editMode ? "editMode" : "displayMode"
+                        }
+                        key={item.type}
+                      >
+                        <Col md="2">
+                          <Label>{item.display}:</Label>
+                        </Col>
+                        <Col xs="9" md="6">
+                          {this.state.editMode ? (
+                            <Input
+                              type={
+                                ["password", "repeatPassword"].indexOf(
+                                  item.type
+                                ) > -1
+                                  ? "password"
+                                  : item.type === "description"
+                                  ? "textarea"
+                                  : "text"
+                              }
+                              disabled={
+                                [
+                                  "eth_address",
+                                  "registration_hash",
+                                  "username",
+                                ].indexOf(item.type) > -1
+                                  ? true
+                                  : this.state.disabled
+                              }
+                              value={this.state[item.type]}
+                              onChange={this.updateValue(item.type)}
+                              rows="5"
+                            />
+                          ) : (
+                            <p>{this.state[item.type]}</p>
+                          )}
+                        </Col>
+                      </FormGroup>
+                    );
+                  })}
+                </Form>
+              </CardBody>
+            </Card>
+            <Card style={{ border: "none" }}>
+              <CardBody>
+                <h2>Involved Projects</h2>
+                {this.state.projectData.map((project) => {
+                  let expirationDate = new Date(project.expirationDate);
+                  let today = new Date();
+                  return (
+                    <Card className="mt-3" key={project.projectName}>
+                      <CardBody>
+                        <h3>
+                          {project.projectName}
+                          {project.approval_hash === ""
+                            ? " - Wait for approval"
+                            : expirationDate > today
+                            ? "Fundrasing Ongoing"
+                            : "Claiming Required"}
+                        </h3>
+                        <p className = "mb-0"> 
+                          <strong>Target:</strong> ${project.fundTarget}    
+                          <strong className="ml-3">Expiration Date:</strong> {project.expirationDate}
+                          <strong className="ml-3">Donation Amount:</strong> {project.actual_amount}
+                        </p>
+                        <Progress animated color="info" value={project.actual_amount/project.fundTarget*100} className="mb-3" >
+                          {project.actual_amount/project.fundTarget*100}%
+                        </Progress>
 
-      <div className="animated fadeIn">
-        <Card>
-          <CardHeader>
-            Your Projects
-          </CardHeader>
-          <CardBody>
-            {projectData.map(project => {
-              return (
-                <Card className="mb-0" key={project.project_name}>
-                  <CardBody>
-                    <h3>{project.project_name}</h3>
-                    <ul>
-                      <li key={project.description}>
-                        Project Description: {project.description}
-                      </li>
-                      <li key={project.expire_date}>Expiry Date: {project.expire_date}</li>
-                      <li key={project.target_amount}>
-                        Target Amount: {project.target_amount}
-                      </li>
-                    </ul>
-                    <Row>
-                      <Col sm="6" style={{ textAlign: "centre" }}>
+                        {this.state.type === "donor" && (
+                          <h3 key={project.amount}>
+                            You have contributed <strong style={{color:"royalblue"}}> {project.amount}  </strong>dollars!
+                          </h3>
+                          )}
                         <Button
                           outline
                           color="success"
-                          // onClick={() => this.rejectDonor(donor)}
+                          onClick={() => {
+                            window.location.replace(`/projects/${project._id}`);
+                          }}
                         >
                           View More
                         </Button>
-                      </Col>
-                    </Row>
-                  </CardBody>
-                </Card>
-              );
-            })}
-          </CardBody>
-        </Card>
+                      </CardBody>
+                    </Card>
+                  );
+                })}
+              </CardBody>
+            </Card>
+          </Container>
+        </LoadingOverlay>
       </div>
-      
-      <Container className="mt-3 mb-3">
-        <Card>
-          <CardBody>
-            <h2
-              style={{
-                borderBottom: "2px solid #000",
-                width: "fit-content",
-                margin: "auto"
-              }}
-            >
-              Contact Us
-              </h2>
-            <Row className="mt-3">
-              <Col xs="12" sm="4">
-                <div style={{ textAlign: "center" }}>
-                  <i className="fa fa-mobile singleIcon"></i>
-                  <p>
-                    Call: +65 6666 8888
-                        <br />
-                    <span>Monday-Friday (9am-5pm)</span>
-                  </p>
-                </div>
-              </Col>
-              <Col xs="12" sm="4">
-                <div style={{ textAlign: "center" }}>
-                  <i className="fa fa-envelope-o singleIcon"></i>
-                  <p>
-                    Email: info@example.com
-                        <br />
-                    <span>Web: www.TRANSACT.com</span>
-                  </p>
-                </div>
-              </Col>
-
-              <Col xs="12" sm="4">
-                <div style={{ textAlign: "center" }}>
-                  <i className="fa fa-map-marker singleIcon"></i>
-                  <p>
-                    Location: 21 Kent Ridge
-                        <br />
-                    <span>NY 510000,Singapore </span>
-                  </p>
-                </div>
-              </Col>
-            </Row>
-          </CardBody>
-        </Card>
-      </Container>
-      <Container className="mb-5">
-        <Card style={{ border: "0px" }}></Card>
-      </Container>
-    </div>)
+    );
   }
-
 }
 
-export default Profile
+export default Profile;

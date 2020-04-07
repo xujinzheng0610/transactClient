@@ -16,7 +16,7 @@ import {
   Alert,
 } from "reactstrap";
 import LoadingOverlay from "react-loading-overlay";
-import { saveProject } from "../../services/axios_api";
+import { saveProject, downloadBeneficiaryFormat} from "../../services/axios_api";
 import "./project.css";
 
 class NewProject extends Component {
@@ -97,6 +97,7 @@ class NewProject extends Component {
       }
       return null;
     });
+    console.log(budgetAmountList)
 
     if (this.state.newImage === "") {
       this.triggerAlert("danger", "Please upload project image.");
@@ -107,7 +108,7 @@ class NewProject extends Component {
     } else if (beneficiaryGainedRatio <= 0) {
       this.triggerAlert(
         "danger",
-        "Please assign beficiary ratio in budget breakdown."
+        "Please assign Beneficiary ratio in budget breakdown."
       );
     } else if (
       this.state.projectName === "" ||
@@ -125,7 +126,7 @@ class NewProject extends Component {
       data.set("fundTarget", this.state.fundTarget);
       data.set("expirationDate", this.state.expirationDate);
       data.set("description", this.state.description);
-      data.set("breakdownList", budgetAmountList);
+      data.set("breakdownList", JSON.stringify(budgetAmountList));
       data.set("beneficiaryGainedRatio", beneficiaryGainedRatio);
 
       data.append(
@@ -324,7 +325,10 @@ class NewProject extends Component {
                     <FormGroup row>
                       <Col md="3">
                         <Label htmlFor="text-input">
-                          Beneficiary List File (.xlsx)
+                          Beneficiary List File (.xlsx)   
+                          <span style={{color: "royalblue", textDecoration: "underline", cursor: "pointer", marginLeft:"1rem"}} onClick={() => downloadBeneficiaryFormat()}> 
+                           Sample
+                          </span> 
                         </Label>
                       </Col>
                       <Col xs="12" md="6">
@@ -402,13 +406,13 @@ class NewProject extends Component {
                     <FormGroup row>
                       <Col md="3">
                         <Label htmlFor="text-input">
-                          Project Cover Image (jpg, png)
+                          Project Cover Image (.jpg)
                         </Label>
                       </Col>
                       <Col xs="12" md="9">
                         <Input
                           type="file"
-                          accept=".png,.jpg"
+                          accept=".jpg"
                           onChange={this.updateImage()}
                         />
                         <img
