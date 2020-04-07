@@ -119,6 +119,10 @@ export function donorReject(data){
   return client.post('/rejectDonor', data)
 }
 
+export function pendingProjectRetrieval(){
+  return client.get("/getAllPendingProjects")
+}
+
 export function saveProject(data){
   return client.post('/registerProject', data)
 }

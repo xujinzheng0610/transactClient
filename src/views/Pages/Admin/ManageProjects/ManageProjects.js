@@ -15,7 +15,7 @@ import {
 import { AppSwitch } from "@coreui/react";
 
 import client, {
-  pendingDonorRetrieval,
+  pendingProjectRetrieval,
   donorApproval,
   donorReject
 } from "../../../../services/axios_api";
@@ -121,10 +121,9 @@ class ManageDonors extends Component {
     this.setState({ fadeIn: !this.state.fadeIn });
   }
 
-  componentDidMount() {
-    pendingDonorRetrieval().then(
+  componentDidMount() { 
+    pendingProjectRetrieval().then(
       result => {
-        console.log("checkinginging");
         let data = result.data;
         console.log(data);
         if (data["code"] === 200) {
@@ -148,8 +147,8 @@ class ManageDonors extends Component {
       }
     );
   }
-  retrievePendingDonors = () => {
-    pendingDonorRetrieval().then(
+  retrievePendingProjects = () => {
+    pendingProjectRetrieval().then(
       result => {
         console.log("checkinginging");
         let data = result.data;

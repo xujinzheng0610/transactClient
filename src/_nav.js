@@ -37,7 +37,7 @@ export default {
           name:'Charity Projects',
           url: '/admin/manageprojects',
           icon: 'icon-puzzle',
-        },
+        },        
       ]
     },
     {

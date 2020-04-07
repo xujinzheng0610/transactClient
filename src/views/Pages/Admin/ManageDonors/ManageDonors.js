@@ -243,14 +243,14 @@ class ManageDonors extends Component {
       return [];
     }
     return (
-      <LoadingOverlay 
-        color={'blue'} // default is white
-        loader="RingLoader" 
-        text="Loading... Please wait!" 
-        active={true} 
-        backgroundColor={'black'} // default is black
-        opacity=".4" // default is .9  
-      >
+      // <LoadingOverlay 
+      //   color={'blue'} // default is white
+      //   loader="RingLoader" 
+      //   text="Loading... Please wait!" 
+      //   active={true} 
+      //   backgroundColor={'black'} // default is black
+      //   opacity=".4" // default is .9  
+      // >
       <div className="animated fadeIn">
         <Card >
           <CardHeader>
@@ -314,7 +314,7 @@ class ManageDonors extends Component {
           </CardBody>
         </Card>
       </div>
-      </LoadingOverlay>
+      // </LoadingOverlay>
     );
   }
 }
