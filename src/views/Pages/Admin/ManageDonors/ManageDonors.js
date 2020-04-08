@@ -48,7 +48,9 @@ class ManageDonors extends Component {
 
       visible: false,
       alertColor: "info",
-      alertMessage: "I am an alert message"
+      alertMessage: "I am an alert message",
+
+      loading: false
     };
     this.onDismiss = this.onDismiss.bind(this);
   }
@@ -59,11 +61,11 @@ class ManageDonors extends Component {
       alertMessage: message
     });
     this.onDismiss();
+    setTimeout(this.onDismiss, 3000);
   };
 
   onDismiss() {
     this.setState({ visible: !this.state.visible });
-    
   }
 
   getCookie = (name) => {
@@ -123,55 +125,37 @@ class ManageDonors extends Component {
   componentDidMount() {
     pendingDonorRetrieval().then(
       result => {
-        console.log("checkinginging");
+        this.setState({loading: true});
         let data = result.data;
-        console.log(data);
         if (data["code"] === 200) {
-          console.log("checking");
-          console.log(data["items"]);
           this.setState({
-            isLoaded: true,
-            pendingDonors: data["items"]
+            pendingDonors: data["items"],
+            loading: false
           });
         } else {
           this.setState({
-            isLoaded: true
+            loading: false
           });
         }
       },
-      error => {
-        this.setState({
-          isLoaded: true,
-          error
-        });
-      }
     );
   }
   retrievePendingDonors = () => {
     pendingDonorRetrieval().then(
       result => {
-        console.log("checkinginging");
+        this.setState({loading: true}); 
         let data = result.data;
-        console.log(data);
         if (data["code"] === 200) {
-          console.log("checking");
-          console.log(data["items"]);
           this.setState({
-            isLoaded: true,
+            loading: false,
             pendingDonors: data["items"]
           });
         } else {
           this.setState({
-            isLoaded: true
+            loading: false
           });
         }
       },
-      error => {
-        this.setState({
-          isLoaded: true,
-          error
-        });
-      }
     );
   };
 
@@ -179,22 +163,16 @@ class ManageDonors extends Component {
     var data = new FormData();
     data.set("donorAddress", approvingDonor.eth_address);
     data.set("inspectorAddress", this.state.inspectorAddress);
-    console.log("Donor Address");
-    console.log(approvingDonor.eth_address);
-    this.setState({ isLoaded: true });
+    this.setState({ loading: true });
 
     donorApproval(data)
       .then(response => {
         if (response.data["code"] === 200) {
-          console.log("approving donor should be fine");
-          console.log(response.data["code"]);
-          this.setState({ approveDonor: true });
+          this.setState({ loading: false });
           this.retrievePendingDonors();
           this.triggerAlert("success", "Donor has been approved");
         } else {
-          console.log("approving donor What's wrong with you");
-          console.log(response.data["code"]);
-          console.log(response.data["message"]);
+          this.setState({ loading: false });
           this.triggerAlert("danger", response.data["message"]);
         }
       })
@@ -202,7 +180,7 @@ class ManageDonors extends Component {
         console.log(e);
       })
       .then(() => {
-        this.setState({ approveDonor: false });
+        this.setState({ loading: false });
       });
   };
 
@@ -210,21 +188,18 @@ class ManageDonors extends Component {
     var data = new FormData();
     data.set("donorAddress", rejectingDonor.eth_address);
     data.set("inspectorAddress", this.state.inspectorAddress);
-    console.log("Donor Address");
-    console.log(rejectingDonor.eth_address);
-    this.setState({ isLoaded: true });
 
     donorReject(data)
       .then(response => {
+        this.setState({loading: true});
         if (response.data["code"] === 200) {
-          console.log("rejecting donor should be fine");
-          console.log(response.data["code"]);
-          this.setState({ rejectDonor: true });
+          this.setState({ 
+            rejectDonor: true,
+            loading: false 
+          });
           this.retrievePendingDonors();
           this.triggerAlert("success", "Donor has been rejected");
         } else {
-          console.log("approving donor What's wrong with you");
-          console.log(response.data["code"]);
           this.triggerAlert("danger", response.data["message"]);
         }
       })
@@ -232,7 +207,10 @@ class ManageDonors extends Component {
         console.log(e);
       })
       .then(() => {
-        this.setState({ rejectDonor: false });
+        this.setState({ 
+          rejectDonor: false,
+          loading: false 
+        });
       });
   };
 
@@ -243,21 +221,25 @@ class ManageDonors extends Component {
       return [];
     }
     return (
-      // <LoadingOverlay 
-      //   color={'blue'} // default is white
-      //   loader="RingLoader" 
-      //   text="Loading... Please wait!" 
-      //   active={true} 
-      //   backgroundColor={'black'} // default is black
-      //   opacity=".4" // default is .9  
-      // >
+      <LoadingOverlay
+        active={this.state.loading}
+        spinner
+        text="Loading..."
+        backgroundColor={"gray"}
+        opacity="0.4"
+        style={{width:"100%"}}
+      >
       <div className="animated fadeIn">
         <Card >
           <CardHeader>
             <i className="fa fa-align-justify"></i> Pending Donors
           </CardHeader>
           <CardBody>
-            <Alert color={this.state.alertColor} isOpen={this.state.visible} toggle={this.onDismiss}>
+            <Alert 
+              color={this.state.alertColor} 
+              isOpen={this.state.visible} 
+              toggle={this.onDismiss}
+            >
               {this.state.alertMessage}
             </Alert>
             {pendingDonors.map(donor => {
@@ -314,7 +296,7 @@ class ManageDonors extends Component {
           </CardBody>
         </Card>
       </div>
-      // </LoadingOverlay>
+      </LoadingOverlay>
     );
   }
 }

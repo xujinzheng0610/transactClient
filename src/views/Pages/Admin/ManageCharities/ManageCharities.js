@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-// import OverlayLoader from 'react-overlay-loading/lib/OverlayLoader'； 
+import LoadingOverlay from 'react-loading-overlay';
 import { 
   Badge, 
   Button, 
@@ -41,9 +41,6 @@ class ManageCharities extends Component {
       fadeIn: true,
       timeout: 300,
 
-      error: null, 
-      isLoaded: false, 
-
       pendingOrganizations: null,
       approveCharity: false,
       rejectCharity: false, 
@@ -53,6 +50,8 @@ class ManageCharities extends Component {
       visible: false,
       alertColor: "info",
       alertMessage: "I am an alert message",
+
+      loading: false
     };
   }
 
@@ -62,6 +61,7 @@ class ManageCharities extends Component {
       alertMessage: message
     });
     this.onDismiss();
+    setTimeout(this.onDismiss, 3000);
   };
 
   onDismiss = () => {
@@ -123,24 +123,19 @@ class ManageCharities extends Component {
     pendingCharityRetrieval()
       .then(
         (result) => {
+          this.setState({loading: true});
           let data = result.data
           if (data["code"] === 200){
             this.setState({
-              isLoaded: true,
+              loading: false,
               pendingOrganizations: data["items"]
             });
           }else{
             this.setState({
-              isLoaded: true
+              loading: false
             })
           }
         },
-        (error) => {
-          this.setState({
-            isLoaded: true,
-            error
-          });
-        }
       )
   }
 
@@ -149,46 +144,35 @@ class ManageCharities extends Component {
       .then(
         (result) => {
           let data = result.data
-          console.log('retrieval after rejecting/approving')
-          console.log(data)
+          this.setState({loading: true}); 
           if (data["code"] === 200){
             this.setState({
-              isLoaded: true,
+              loading: false,
               pendingOrganizations: data["items"]
             });
           }else{
             this.setState({
-              isLoaded: true
+              loading: false
             })
           }
         },
-        (error) => {
-          this.setState({
-            isLoaded: true,
-            error
-          });
-        }
       )
-      }
+    }
 
   approveCharity = approvingCharity => {
     var data = new FormData();
     data.set("charityAddress", approvingCharity.eth_address);
     data.set("inspectorAddress", this.state.inspectorAddress); 
-    console.log("charityAddress");
-    console.log(approvingCharity.eth_address);
-    this.setState({ isLoaded: true });
+    this.setState({ loading: true });
     charityApproval(data)
       .then(response => {
         if (response.data["code"] === 200) {
-          console.log("should be fine");
-          console.log(response.data["code"])
-          this.setState({ approveCharity: true });
+          this.setState({ 
+            loading: false
+          });
           this.retrievePendingCharity()
           this.triggerAlert("success", "Charity has been approved");
         } else {
-          console.log("What's wrong with you")
-          console.log(response.data["code"])
           this.triggerAlert("danger", response.data["message"]);
         }
       })
@@ -196,7 +180,9 @@ class ManageCharities extends Component {
         console.log(e);
       })
       .then(() => {
-        this.setState({ approveCharity: false });
+        this.setState({ 
+          loading: false
+        });
       });
   }; 
 
@@ -204,20 +190,14 @@ class ManageCharities extends Component {
     var data = new FormData();
     data.set("charityAddress", rejectingCharity.eth_address);
     data.set("inspectorAddress", this.state.inspectorAddress); 
-    console.log("charityAddress");
-    console.log(rejectingCharity.eth_address);
-    this.setState({ isLoaded: true });
+    this.setState({ loading: true });
     charityReject(data)
       .then(response => {
         if (response.data["code"] === 200) {
-          console.log("should be fine");
-          console.log(response.data["code"])
-          this.setState({ rejectCharity: true });
+          this.setState({ loading: false });
           this.retrievePendingCharity()
           this.triggerAlert("success", "Charity has been rejected");
         } else {
-          console.log("What's wrong with you")
-          console.log(response.data["code"])
           this.triggerAlert("danger", response.data["message"]);
         }
       })
@@ -225,7 +205,7 @@ class ManageCharities extends Component {
         console.log(e);
       })
       .then(() => {
-        this.setState({ rejectCharity: false });
+        this.setState({ loading: false });
       });
   }; 
 
@@ -234,14 +214,14 @@ class ManageCharities extends Component {
   
     if (!pendingOrganizations) { return [] }
     return (
-      // <OverlayLoader 
-      //   color={'blue'} // default is white
-      //   loader="RingLoader" 
-      //   text="Loading... Please wait!" 
-      //   active={true} 
-      //   backgroundColor={'black'} // default is black
-      //   opacity=".4" // default is .9  
-      // >
+      <LoadingOverlay
+        active={this.state.loading}
+        spinner
+        text="Loading..."
+        backgroundColor={"gray"}
+        opacity="0.4"
+        style={{width:"100%"}}
+      >
       <div className="animated fadeIn">
         <Card>
           <CardHeader>
@@ -295,7 +275,7 @@ class ManageCharities extends Component {
           </CardBody>
         </Card>
       </div>
-      // </LoadingOverlay>
+    </LoadingOverlay>
     )
   }
 }

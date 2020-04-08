@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import LoadingOverlay from "react-loading-overlay";
 import {
   Badge,
   Button,
@@ -10,16 +11,18 @@ import {
   Row,
   Collapse,
   Fade,
+  Progress,
   Alert
 } from "reactstrap";
 import { AppSwitch } from "@coreui/react";
+import Moment from 'react-moment';
 
 import client, {
-  pendingProjectRetrieval,
-  projectApproval, 
-  projectReject
+  approvedProjectRetrieval,
+  projectStop,
+  downloadBeneficiaryList
 } from "../../../../services/axios_api";
-class ManageProjects extends Component {
+class ManageActiveProjects extends Component {
   constructor(props) {
     super(props);
     this.onEntering = this.onEntering.bind(this);
@@ -31,6 +34,8 @@ class ManageProjects extends Component {
     this.toggle = this.toggle.bind(this);
     this.toggleFade = this.toggleFade.bind(this);
 
+    var tempDate = new Date();
+    var date = tempDate.getFullYear() + '-' + (tempDate.getMonth()+1) + '-' + tempDate.getDate();
     this.state = {
       collapse: false,
       accordion: [true, false, false],
@@ -39,16 +44,15 @@ class ManageProjects extends Component {
       fadeIn: true,
       timeout: 300,
       
-      pendingProjects: null, 
-      error: null,
-      isLoaded: false,
-      approveProject: false,
-      rejectDonor: false,
+      activeProjects: [], 
+      stopProject: false, 
       inspectorAddress: this.getCookie("admin"),
 
       visible: false,
       alertColor: "info",
-      alertMessage: "I am an alert message"
+      alertMessage: "I am an alert message",
+      loading: false, 
+      today: date
     };
     this.onDismiss = this.onDismiss.bind(this);
   }
@@ -59,6 +63,7 @@ class ManageProjects extends Component {
       alertMessage: message
     });
     this.onDismiss();
+    setTimeout(this.onDismiss, 3000);
   };
 
   onDismiss() {
@@ -121,85 +126,72 @@ class ManageProjects extends Component {
   }
 
   componentDidMount() { 
-    pendingProjectRetrieval().then(
+    approvedProjectRetrieval().then(
       result => {
+        this.setState({loading: true}); 
         let data = result.data;
-        console.log(data);
         if (data["code"] === 200) {
-          console.log("checking");
-          console.log(data["items"]);
+          var project_list = [];
+          for (var item in data['items']) {
+            var obj = data['items'][item];
+            if (obj.expirationDate <= this.state.today ){
+              project_list.push(obj);
+            }
+          }
           this.setState({
-            isLoaded: true,
-            pendingProjects: data["items"]
-          });
+            loading:false,
+            activeProjects: project_list});
         } else {
           this.setState({
-            isLoaded: true
+            loading: false
           });
         }
-      },
-      error => {
-        this.setState({
-          isLoaded: true,
-          error
-        });
       }
     );
   }
-  retrievePendingProjects = () => {
-    pendingProjectRetrieval().then(
+  retrieveActiveProjects = () => {
+    approvedProjectRetrieval().then(
       result => {
-        console.log("checkinginging");
+        this.setState({loading: true}); 
         let data = result.data;
-        console.log(data);
         if (data["code"] === 200) {
-          console.log("checking");
-          console.log(data["items"]);
+          var project_list = [];
+          for (var item in data['items']) {
+            var obj = data['items'][item];
+            if (obj.expirationDate <= this.state.today ){
+              project_list.push(obj);
+            }
+          }
           this.setState({
-            isLoaded: true,
-            pendingProjects: data["items"]
-          });
+            loading:false,
+            activeProjects: project_list});
         } else {
           this.setState({
-            isLoaded: true
+            loading: false
           });
         }
-      },
-      error => {
-        this.setState({
-          isLoaded: true,
-          error
-        });
       }
     );
   };
 
-  approveProject = approvingProject => {
+  stopProject = stoppingProject => {
     var data = new FormData();
-    data.set("project_solidity_id", approvingProject.project_solidity_id);
+    data.set("project_solidity_id", stoppingProject.project_solidity_id);
     data.set("inspectorAddress", this.state.inspectorAddress);
 
-    console.log("project_solidity_id");
-    console.log(typeof approvingProject.project_solidity_id);
+    this.setState({ loading: true });
 
-    console.log("inspectorAddress");
-    console.log(this.state.inspectorAddress);
-    console.log(typeof this.state.inspectorAddress);
-
-    this.setState({ isLoaded: true });
-
-    projectApproval(data)
+    projectStop(data)
       .then(response => {
         if (response.data["code"] === 200) {
-          console.log("approving project should be fine");
-          console.log(response.data["code"]);
-          this.setState({ approveProject: true });
-          this.retrievePendingProjects();
-          this.triggerAlert("success", "Project has been approved");
+          this.setState({ 
+            stopProject: true,
+            loading:false 
+          });
+          this.retrieveActiveProjects();
+          this.triggerAlert("success", "Project has been stopped");
         } else {
-          console.log("approving project What's wrong with you");
-          console.log(response.data["code"]);
-          console.log(response.data["message"]);
+          this.setState({loading:false}); 
           this.triggerAlert("danger", response.data["message"]);
         }
       })
@@ -207,93 +199,107 @@ class ManageProjects extends Component {
         console.log(e);
       })
       .then(() => {
-        this.setState({ approveProject: false });
-      });
-  };
-
-  rejectProject = rejectingProject => {
-    var data = new FormData();
-    data.set("project_solidity_id", rejectingProject.project_solidity_id);
-    data.set("inspectorAddress", this.state.inspectorAddress);
-    this.setState({ isLoaded: true });
-
-    projectReject(data)
-      .then(response => {
-        if (response.data["code"] === 200) {
-          this.setState({ rejectDonor: true });
-          this.retrievePendingProjects();
-          this.triggerAlert("success", "Project has been rejected");
-        } else {
-          this.triggerAlert("danger", response.data["message"]);
-        }
-      })
-      .catch(e => {
-        console.log(e);
-      })
-      .then(() => {
-        this.setState({ rejectDonor: false });
+        this.setState({ 
+          stopProject: false,
+          loading:false 
+        });
       });
   };
 
   render() {
-    const { pendingProjects } = this.state;
-    if (!pendingProjects) {
+    const { activeProjects } = this.state;
+    if (!activeProjects) {
       return [];
     }
     return (
+      <LoadingOverlay
+        active={this.state.loading}
+        spinner
+        text="Loading..."
+        backgroundColor={"gray"}
+        opacity="0.4"
+        style={{width:"100%"}}
+      >
       <div className="animated fadeIn">
         <Card>
           <CardHeader>
-            <i className="fa fa-align-justify"></i> Pending Projects
+            <i className="fa fa-align-justify"></i> Active Projects
           </CardHeader>
           <CardBody>
             <Alert color={this.state.alertColor} isOpen={this.state.visible} toggle={this.onDismiss}>
               {this.state.alertMessage}
             </Alert>
-            {pendingProjects.map(project => {
+            {activeProjects.map(project => {
               return (
-                <Card className="mb-0" key={project.projectName}>
+                <Card className="mx-auto my-2" key={project.projectName}>
                   <CardBody>
-                    <h3>Project Name: {project.projectName}</h3>
+                    <Row>
+                      <Col sm='6' style={{ textAlign: "left" }}>
+                        <h3>Project Name: {project.projectName}</h3>
+                      </Col>
+                      <Col sm="6" style={{ textAlign: "right" }}>
+                        <h6 className = 'mt-0' style={{textAlign: "right"}}>
+                          <Moment diff={this.state.today} unit="days">{project.expirationDate}</Moment> more days
+                        </h6>
+                      </Col>
+                    </Row>
                     <ul>
                       <li key={project.projectCategory}>
                         Category: {project.projectCategory}
                       </li>
-                      <li key={project.project_solidity_id}>Project Blockchain ID: {project.project_solidity_id}</li>
-                      <li key={project.charityAddress}>
-                        Charity Address: {project.charityAddress}
-                      </li>
-                      {/* <li key={project.beneficiaryList}>
-                        Beneficiary List: {project.beneficiaryList}
-                      </li> */}
-                      <li key={project.expirationDate}>Expiration Date: {project.expirationDate}</li>
-                      <li key={project.fundTarget}>
-                        Funding Target: {project.fundTarget}
+                      <li key={project.expirationDate}>
+                        Expiration Date: {project.expirationDate}
                       </li>
                       <li key={project.description}>
                         Description: {project.description}
                       </li>
+                      <li key={project.project_solidity_id}>
+                        Project Blockchain ID: {project.project_solidity_id}
+                      </li>
+                      <li key={project.charityAddress}>
+                        Charity Ethereum Address: {project.charityAddress}
+                      </li>
                       <li key={project.registration_hash}>
                         Registration Hash: {project.registration_hash}
                       </li>
+                      <li key={project.approval_hash}>
+                        Approval Hash: {project.approval_hash}
+                      </li>
+                      <li>
+                        Beneficiary List: 
+                        <span
+                            style={{
+                              color: "royalblue",
+                              textDecoration: "underline",
+                              cursor: "pointer",
+                              marginLeft: "1rem",
+                            }}
+                            onClick={() => downloadBeneficiaryList(project._id)}
+                          >
+                            download file
+                        </span>
+                      </li>
+                      <li key={project.fundTarget}>
+                        Funding Target: {project.fundTarget}
+                      </li>
+                      <li key={project.actual_amount}>
+                        Funding Status: Raised ${project.actual_amount} from {project.numDonors} donations 
+                        <Progress animated color="info" value={project.actual_amount/project.fundTarget*100} className="mb-3" >
+                          {project.actual_amount/project.fundTarget*100}%
+                        </Progress>
+                        {/* <Progress animated color="info" value='80' className="mb-3" >
+                          80%
+                        </Progress> */}
+                      </li>
                     </ul>
                     <Row>
-                      <Col sm="6" style={{ textAlign: "center" }}>
-                        <Button
-                          outline
-                          color="success"
-                          onClick={() => this.approveProject(project)}
-                        >
-                          Approve
-                        </Button>
-                      </Col>
-                      <Col sm="6" style={{ textAlign: "center" }}>
+                      <Col style={{ textAlign: "center" }}>
                         <Button
                           outline
                           color="danger"
-                          onClick={() => this.rejectProject(project)}
+                          onClick={() => this.stopProject(project)}
                         >
-                          Reject
+                          Stop Project
                         </Button>
                       </Col>
                     </Row>
@@ -304,7 +310,8 @@ class ManageProjects extends Component {
           </CardBody>
         </Card>
       </div>
+      </LoadingOverlay>
     );
   }
 }
-export default ManageProjects;
+export default ManageActiveProjects;
