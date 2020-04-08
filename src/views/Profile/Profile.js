@@ -11,7 +11,7 @@ import {
   FormGroup,
   Input,
   Button,
-  Progress
+  Progress,
 } from "reactstrap";
 import {
   charityProfile,
@@ -120,68 +120,74 @@ class Profile extends Component {
   }
 
   getUsersData() {
-    this.state.type === "donor"
-      ? donorProfile(this.state.address).then(
-          (result) => {
-            let data = result.data;
-            if (data.code[0] === 200) {
-              this.setState({
-                username: data["username"],
-                email: data["email"],
-                eth_address: this.state.address,
-                password: data["password"],
-                repeatPassword: data["password"],
-                bank_account: data["bank_account"],
-                physical_address: data["physical_address"],
-                full_name: data["name"],
-                financial_info: data["financial_info"],
-                contact_number: data["contact_number"],
-              });
-              getProjectByDonor(this.state.address).then((result) => {
-                let data = result.data;
-                this.setState({ projectData: data["items"] });
-              });
-            } else {
-              //window.history.back()
-            }
-          },
-          (error) => {
-            console.log(error);
+    if (this.state.type === "donor") {
+      donorProfile(this.state.address).then(
+        (result) => {
+          let data = result.data;
+          if (data.code === "200") {
+            this.setState({
+              username: data["username"],
+              email: data["email"],
+              eth_address: this.state.address,
+              password: data["password"],
+              repeatPassword: data["password"],
+              bank_account: data["bank_account"],
+              physical_address: data["physical_address"],
+              full_name: data["name"],
+              financial_info: data["financial_info"],
+              contact_number: data["contact_number"],
+            });
+          } else {
+            this.triggerAlert("danger", data.message)
+          }
+        },
+        (error) => {
+          console.log(error);
+        }
+      );
+      getProjectByDonor(this.state.address).then(
+        (result) => {
+        console.log(result.data)
+        let data = result.data;
+        this.setState({ projectData: data["items"] });
+      });
+    } else {
+      charityProfile(this.state.address).then(
+        (result) => {
+          let data = result.data;
+          console.log(data);
+          if (data.code[0] === 200) {
+            this.setState({
+              username: data["username"],
+              email: data["email"],
+              eth_address: this.state.address,
+              password: data["password"],
+              repeatPassword: data["password"],
+              bank_account: data["bank_account"],
+              physical_address: data["physical_address"],
+              full_name: data["name"],
+              financial_info: data["financial_info"],
+              contact_number: data["contact_number"],
+              description: data["description"],
+            });
+          } else {
             //window.history.back()
           }
-        )
-      : charityProfile(this.state.address).then(
-          (result) => {
-            let data = result.data;
-            console.log(data);
-            if (data.code[0] === 200) {
-              this.setState({
-                username: data["username"],
-                email: data["email"],
-                eth_address: this.state.address,
-                password: data["password"],
-                repeatPassword: data["password"],
-                bank_account: data["bank_account"],
-                physical_address: data["physical_address"],
-                full_name: data["name"],
-                financial_info: data["financial_info"],
-                contact_number: data["contact_number"],
-                description: data["description"],
-              });
-              getProjectByCharity(this.state.address).then((result) => {
-                let data = result.data;
-                console.log(data);
-                this.setState({ projectData: data["items"] });
-              });
-            } else {
-              //window.history.back()
-            }
-          },
-          (error) => {
-            console.log(error);
-            //window.history.back()
+        },
+        (error) => {
+          console.log(error);
+          //window.history.back()
+        }
+      );
+      getProjectByCharity(this.state.address).then(
+        (result) => {
+          if (result.data.code === 200){
+            this.setState({ projectData: result.data["items"] });
+          }else{
+            this.triggerAlert("danger", result.data.message)
           }
-        );
+      });
+    }
   }
 
   updateProfile = () => {
@@ -349,7 +355,7 @@ class Profile extends Component {
                       !this.state.editMode &&
                       ["password", "repeatPassword"].indexOf(item.type) > -1
                     )
-                      return null
+                      return null;
                     return (
                       <FormGroup
                         row
@@ -410,42 +416,78 @@ class Profile extends Component {
                           {project.approval_hash === ""
                             ? " - Wait for approval"
                             : expirationDate > today
-                            ? "Fundrasing Ongoing"
-                            : "Claiming Required"}
+                            ? " - Fundrasing Ongoing"
+                            : " - Claiming Required"}
                         </h3>
-                        <p className = "mb-0"> 
-                          <strong>Target:</strong> ${project.fundTarget}    
-                          <strong className="ml-3">Expiration Date:</strong> {project.expirationDate}
-                          <strong className="ml-3">Donation Amount:</strong> {project.actual_amount}
+                        <p className="mb-0">
+                          <strong>Target:</strong> ${project.fundTarget}
+                          <strong className="ml-3">
+                            Expiration Date:
+                          </strong>{" "}
+                          {project.expirationDate}
+                          <strong className="ml-3">
+                            Donation Amount:
+                          </strong>{" "}
+                          {project.actual_amount}
                         </p>
-                        <Progress animated color="info" value={project.actual_amount/project.fundTarget*100} className="mb-3" >
-                          {project.actual_amount/project.fundTarget*100}%
+                        <Progress
+                          animated
+                          color="info"
+                          value={
+                            (project.actual_amount / project.fundTarget) * 100
+                          }
+                          className="mb-3"
+                        >
+                          {(project.actual_amount / project.fundTarget) * 100}%
                         </Progress>
 
-                        {this.state.type === "donor" && (
-                          <h3 key={project.amount}>
-                            You have contributed <strong style={{color:"royalblue"}}> {project.amount}  </strong>dollars!
-                          </h3>
-                          )}
-                        <Button
-                          outline
-                          color="success"
-                          onClick={() => {
-                            window.location.replace(`/project/${project._id}`);
-                          }}
-                        >
-                          View More
-                        </Button>
-                        <Button
-                          outline
-                          color="primary"
-                          className="ml-3"
-                          onClick={() => {
-                            window.location.replace(`/projectNew/${project._id}`);
-                          }}
-                        >
-                          Edit
-                        </Button>
+                        {this.state.type === "donor" ? (
+                          <div>
+                            <h3 key={project.amount}>
+                              You have contributed{" "}
+                              <strong style={{ color: "royalblue" }}>
+                                {" "}
+                                {project.amount}{" "}
+                              </strong>
+                              dollars!
+                            </h3>
+                            <Button
+                              outline
+                              color="success"
+                              onClick={() => {
+                                window.location.replace(`/project/${project._id}`);
+                              }}
+                            >
+                              View More
+                            </Button>
+                          </div>
+                        ):(
+                          <div>
+                            <Button
+                              outline
+                              color="success"
+                              onClick={() => {
+                                window.location.replace(`/project_charity/${project._id}`);
+                              }}
+                            >
+                              View More
+                            </Button>
+                            <Button
+                              outline
+                              color="primary"
+                              className="ml-3"
+                              onClick={() => {
+                                window.location.replace(
+                                  `/projectNew/${project._id}`
+                                );
+                              }}
+                            >
+                              Edit
+                            </Button>
+                          </div>
+                        )
+                      }
+
                       </CardBody>
                     </Card>
                   );

@@ -138,7 +138,7 @@ class Login extends Component {
           color={this.state.alertColor}
           isOpen={this.state.alertVisible}
           toggle={this.onDismiss}
-          style={{ position: "fixed", top: "2rem", right: "1rem" }}
+          style={{ position: "fixed", top: "2rem", right: "1rem", zIndex: "999" }}
         >
           {this.state.alertMessage}
         </Alert>
