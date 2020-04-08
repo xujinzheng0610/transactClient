@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import LoadingOverlay from "react-loading-overlay";
 import {
   Badge,
   Button,
@@ -40,15 +41,15 @@ class ManageProjects extends Component {
       timeout: 300,
       
       pendingProjects: null, 
-      error: null,
-      isLoaded: false,
       approveProject: false,
-      rejectDonor: false,
+      rejectProject: false,
       inspectorAddress: this.getCookie("admin"),
 
       visible: false,
       alertColor: "info",
-      alertMessage: "I am an alert message"
+      alertMessage: "I am an alert message",
+
+      loading:false 
     };
     this.onDismiss = this.onDismiss.bind(this);
   }
@@ -59,11 +60,11 @@ class ManageProjects extends Component {
       alertMessage: message
     });
     this.onDismiss();
+    setTimeout(this.onDismiss, 3000);
   };
 
   onDismiss() {
     this.setState({ visible: !this.state.visible });
-    
   }
 
   getCookie = (name) => {
@@ -124,53 +125,36 @@ class ManageProjects extends Component {
     pendingProjectRetrieval().then(
       result => {
         let data = result.data;
-        console.log(data);
+        this.setState({loading: true});
         if (data["code"] === 200) {
-          console.log("checking");
-          console.log(data["items"]);
           this.setState({
-            isLoaded: true,
+            loading: false,
             pendingProjects: data["items"]
           });
         } else {
           this.setState({
-            isLoaded: true
+            loading: false
           });
         }
       },
-      error => {
-        this.setState({
-          isLoaded: true,
-          error
-        });
-      }
     );
   }
   retrievePendingProjects = () => {
     pendingProjectRetrieval().then(
       result => {
-        console.log("checkinginging");
+        this.setState({loading: true});
         let data = result.data;
-        console.log(data);
         if (data["code"] === 200) {
-          console.log("checking");
-          console.log(data["items"]);
           this.setState({
-            isLoaded: true,
+            loading: false,
             pendingProjects: data["items"]
           });
         } else {
           this.setState({
-            isLoaded: true
+            loading: false
           });
         }
       },
-      error => {
-        this.setState({
-          isLoaded: true,
-          error
-        });
-      }
     );
   };
 
@@ -179,27 +163,16 @@ class ManageProjects extends Component {
     data.set("project_solidity_id", approvingProject.project_solidity_id);
     data.set("inspectorAddress", this.state.inspectorAddress);
 
-    console.log("project_solidity_id");
-    console.log(typeof approvingProject.project_solidity_id);
-
-    console.log("inspectorAddress");
-    console.log(this.state.inspectorAddress);
-    console.log(typeof this.state.inspectorAddress);
-
-    this.setState({ isLoaded: true });
+    this.setState({ loading: true });
 
     projectApproval(data)
       .then(response => {
         if (response.data["code"] === 200) {
-          console.log("approving project should be fine");
-          console.log(response.data["code"]);
-          this.setState({ approveProject: true });
+          this.setState({ loading: false });
           this.retrievePendingProjects();
           this.triggerAlert("success", "Project has been approved");
         } else {
-          console.log("approving project What's wrong with you");
-          console.log(response.data["code"]);
-          console.log(response.data["message"]);
+          this.setState({ loading: false });
           this.triggerAlert("danger", response.data["message"]);
         }
       })
@@ -207,7 +180,7 @@ class ManageProjects extends Component {
         console.log(e);
       })
       .then(() => {
-        this.setState({ approveProject: false });
+        this.setState({ loading: false });
       });
   };
 
@@ -215,15 +188,16 @@ class ManageProjects extends Component {
     var data = new FormData();
     data.set("project_solidity_id", rejectingProject.project_solidity_id);
     data.set("inspectorAddress", this.state.inspectorAddress);
-    this.setState({ isLoaded: true });
+    this.setState({ loading: true });
 
     projectReject(data)
       .then(response => {
         if (response.data["code"] === 200) {
-          this.setState({ rejectDonor: true });
+          this.setState({ loading: false });
           this.retrievePendingProjects();
           this.triggerAlert("success", "Project has been rejected");
         } else {
+          this.setState({ loading: false });
           this.triggerAlert("danger", response.data["message"]);
         }
       })
@@ -231,7 +205,7 @@ class ManageProjects extends Component {
         console.log(e);
       })
       .then(() => {
-        this.setState({ rejectDonor: false });
+        this.setState({ loading: false });
       });
   };
 
@@ -241,6 +215,14 @@ class ManageProjects extends Component {
       return [];
     }
     return (
+      <LoadingOverlay
+        active={this.state.loading}
+        spinner
+        text="Loading..."
+        backgroundColor={"gray"}
+        opacity="0.4"
+        style={{width:"100%"}}
+      >
       <div className="animated fadeIn">
         <Card>
           <CardHeader>
@@ -252,7 +234,7 @@ class ManageProjects extends Component {
             </Alert>
             {pendingProjects.map(project => {
               return (
-                <Card className="mb-0" key={project.projectName}>
+                <Card className="mx-auto my-2" key={project.projectName}>
                   <CardBody>
                     <h3>Project Name: {project.projectName}</h3>
                     <ul>
@@ -304,6 +286,7 @@ class ManageProjects extends Component {
           </CardBody>
         </Card>
       </div>
+      </LoadingOverlay>
     );
   }
 }

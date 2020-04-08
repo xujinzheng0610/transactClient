@@ -131,6 +131,14 @@ export function projectReject(data){
   return client.post('/rejectProject', data)
 }
 
+export function approvedProjectRetrieval(){
+  return client.get("/getAllApprovedProjects")
+}
+
+export function projectStop(data){
+  return client.post('/stopProject', data)
+}
+
 export function saveProject(data){
   return client.post('/registerProject', data)
 }
