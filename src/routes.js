@@ -99,7 +99,7 @@ const routes = [
   { path: '/projectnew/:id', name: 'Modify Project', component: NewProject},
   { path: '/profile/:type/:address', name: 'Profile Page', component: Profile},
   { path: '/projects',exact: true, name: 'Projects', component: Project},
-  { path: '/projects/:projectId', exact: true, name: 'Project Details', component: ProjectDetails},
+  { path: '/project/:projectId', exact: true, name: 'Project Details', component: ProjectDetails},
   { path: '/project_charity/:projectId',exact:true,name:'Project Charity', component: ProjectCharity }
 ];
 

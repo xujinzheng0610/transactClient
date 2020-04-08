@@ -75,11 +75,11 @@ class Project extends Component{
                     <CardBody>
                       <h2 className = 'mt-0 mb-3'>{item.project_name}</h2>
                       <p><strong>Target: </strong>${item.target_amount}<FaCalendar style={{ marginLeft: '5rem' }}/><strong>Due: </strong>{item.expiry_date}</p>
-                      <Progress animated color="info" value={item.actual_amount/item.target_amount*100} className="mb-3" >
-                        {item.actual_amount/item.target_amount*100}%
+                      <Progress animated color="info" value={item.actual_amount/item.fundTarget*100} className="mb-3" >
+                        {item.actual_amount/item.fundTarget*100}%
                       </Progress>
                       <p>{item.description}</p>
-                      <Col style = {{textAlign: "center"}}><Link to={`/projects/${item._id}`}><Button outline color="primary">KNOW PROJECT BETTER</Button></Link></Col>
+                      <Col style = {{textAlign: "center"}}><Link to={`/project/${item._id}`}><Button outline color="primary">KNOW PROJECT BETTER</Button></Link></Col>
                     </CardBody>
                   </Card>   
                 </Col>  

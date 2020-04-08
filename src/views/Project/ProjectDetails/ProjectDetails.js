@@ -362,11 +362,11 @@ class ProjectDetails extends Component{
                                 fontSize: "35px"
                                 }}
                             >
-                                <strong>${this.state.project.actual_amount}/${this.state.project.target_amount}</strong>
+                                <strong>${this.state.project.actual_amount}/${this.state.project.fundTarget}</strong>
                             </p>
                             <h6 className = 'mt-0'><strong>raised from {Object.keys(this.state.donors).length} donations</strong></h6>
-                            <Progress animated color="info" value={this.state.project.actual_amount/this.state.project.target_amount*100} className="mb-3" >
-                                {this.state.project.actual_amount/this.state.project.target_amount*100}%
+                            <Progress animated color="info" value={this.state.project.actual_amount/this.state.project.fundTarget*100} className="mb-3" >
+                                {this.state.project.actual_amount/this.state.project.fundTarget*100}%
                             </Progress>
                             <h6 className = 'mt-0' style={{textAlign: "right"}}><strong><Moment diff={this.state.today} unit="days">{this.state.project.expiry_date}</Moment> more days</strong></h6>
                             <hr
