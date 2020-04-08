@@ -196,7 +196,7 @@ class ProjectCharity extends Component {
         </style>
         <style type="text/css">{".hidden { display:none; }"}</style>
 
-        <Container fluid className="mt-3 mb-3 ml-5">
+        <Container fluid className="pt-3 mb-3 ml-5">
           <Row style={{ width: "95%", alignContent: "center" }}>
             <Col xs="40" sm="12" md="8">
               <div className="custome-tag">
@@ -527,7 +527,7 @@ class ProjectCharity extends Component {
               Confirm!
             </Button>
             <Button color="secondary" onClick={this.togglePrimary}>
-              Cancel
+              Close
             </Button>
           </ModalFooter>
         </Modal>
