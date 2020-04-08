@@ -19,6 +19,18 @@ export function retrieveDonorsByProject(data){
   return client.get("/retrieveDonorsByProject?id="+data)
 }
 
+export function makeDonation(data){
+  return client.post("/makeDonation",data)
+}
+
+export function confirm(data){
+  return client.post("/confirmMoney",data)
+}
+
+export function retrieveConfirmation(data){
+  return client.get("retrieveConfirmation?project_id="+data)
+}
+
 export function donorRegister(data){
   return client.post('/registerDonor',data)
 }
