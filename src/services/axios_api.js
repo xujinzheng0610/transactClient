@@ -1,7 +1,7 @@
 var axios = require('axios');
-
+let baseURL = 'http://localhost:5000'
 var client = axios.create({
-  baseURL: 'http://localhost:5000',
+  baseURL: baseURL,
   /* other custom settings */
 });
 
@@ -129,6 +129,32 @@ export function donorApproval(data){
 
 export function donorReject(data){
   return client.post('/rejectDonor', data)
+}
+
+export function pendingProjectRetrieval(){
+  return client.get("/getAllPendingProjects")
+}
+
+export function projectApproval(data){
+  return client.post('/approveProject',data)
+}
+
+export function projectReject(data){
+  return client.post('/rejectProject', data)
+}
+
+export function saveProject(data){
+  return client.post('/registerProject', data)
+}
+
+export function downloadBeneficiaryList(projectId){
+  let url = baseURL + "/beneficiaryFile?id=" + projectId
+  window.open(url, "_blank")
+}
+
+export function downloadBeneficiaryFormat(){
+  let url = baseURL + "/beneficiaryFileFormat"
+  window.open(url, "_blank")
 }
 
 

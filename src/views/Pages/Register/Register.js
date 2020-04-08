@@ -56,7 +56,7 @@ let donor_attributes = [
   {
     type: "full_name",
     logo: "icon-notebook",
-    display: "Full Name"
+    display: "Display Name"
   },
   {
     type: "contact_number",
@@ -70,7 +70,7 @@ let donor_attributes = [
   }
 ];
 
-var charity_attributes = [...donor_attributes];
+let charity_attributes = [...donor_attributes];
 charity_attributes.push({
   type: "description",
   logo: "icon-grid",
@@ -247,8 +247,10 @@ class Register extends Component {
                                     item.type
                                   ) > -1
                                     ? "password"
-                                    : "text"
+                                    : item.type === "description" ? "textarea" : "text"
                                 }
+
+                                rows="9"
                                 onChange={this.updateValue(item.type)}
                                 // placeholder={item.display}
                               />

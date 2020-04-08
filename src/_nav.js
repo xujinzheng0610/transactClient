@@ -34,10 +34,15 @@ export default {
           icon: 'icon-puzzle',
         },
         {
-          name:'Charity Projects',
+          name:'Pending Projects',
           url: '/admin/manageprojects',
           icon: 'icon-puzzle',
         },
+        {
+          name:'Active Projects',
+          url: '/admin/manageactiveprojects',
+          icon: 'icon-puzzle',
+        },           
       ]
     },
     {

@@ -208,9 +208,7 @@ class Login extends Component {
                       <div>
                         <h2>Sign up</h2>
                         <p>
-                          Lorem ipsum dolor sit amet, consectetur adipisicing
-                          elit, sed do eiusmod tempor incididunt ut labore et
-                          dolore magna aliqua.
+                          Welcome to Join TransACT! This is a fully transparent charity funding platform, enpowered by blokchain!
                         </p>
                         <Link to={"/register/".concat(this.state.type)}>
                           <Button

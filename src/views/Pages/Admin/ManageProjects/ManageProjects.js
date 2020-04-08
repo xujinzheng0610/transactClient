@@ -1,9 +1,10 @@
 import React, { Component } from "react";
-import LoadingOverlay from "react-loading-overlay";
 import {
+  Badge,
   Button,
   Card,
   CardBody,
+  CardFooter,
   CardHeader,
   Col,
   Row,
@@ -14,11 +15,11 @@ import {
 import { AppSwitch } from "@coreui/react";
 
 import client, {
-  pendingDonorRetrieval,
-  donorApproval,
-  donorReject
+  pendingProjectRetrieval,
+  projectApproval, 
+  projectReject
 } from "../../../../services/axios_api";
-class ManageDonors extends Component {
+class ManageProjects extends Component {
   constructor(props) {
     super(props);
     this.onEntering = this.onEntering.bind(this);
@@ -37,14 +38,13 @@ class ManageDonors extends Component {
       status: "Closed",
       fadeIn: true,
       timeout: 300,
-
-      pendingDonors: null,
+      
+      pendingProjects: null, 
       error: null,
       isLoaded: false,
-      approveDonor: false,
+      approveProject: false,
       rejectDonor: false,
       inspectorAddress: this.getCookie("admin"),
-      donorAddress: null,
 
       visible: false,
       alertColor: "info",
@@ -120,10 +120,9 @@ class ManageDonors extends Component {
     this.setState({ fadeIn: !this.state.fadeIn });
   }
 
-  componentDidMount() {
-    pendingDonorRetrieval().then(
+  componentDidMount() { 
+    pendingProjectRetrieval().then(
       result => {
-        console.log("checkinginging");
         let data = result.data;
         console.log(data);
         if (data["code"] === 200) {
@@ -131,7 +130,7 @@ class ManageDonors extends Component {
           console.log(data["items"]);
           this.setState({
             isLoaded: true,
-            pendingDonors: data["items"]
+            pendingProjects: data["items"]
           });
         } else {
           this.setState({
@@ -147,8 +146,8 @@ class ManageDonors extends Component {
       }
     );
   }
-  retrievePendingDonors = () => {
-    pendingDonorRetrieval().then(
+  retrievePendingProjects = () => {
+    pendingProjectRetrieval().then(
       result => {
         console.log("checkinginging");
         let data = result.data;
@@ -158,7 +157,7 @@ class ManageDonors extends Component {
           console.log(data["items"]);
           this.setState({
             isLoaded: true,
-            pendingDonors: data["items"]
+            pendingProjects: data["items"]
           });
         } else {
           this.setState({
@@ -175,24 +174,30 @@ class ManageDonors extends Component {
     );
   };
 
-  approveDonor = approvingDonor => {
+  approveProject = approvingProject => {
     var data = new FormData();
-    data.set("donorAddress", approvingDonor.eth_address);
+    data.set("project_solidity_id", approvingProject.project_solidity_id);
     data.set("inspectorAddress", this.state.inspectorAddress);
-    console.log("Donor Address");
-    console.log(approvingDonor.eth_address);
+
+    console.log("project_solidity_id");
+    console.log(typeof approvingProject.project_solidity_id);
+
+    console.log("inspectorAddress");
+    console.log(this.state.inspectorAddress);
+    console.log(typeof this.state.inspectorAddress);
+
     this.setState({ isLoaded: true });
 
-    donorApproval(data)
+    projectApproval(data)
       .then(response => {
         if (response.data["code"] === 200) {
-          console.log("approving donor should be fine");
+          console.log("approving project should be fine");
           console.log(response.data["code"]);
-          this.setState({ approveDonor: true });
-          this.retrievePendingDonors();
-          this.triggerAlert("success", "Donor has been approved");
+          this.setState({ approveProject: true });
+          this.retrievePendingProjects();
+          this.triggerAlert("success", "Project has been approved");
         } else {
-          console.log("approving donor What's wrong with you");
+          console.log("approving project What's wrong with you");
           console.log(response.data["code"]);
           console.log(response.data["message"]);
           this.triggerAlert("danger", response.data["message"]);
@@ -202,29 +207,23 @@ class ManageDonors extends Component {
         console.log(e);
       })
       .then(() => {
-        this.setState({ approveDonor: false });
+        this.setState({ approveProject: false });
       });
   };
 
-  rejectDonor = rejectingDonor => {
+  rejectProject = rejectingProject => {
     var data = new FormData();
-    data.set("donorAddress", rejectingDonor.eth_address);
+    data.set("project_solidity_id", rejectingProject.project_solidity_id);
     data.set("inspectorAddress", this.state.inspectorAddress);
-    console.log("Donor Address");
-    console.log(rejectingDonor.eth_address);
     this.setState({ isLoaded: true });
 
-    donorReject(data)
+    projectReject(data)
       .then(response => {
         if (response.data["code"] === 200) {
-          console.log("rejecting donor should be fine");
-          console.log(response.data["code"]);
           this.setState({ rejectDonor: true });
-          this.retrievePendingDonors();
-          this.triggerAlert("success", "Donor has been rejected");
+          this.retrievePendingProjects();
+          this.triggerAlert("success", "Project has been rejected");
         } else {
-          console.log("approving donor What's wrong with you");
-          console.log(response.data["code"]);
           this.triggerAlert("danger", response.data["message"]);
         }
       })
@@ -237,54 +236,45 @@ class ManageDonors extends Component {
   };
 
   render() {
-    const { pendingDonors } = this.state;
-
-    if (!pendingDonors) {
+    const { pendingProjects } = this.state;
+    if (!pendingProjects) {
       return [];
     }
     return (
-      // <LoadingOverlay 
-      //   color={'blue'} // default is white
-      //   loader="RingLoader" 
-      //   text="Loading... Please wait!" 
-      //   active={true} 
-      //   backgroundColor={'black'} // default is black
-      //   opacity=".4" // default is .9  
-      // >
       <div className="animated fadeIn">
-        <Card >
+        <Card>
           <CardHeader>
-            <i className="fa fa-align-justify"></i> Pending Donors
+            <i className="fa fa-align-justify"></i> Pending Projects
           </CardHeader>
           <CardBody>
             <Alert color={this.state.alertColor} isOpen={this.state.visible} toggle={this.onDismiss}>
               {this.state.alertMessage}
             </Alert>
-            {pendingDonors.map(donor => {
+            {pendingProjects.map(project => {
               return (
-                <Card className="mx-auto my-2" key={donor.username}>
+                <Card className="mb-0" key={project.projectName}>
                   <CardBody>
-                    <h3>Username: {donor.username}</h3>
+                    <h3>Project Name: {project.projectName}</h3>
                     <ul>
-                      <li key={donor.eth_address}>
-                        Eth Account: {donor.eth_address}
+                      <li key={project.projectCategory}>
+                        Category: {project.projectCategory}
                       </li>
-                      <li key={donor.email}>Email Address: {donor.email}</li>
-                      <li key={donor.bank_account}>
-                        Bank Account: {donor.bank_account}
+                      <li key={project.project_solidity_id}>Project Blockchain ID: {project.project_solidity_id}</li>
+                      <li key={project.charityAddress}>
+                        Charity Address: {project.charityAddress}
                       </li>
-                      <li key={donor.physical_address}>
-                        Physical Address: {donor.physical_address}
+                      {/* <li key={project.beneficiaryList}>
+                        Beneficiary List: {project.beneficiaryList}
+                      </li> */}
+                      <li key={project.expirationDate}>Expiration Date: {project.expirationDate}</li>
+                      <li key={project.fundTarget}>
+                        Funding Target: {project.fundTarget}
                       </li>
-                      <li key={donor.full_name}>Full Name: {donor.full_name}</li>
-                      <li key={donor.contact_number}>
-                        Contact Number: {donor.contact_number}
+                      <li key={project.description}>
+                        Description: {project.description}
                       </li>
-                      <li key={donor.financial_info}>
-                        Financial Information: {donor.financial_info}
-                      </li>
-                      <li key={donor.registration_hash}>
-                        Registration Hash: {donor.registration_hash}
+                      <li key={project.registration_hash}>
+                        Registration Hash: {project.registration_hash}
                       </li>
                     </ul>
                     <Row>
@@ -292,7 +282,7 @@ class ManageDonors extends Component {
                         <Button
                           outline
                           color="success"
-                          onClick={() => this.approveDonor(donor)}
+                          onClick={() => this.approveProject(project)}
                         >
                           Approve
                         </Button>
@@ -301,7 +291,7 @@ class ManageDonors extends Component {
                         <Button
                           outline
                           color="danger"
-                          onClick={() => this.rejectDonor(donor)}
+                          onClick={() => this.rejectProject(project)}
                         >
                           Reject
                         </Button>
@@ -314,8 +304,7 @@ class ManageDonors extends Component {
           </CardBody>
         </Card>
       </div>
-      // </LoadingOverlay>
     );
   }
 }
-export default ManageDonors;
+export default ManageProjects;
