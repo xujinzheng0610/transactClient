@@ -61,6 +61,7 @@ class ProjectDetails extends Component {
       cardNumber: "",
       expiryDate: "",
       cvc: "",
+      anonymous: "false",
       pie: "",
       confirmations: [],
       total_confirmation: "",
@@ -69,6 +70,7 @@ class ProjectDetails extends Component {
       alertMessage: "I am an alert message",
     };
     this.togglePrimary = this.togglePrimary.bind(this);
+    this.handleAnonymous = this.handleAnonymous.bind(this);
   }
   setAmount(amt) {
     if (!this.state.primary && !this.getCookie("donor_id")) {
@@ -84,6 +86,7 @@ class ProjectDetails extends Component {
       cardNumber: "",
       expiryDate: "",
       cvc: "",
+      anonymous: "false"
     });
   }
   togglePrimary() {
@@ -99,6 +102,7 @@ class ProjectDetails extends Component {
       cardNumber: "",
       expiryDate: "",
       cvc: "",
+      anonymous: "false"
     });
   }
 
@@ -172,6 +176,10 @@ class ProjectDetails extends Component {
     console.log(e);
     this.setState({ cvc: e.target.value });
   };
+  handleAnonymous = (e) => {
+    console.log(e);
+    this.setState({ anonymous: e.target.value });
+  };
   triggerAlert = (color, message) => {
     this.setState({
       alertColor: color,
@@ -207,6 +215,7 @@ class ProjectDetails extends Component {
     data.set("project_id", this.state.project_id);
     data.set("donor_id", this.getCookie("donor_id"));
     data.set("donor_address", this.getCookie("donor_address"));
+    data.set("anonymous", this.state.anonymous);
 
     if (this.state.cardNumber === "") {
       this.triggerAlert("danger", "Card Number Required!");
@@ -618,6 +627,18 @@ class ProjectDetails extends Component {
                         </PaymentInputsWrapper>
                       )}
                     </PaymentInputsContainer>
+                    <br/>
+                    <br/>
+                    <Row className = "ml-1">
+                      <div className="radio">
+                        <h4>Anonymous donation?</h4>
+                        <div onChange={this.handleAnonymous.bind(this)}>
+                          <input type="radio" value="true" name="gender"/>Yes
+                          <input className='ml-5' type="radio" value="false" name="gender"/> No
+                      </div>
+                      </div>
+                      
+                    </Row>
                     <br></br>
                     <br></br>
                   </div>
