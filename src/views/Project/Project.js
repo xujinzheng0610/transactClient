@@ -31,6 +31,7 @@ class Project extends Component {
   componentDidMount() {
     retrieveAllProjects()
       .then((response) => {
+        console.log(response)
         this.setState({
           projects: response.data.result,
         });

@@ -131,6 +131,7 @@ class ProjectCharity extends Component {
     data.set("amount", this.state.amount);
     data.set("project_id", this.state.project_id);
     data.set("description", this.state.description);
+    data.set("charity_id", this.getCookie("charity_id"));
 
     confirm(data).then((response) => {
       this.triggerAlert("success", "Confirmation will be processed!");
@@ -257,11 +258,11 @@ class ProjectCharity extends Component {
                   height: 5,
                 }}
               />
-              <h2>Recent Donors</h2>
+              <h2>Recent Donations</h2>
               <Card>
                 <CardHeader>
-                  <i className="fa fa-align-justify"></i> Donors{" "}
-                  <small className="text-muted">latest 10 donors</small>
+                  <i className="fa fa-align-justify"></i> Donations{" "}
+                  <small className="text-muted">All donations</small>
                 </CardHeader>
                 <CardBody>
                   <Table responsive hover className="table table-striped">
@@ -297,7 +298,7 @@ class ProjectCharity extends Component {
               <Card>
                 <CardHeader>
                   <i className="fa fa-align-justify"></i> Confirmations{" "}
-                  <small className="text-muted">latest 10 donors</small>
+                  <small className="text-muted">All Confirmations</small>
                 </CardHeader>
                 <CardBody>
                   <Table responsive hover className="table table-striped">

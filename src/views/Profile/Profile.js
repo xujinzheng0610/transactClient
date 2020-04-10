@@ -133,7 +133,7 @@ class Profile extends Component {
               repeatPassword: data["password"],
               bank_account: data["bank_account"],
               physical_address: data["physical_address"],
-              full_name: data["name"],
+              full_name: data["full_name"],
               financial_info: data["financial_info"],
               contact_number: data["contact_number"],
             });
@@ -165,7 +165,7 @@ class Profile extends Component {
               repeatPassword: data["password"],
               bank_account: data["bank_account"],
               physical_address: data["physical_address"],
-              full_name: data["name"],
+              full_name: data["full_name"],
               financial_info: data["financial_info"],
               contact_number: data["contact_number"],
               description: data["description"],

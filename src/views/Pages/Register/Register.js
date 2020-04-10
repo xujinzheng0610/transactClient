@@ -179,6 +179,7 @@ class Register extends Component {
             if (response.data["code"] === 200) {
               this.setState({ submitted: true });
             } else {
+              console.log(response)
               this.triggerAlert("danger", response.data["message"]);
             }
           })
