@@ -130,6 +130,7 @@ class ManageActiveProjects extends Component {
       result => {
         this.setState({loading: true}); 
         let data = result.data;
+        console.log(data);
         if (data["code"] === 200) {
           var project_list = [];
           for (var item in data['items']) {

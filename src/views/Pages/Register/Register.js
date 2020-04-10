@@ -136,7 +136,9 @@ class Register extends Component {
       this.triggerAlert("danger", "Password unmatched!");
     } else if (this.state.username === "") {
       this.triggerAlert("danger", "Username is required!");
-    } else if (this.state.email === "") {
+    } else if ( this.state.username.includes(' ')){
+      this.triggerAlert("danger", "Cannot have space in your username");
+    }else if (this.state.email === "") {
       this.triggerAlert("danger", "Email is required!");
     } else if (this.state.password === "") {
       this.triggerAlert("danger", "Paasword is required!");
