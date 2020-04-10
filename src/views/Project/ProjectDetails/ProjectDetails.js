@@ -103,7 +103,7 @@ class ProjectDetails extends Component {
   }
 
   componentDidMount() {
-    retrieveProjectDetails(this.state.project_id)
+    retrieveProjectDetails(this.props.match.params.projectId)
       .then((response) => {
         let breakdownList = JSON.parse(response.data.result.breakdownList);
         let labelList = [];
@@ -133,7 +133,7 @@ class ProjectDetails extends Component {
         console.log(e);
       });
 
-    retrieveDonorsByProject(this.state.project_id)
+    retrieveDonorsByProject(this.props.match.params.projectId)
       .then((response) => {
         console.log(response["data"]);
         console.log(typeof response["data"]);
@@ -146,7 +146,7 @@ class ProjectDetails extends Component {
         console.log(e);
       });
 
-    retrieveConfirmation(this.state.project_id)
+    retrieveConfirmation(this.props.match.params.projectId)
       .then((response) => {
         this.setState({
           confirmations: response.data.result.confirmations,
@@ -214,13 +214,19 @@ class ProjectDetails extends Component {
     }
     makeDonation(data)
       .then((response) => {
-        console.log(response);
-        this.triggerAlert("success", "Donation will be processed!");
-        this.setState({
-          // primary: false
-          donationFinished: true,
-        });
-        this.componentDidMount();
+          if(response.data.code =="400"){
+            this.triggerAlert("danger",response.data.error );
+          }
+          else{
+            console.log(response);
+            this.triggerAlert("success", "Donation will be processed!");
+            this.setState({
+              // primary: false
+              donationFinished: true,
+            });
+            this.componentDidMount();
+          }
+       
       })
       .catch((e) => {
         this.triggerAlert("danger", "Error!");
@@ -300,11 +306,11 @@ class ProjectDetails extends Component {
                   height: 5,
                 }}
               />
-              <h2>Recent Donors</h2>
+              <h2>Recent Donations</h2>
               <Card>
                 <CardHeader>
-                  <i className="fa fa-align-justify"></i> Donors{" "}
-                  <small className="text-muted">latest 10 donors</small>
+                  <i className="fa fa-align-justify"></i> Donations{" "}
+                  <small className="text-muted">All Donations</small>
                 </CardHeader>
                 <CardBody>
                   <Table responsive hover className="table table-striped">
@@ -334,7 +340,7 @@ class ProjectDetails extends Component {
               <Card>
                 <CardHeader>
                   <i className="fa fa-align-justify"></i> Confirmations{" "}
-                  <small className="text-muted">latest 10 donors</small>
+                  <small className="text-muted">All confirmations</small>
                 </CardHeader>
                 <CardBody>
                   <Table responsive hover className="table table-striped">
@@ -456,11 +462,10 @@ class ProjectDetails extends Component {
                   height: 5,
                 }}
               />
-
               <div
                 className={
                   this.state.project.actual_amount >=
-                  this.state.project.target_amount
+                  this.state.project.fundTarget
                     ? "hidden"
                     : ""
                 }
@@ -536,7 +541,7 @@ class ProjectDetails extends Component {
               <div
                 className={
                   this.state.project.actual_amount >=
-                  this.state.project.target_amount
+                  this.state.project.fundTarget
                     ? ""
                     : "hidden"
                 }
