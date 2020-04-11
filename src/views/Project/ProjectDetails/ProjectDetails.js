@@ -1,9 +1,6 @@
-import React, { Component} from "react";
+import React, { Component } from "react";
 import {
   Button,
-  Card,
-  CardBody,
-  CardHeader,
   Container,
   Input,
   Row,
@@ -18,7 +15,7 @@ import {
   ModalFooter,
   ModalHeader,
 } from "reactstrap";
-import {Pie} from "react-chartjs-2";
+import { Pie } from "react-chartjs-2";
 import Moment from "react-moment";
 import {
   PaymentInputsContainer,
@@ -31,6 +28,7 @@ import {
   retrieveDonorsByProject,
   makeDonation,
   retrieveConfirmation,
+  donorProfile,
 } from "../../../services/axios_api";
 
 const pieColors = ["#FF5733", "#33FFE9", "#FF6384", "#36A2EB", "#FFCE56"];
@@ -79,19 +77,31 @@ class ProjectDetails extends Component {
     }
     console.log(amt);
     this.setState({
+      cardNumber: "",
+      expiryDate: "",
       primary: !this.state.primary,
       amount: amt,
       custom: false,
       donationFinished: false,
-      cardNumber: "",
-      expiryDate: "",
+      anonymous: "false",
       cvc: "",
-      anonymous: "false"
     });
+    donorProfile(this.getCookie("donor_address"))
+      .then((res) => {
+        let data = res.data;
+        console.log(data);
+        if (data.code === "200") {
+          this.setState({
+            cardNumber: data["card_number"],
+            expiryDate: data["card_expiry_date"],
+          });
+        }
+      })
+      .catch((e) => console.log(e));
   }
   togglePrimary() {
     if (!this.state.primary && !this.getCookie("donor_id")) {
-      this.props.history.push("/login/donor");
+      window.location.replace("/login/donor");
       return;
     }
     this.setState({
@@ -102,8 +112,20 @@ class ProjectDetails extends Component {
       cardNumber: "",
       expiryDate: "",
       cvc: "",
-      anonymous: "false"
+      anonymous: "false",
     });
+    donorProfile(this.getCookie("donor_address"))
+      .then((res) => {
+        let data = res.data;
+        console.log(data);
+        if (data.code === "200") {
+          this.setState({
+            cardNumber: data["card_number"],
+            expiryDate: data["card_expiry_date"],
+          });
+        }
+      })
+      .catch((e) => console.log(e));
   }
 
   componentDidMount() {
@@ -139,9 +161,6 @@ class ProjectDetails extends Component {
 
     retrieveDonorsByProject(this.props.match.params.projectId)
       .then((response) => {
-        console.log(response["data"]);
-        console.log(typeof response["data"]);
-        // console.log(response['data'])
         this.setState({
           donors: response.data.latestDonors,
         });
@@ -177,7 +196,7 @@ class ProjectDetails extends Component {
     this.setState({ cvc: e.target.value });
   };
   handleAnonymous = (e) => {
-    console.log(e);
+    console.log(e.target.value);
     this.setState({ anonymous: e.target.value });
   };
   triggerAlert = (color, message) => {
@@ -223,19 +242,17 @@ class ProjectDetails extends Component {
     }
     makeDonation(data)
       .then((response) => {
-          if(response.data.code =="400"){
-            this.triggerAlert("danger",response.data.error );
-          }
-          else{
-            console.log(response);
-            this.triggerAlert("success", "Donation will be processed!");
-            this.setState({
-              // primary: false
-              donationFinished: true,
-            });
-            this.componentDidMount();
-          }
-       
+        if (response.data.code == "400") {
+          this.triggerAlert("danger", response.data.error);
+        } else {
+          console.log(response);
+          this.triggerAlert("success", "Donation will be processed!");
+          this.setState({
+            // primary: false
+            donationFinished: true,
+          });
+          this.componentDidMount();
+        }
       })
       .catch((e) => {
         this.triggerAlert("danger", "Error!");
@@ -264,10 +281,25 @@ class ProjectDetails extends Component {
                     this.state.project.image
                   }
                   alt="project cover"
-                  style={{ width: "100%", height: "100%" }}
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    marginBottom: "1rem",
+                  }}
                 />
               </div>
               <h2>About This Project</h2>
+              <p style={{ marginLeft: "2rem", fontSize: "16px" }}>
+                {this.state.project.description}
+              </p>
+              <hr
+                style={{
+                  color: "primary",
+                  backgroundColor: "primary",
+                  height: 5,
+                }}
+              />
+              <h2>About This Charity</h2>
               <div
                 style={{
                   marginLeft: "2rem",
@@ -283,20 +315,9 @@ class ProjectDetails extends Component {
                     fontSize: "15px",
                   }}
                 >
-                  {this.state.project.description}
+                  {this.state.project.charity_description}
                 </p>
               </div>
-              <hr
-                style={{
-                  color: "primary",
-                  backgroundColor: "primary",
-                  height: 5,
-                }}
-              />
-              <h2>About This Charity</h2>
-              <p style={{ marginLeft: "2rem", fontSize: "16px" }}>
-                {this.state.project.charity_description}
-              </p>
               <hr
                 style={{
                   color: "primary",
@@ -316,64 +337,47 @@ class ProjectDetails extends Component {
                 }}
               />
               <h2>Recent Donations</h2>
-              <Card>
-                <CardHeader>
-                  <i className="fa fa-align-justify"></i> Donations{" "}
-                  <small className="text-muted">All Donations</small>
-                </CardHeader>
-                <CardBody>
-                  <Table responsive hover className="table table-striped">
-                    <thead>
+              <Table responsive hover className="table table-striped">
+                <thead>
+                  <tr>
+                    <th scope="col">User Name</th>
+                    <th scope="col">Amount</th>
+                    <th scope="col">Time</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {this.state.donors.map((item) => {
+                    return (
                       <tr>
-                        <th scope="col">User Name</th>
-                        <th scope="col">Amount</th>
-                        <th scope="col">Time</th>
+                        <td>{item.donor}</td>
+                        <td>${item.amount}</td>
+                        <td>{item.donation_time}</td>
                       </tr>
-                    </thead>
-                    <tbody>
-                      {this.state.donors.map((item) => {
-                        return (
-                          <tr>
-                            <td>{item.donor}</td>
-                            <td>${item.amount}</td>
-                            <td>{item.donation_time}</td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </Table>
-                </CardBody>
-              </Card>
-
-              <h2>Recent Confirmations</h2>
-              <Card>
-                <CardHeader>
-                  <i className="fa fa-align-justify"></i> Confirmations{" "}
-                  <small className="text-muted">All confirmations</small>
-                </CardHeader>
-                <CardBody>
-                  <Table responsive hover className="table table-striped">
-                    <thead>
+                    );
+                  })}
+                </tbody>
+              </Table>
+              <h2>All Confirmations</h2>
+              <Table responsive hover className="table table-striped">
+                <thead>
+                  <tr>
+                    <th scope="col">Description</th>
+                    <th scope="col">Amount</th>
+                    <th scope="col">Time</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {this.state.confirmations.map((item) => {
+                    return (
                       <tr>
-                        <th scope="col">Description</th>
-                        <th scope="col">Amount</th>
-                        <th scope="col">Time</th>
+                        <td>{item.description}</td>
+                        <td>${item.amount}</td>
+                        <td>{item.confirmation_time}</td>
                       </tr>
-                    </thead>
-                    <tbody>
-                      {this.state.confirmations.map((item) => {
-                        return (
-                          <tr>
-                            <td>{item.description}</td>
-                            <td>${item.amount}</td>
-                            <td>{item.confirmation_time}</td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </Table>
-                </CardBody>
-              </Card>
+                    );
+                  })}
+                </tbody>
+              </Table>
             </Col>
             <Col xs="12" sm="12" md="4">
               <p
@@ -571,9 +575,7 @@ class ProjectDetails extends Component {
                 <ModalBody>
                   <div className={this.state.donationFinished ? "hidden" : ""}>
                     <div className={this.state.custom ? "hidden" : ""}>
-                      <h2>
-                        Your donation amount will be ${this.state.amount} 
-                      </h2>
+                      <h2>Your donation amount will be ${this.state.amount}</h2>
                       <br></br>
                       <h4 style={{ color: "gray" }}>
                         Please type in your bank card information
@@ -627,17 +629,23 @@ class ProjectDetails extends Component {
                         </PaymentInputsWrapper>
                       )}
                     </PaymentInputsContainer>
-                    <br/>
-                    <br/>
-                    <Row className = "ml-1">
+                    <br />
+                    <br />
+                    <Row className="ml-1">
                       <div className="radio">
                         <h4>Anonymous donation?</h4>
                         <div onChange={this.handleAnonymous.bind(this)}>
-                          <input type="radio" value="true" name="gender"/>Yes
-                          <input className='ml-5' type="radio" value="false" name="gender"/> No
+                          <input type="radio" value="true" checked={this.state.anonymous === "true"} />
+                          Yes
+                          <input
+                            className="ml-5"
+                            type="radio"
+                            value="false"
+                            checked={this.state.anonymous === "false"}
+                          />
+                          No
+                        </div>
                       </div>
-                      </div>
-                      
                     </Row>
                     <br></br>
                     <br></br>

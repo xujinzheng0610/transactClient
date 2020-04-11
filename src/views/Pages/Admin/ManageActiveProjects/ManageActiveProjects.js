@@ -125,6 +125,10 @@ class ManageActiveProjects extends Component {
     this.setState({ fadeIn: !this.state.fadeIn });
   }
 
+  downloadBeneficiaryList = id => {
+    downloadBeneficiaryList(id)
+  }
+
   componentDidMount() { 
     approvedProjectRetrieval().then(
       result => {
@@ -150,6 +154,7 @@ class ManageActiveProjects extends Component {
       }
     );
   }
+
   retrieveActiveProjects = () => {
     approvedProjectRetrieval().then(
       result => {
@@ -275,13 +280,16 @@ class ManageActiveProjects extends Component {
                               cursor: "pointer",
                               marginLeft: "1rem",
                             }}
-                            onClick={() => downloadBeneficiaryList(project._id)}
+                            onClick={() => this.downloadBeneficiaryList(project._id)}
                           >
-                            download file
+                            Download file
                         </span>
                       </li>
                       <li key={project.fundTarget}>
                         Funding Target: {project.fundTarget}
+                      </li>
+                      <li key={project.breakdownList}>
+                        Budget Breakdown: {project.breakdownList}
                       </li>
                       <li key={project.actual_amount}>
                         Funding Status: Raised ${project.actual_amount} from {project.numDonors} donations 

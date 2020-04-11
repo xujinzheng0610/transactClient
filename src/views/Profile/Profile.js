@@ -20,11 +20,17 @@ import {
   donorUpdate,
   getProjectByCharity,
   getProjectByDonor,
+  downloadCertificate,
 } from "../../services/axios_api";
 import LoadingOverlay from "react-loading-overlay";
 import "./profile.css";
+import {
+  PaymentInputsContainer,
+  PaymentInputsWrapper,
+} from "react-payment-inputs";
+import images from "react-payment-inputs/images";
 
-let donor_attributes = [
+let input_attributes = [
   {
     type: "username",
     logo: "icon-user",
@@ -51,11 +57,6 @@ let donor_attributes = [
     display: "ETH Address",
   },
   {
-    type: "bank_account",
-    logo: "icon-credit-card",
-    display: "Bank Account",
-  },
-  {
     type: "physical_address",
     logo: "icon-location-pin",
     display: "Address",
@@ -70,41 +71,29 @@ let donor_attributes = [
     logo: "icon-phone",
     display: "Contact Number",
   },
-  {
-    type: "financial_info",
-    logo: "icon-handbag",
-    display: "Financial Info",
-  },
 ];
-
-let charity_attributes = [...donor_attributes];
-charity_attributes.push({
-  type: "description",
-  logo: "icon-grid",
-  display: "Description",
-});
 
 class Profile extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      address: this.checkAddress(),
+      address: this.props.match.params.address,
       username: "",
       email: "",
-      password: "",
-      repeatPassword: "",
+      password: "nochange",
+      repeatPassword: "nochange",
       eth_address: "",
-      bank_account: "",
       physical_address: "",
       full_name: "",
       contact_number: "",
       financial_info: "",
+      card_number: "",
+      card_expiry_date: "",
       description: "",
       projectData: [],
       isLoaded: false,
       type: this.checkType(),
-      userData: [],
       editMode: false,
       updatedValue: false,
       alertVisible: false,
@@ -115,8 +104,35 @@ class Profile extends Component {
     };
   }
 
+  checkType = () => {
+    if (["donor", "charity"].indexOf(this.props.match.params.type) > -1) {
+      console.log("valid route");
+      let address = this.props.match.params.address
+      let type = this.props.match.params.type
+      if ( type === "donor" && this.getCookie("donor_address") !== address){
+          window.location.replace("/home");
+      } else if(type === "charity" && this.getCookie("charity_address") !== address){
+        window.location.replace("/home");
+      }
+      return this.props.match.params.type;
+    } else {
+      console.log("invalid route");
+      window.location.replace("/home");
+    }
+  };
+
+  getCookie = (name) => {
+    var value = "; " + document.cookie;
+    var parts = value.split("; " + name + "=");
+    if (parts.length === 2) return parts.pop().split(";").shift();
+  };
+
   allowEdit() {
     this.setState({ editMode: true });
+  }
+
+  downloadCertificate = charityAddress => {
+    downloadCertificate(charityAddress)
   }
 
   getUsersData() {
@@ -129,25 +145,24 @@ class Profile extends Component {
               username: data["username"],
               email: data["email"],
               eth_address: this.state.address,
-              password: data["password"],
-              repeatPassword: data["password"],
               bank_account: data["bank_account"],
               physical_address: data["physical_address"],
               full_name: data["full_name"],
               financial_info: data["financial_info"],
               contact_number: data["contact_number"],
+              card_number: data["card_number"],
+              card_expiry_date: data["card_expiry_date"],
             });
           } else {
-            this.triggerAlert("danger", data.message)
+            this.triggerAlert("danger", data.message);
           }
         },
         (error) => {
           console.log(error);
         }
       );
-      getProjectByDonor(this.state.address).then(
-        (result) => {
-        console.log(result.data)
+      getProjectByDonor(this.state.address).then((result) => {
+        console.log(result.data);
         let data = result.data;
         this.setState({ projectData: data["items"] });
       });
@@ -161,14 +176,15 @@ class Profile extends Component {
               username: data["username"],
               email: data["email"],
               eth_address: this.state.address,
-              password: data["password"],
-              repeatPassword: data["password"],
               bank_account: data["bank_account"],
               physical_address: data["physical_address"],
               full_name: data["full_name"],
+              certificate: "",
               financial_info: data["financial_info"],
               contact_number: data["contact_number"],
               description: data["description"],
+              card_number: data["card_number"],
+              card_expiry_date: data["card_expiry_date"],
             });
           } else {
             //window.history.back()
@@ -179,16 +195,21 @@ class Profile extends Component {
           //window.history.back()
         }
       );
-      getProjectByCharity(this.state.address).then(
-        (result) => {
-          if (result.data.code === 200){
-            this.setState({ projectData: result.data["items"] });
-          }else{
-            this.triggerAlert("danger", result.data.message)
-          }
+      getProjectByCharity(this.state.address).then((result) => {
+        if (result.data.code === 200) {
+          this.setState({ projectData: result.data["items"] });
+        } else {
+          this.triggerAlert("danger", result.data.message);
+        }
       });
     }
   }
+
+  uploadCertificate = () => (e) => {
+    this.setState({
+      certificate: e.target.files[0],
+    });
+  };
 
   updateProfile = () => {
     if (this.state.password !== this.state.repeatPassword) {
@@ -203,18 +224,24 @@ class Profile extends Component {
       this.triggerAlert("danger", "ETH Address is required!");
     } else {
       var data = new FormData();
+      if (this.state.password !== "nochange") {
+        data.set("password", this.state.password);
+      }
+      
       data.set("username", this.state.username);
       data.set("eth_address", this.state.address);
       data.set("email", this.state.email);
-      data.set("password", this.state.password);
       data.set("eth_address", this.state.eth_address);
-      data.set("bank_account", this.state.bank_account);
+      data.set("card_number", this.state.card_number);
+      data.set("card_expiry_date", this.state.card_expiry_date);
       data.set("physical_address", this.state.physical_address);
       data.set("full_name", this.state.full_name);
-      data.set("financial_info", this.state.financial_info);
       data.set("contact_number", this.state.contact_number);
       if (this.state.type === "charity") {
         data.set("description", this.state.description);
+        if (this.state.certificate !== "") {
+          data.append("certificate", this.state.certificate);
+        }
         this.setState({ loading: true });
         charityUpdate(data)
           .then((response) => {
@@ -266,29 +293,8 @@ class Profile extends Component {
   };
 
   componentDidMount() {
-    if (this.state.type === "donor") {
-      this.setState({ userData: donor_attributes });
-    } else {
-      this.setState({ userData: charity_attributes });
-    }
-
     this.getUsersData();
   }
-
-  checkType = () => {
-    if (["donor", "charity"].indexOf(this.props.match.params.type) > -1) {
-      console.log("valid route");
-      return this.props.match.params.type;
-    } else {
-      console.log("invalid route");
-      window.location.replace("/home");
-    }
-  };
-
-  checkAddress = () => {
-    console.log("valid route");
-    return this.props.match.params.address;
-  };
 
   updateValue = (type) => (e) => {
     this.setState({
@@ -350,7 +356,7 @@ class Profile extends Component {
                   className="form-horizontal mt-4 ml-5 mr-5"
                   style={{ width: "80%" }}
                 >
-                  {this.state.userData.map((item) => {
+                  {input_attributes.map((item) => {
                     if (
                       !this.state.editMode &&
                       ["password", "repeatPassword"].indexOf(item.type) > -1
@@ -399,6 +405,110 @@ class Profile extends Component {
                       </FormGroup>
                     );
                   })}
+                  <FormGroup
+                    row
+                    key="Bankinfo"
+                    className={this.state.editMode ? "editMode" : "displayMode"}
+                  >
+                    <Col md="2">
+                      <Label>Bankcard Info:</Label>
+                    </Col>
+                    <Col xs="9" md="6">
+                      {this.state.editMode ? (
+                        <PaymentInputsContainer>
+                          {({
+                            wrapperProps,
+                            getCardImageProps,
+                            getCardNumberProps,
+                            getExpiryDateProps,
+                          }) => (
+                            <PaymentInputsWrapper {...wrapperProps}>
+                              <svg {...getCardImageProps({ images })} />
+                              <input
+                                {...getCardNumberProps({
+                                  onChange: this.updateValue("card_number"),
+                                })}
+                                value={this.state.card_number}
+                              />
+                              <input
+                                {...getExpiryDateProps({
+                                  onChange: this.updateValue(
+                                    "card_expiry_date"
+                                  ),
+                                })}
+                                value={this.state.card_expiry_date}
+                              />
+                            </PaymentInputsWrapper>
+                          )}
+                        </PaymentInputsContainer>
+                      ) : (
+                        <p>
+                          {this.state.card_number} -{" "}
+                          {this.state.card_expiry_date}
+                        </p>
+                      )}
+                    </Col>
+                  </FormGroup>
+                  {this.state.type === "charity" && (
+                    <div>
+                      <FormGroup
+                        row
+                        className={
+                          this.state.editMode ? "editMode" : "displayMode"
+                        }
+                        key="certificate"
+                      >
+                        <Col md="2">
+                          <Label> Certificate</Label>
+                        </Col>
+                        <Col xs="9" md="6">
+                          {this.state.editMode ? (
+                            <Input
+                              type="file"
+                              accept=".pdf"
+                              onChange={this.uploadCertificate()}
+                              style={{ width: "auto", margin: "auto" }}
+                            />
+                          ) : (
+                            <span
+                              style={{
+                                color: "royalblue",
+                                textDecoration: "underline",
+                                cursor: "pointer",
+                              }}
+                              onClick={() => this.downloadCertificate(this.state.address)}
+                            >
+                              Download file
+                          </span>
+                          )}
+                        </Col>
+                      </FormGroup>
+
+                      <FormGroup
+                        row
+                        className={
+                          this.state.editMode ? "editMode" : "displayMode"
+                        }
+                        key="description"
+                      >
+                        <Col md="2">
+                          <Label> Description</Label>
+                        </Col>
+                        <Col xs="9" md="6">
+                          {this.state.editMode ? (
+                            <Input
+                              type="textarea"
+                              rows="9"
+                              value={this.state.description}
+                              onChange={this.updateValue("description")}
+                            />
+                          ) : (
+                            <p>{this.state.description}</p>
+                          )}
+                        </Col>
+                      </FormGroup>
+                    </div>
+                  )}
                 </Form>
               </CardBody>
             </Card>
@@ -426,9 +536,13 @@ class Profile extends Component {
                           </strong>{" "}
                           {project.expirationDate}
                           <strong className="ml-3">
-                            Donation Amount:
+                            Fund Raised:
                           </strong>{" "}
-                          {project.actual_amount}
+                          ${project.actual_amount}
+                          <strong className="ml-3">
+                            OUtflow Cliamed:
+                          </strong>{" "}
+                          ${project.confirmed_amount}
                         </p>
                         <Progress
                           animated
@@ -438,7 +552,18 @@ class Profile extends Component {
                           }
                           className="mb-3"
                         >
-                          {(project.actual_amount / project.fundTarget) * 100}%
+                          Fund Raised: {(project.actual_amount / project.fundTarget) * 100}%
+                        </Progress>
+
+                        <Progress
+                          animated
+                          color="success"
+                          value={
+                            (project.confirmed_amount / project.fundTarget) * 100
+                          }
+                          className="mb-3"
+                        >
+                          Outflow Confirmed:{(project.confirmed_amount / project.fundTarget) * 100}%
                         </Progress>
 
                         {this.state.type === "donor" ? (
@@ -455,19 +580,23 @@ class Profile extends Component {
                               outline
                               color="success"
                               onClick={() => {
-                                window.location.replace(`/project/${project._id}`);
+                                window.location.replace(
+                                  `/project/${project._id}`
+                                );
                               }}
                             >
                               View More
                             </Button>
                           </div>
-                        ):(
+                        ) : (
                           <div>
                             <Button
                               outline
                               color="success"
                               onClick={() => {
-                                window.location.replace(`/project_charity/${project._id}`);
+                                window.location.replace(
+                                  `/project_charity/${project._id}`
+                                );
                               }}
                             >
                               View More
@@ -485,9 +614,7 @@ class Profile extends Component {
                               Edit
                             </Button>
                           </div>
-                        )
-                      }
-
+                        )}
                       </CardBody>
                     </Card>
                   );

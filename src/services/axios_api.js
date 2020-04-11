@@ -160,6 +160,11 @@ export function downloadBeneficiaryList(projectId){
   window.open(url, "_blank")
 }
 
+export function downloadCertificate(charityAddress){
+  let url = baseURL + "/certificateFile?address=" + charityAddress
+  window.open(url, "_blank")
+}
+
 export function downloadBeneficiaryFormat(){
   let url = baseURL + "/beneficiaryFileFormat"
   window.open(url, "_blank")

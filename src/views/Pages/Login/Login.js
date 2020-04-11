@@ -13,13 +13,14 @@ import {
   InputGroupAddon,
   InputGroupText,
   Row,
-  Alert
+  Alert,
 } from "reactstrap";
 import {
   adminLogin,
   donorLogin,
-  charityLogin
+  charityLogin,
 } from "../../../services/axios_api";
+import LoadingOverlay from "react-loading-overlay";
 
 class Login extends Component {
   constructor(props) {
@@ -29,6 +30,7 @@ class Login extends Component {
       type: this.checkType(),
       username: "",
       password: "",
+      loading: false,
       alertVisible: false,
       alertColor: "info",
       alertMessage: "I am an alert message",
@@ -49,9 +51,9 @@ class Login extends Component {
 
   componentDidMount() {}
 
-  updateValue = type => e => {
+  updateValue = (type) => (e) => {
     this.setState({
-      [type]: e.target.value
+      [type]: e.target.value,
     });
   };
 
@@ -69,13 +71,14 @@ class Login extends Component {
     var value = "; " + document.cookie;
     var parts = value.split("; " + name + "=");
     if (parts.length === 2) return parts.pop().split(";").shift();
-  }
+  };
 
   login = () => {
     if (this.state.username !== "" && this.state.password !== "") {
+      this.setState({ loading: true });
       if (this.state.type === "admin") {
         adminLogin(this.state.username, this.state.password)
-          .then(response => {
+          .then((response) => {
             if (response.data.code === 200) {
               //set local key
               this.setCookie("admin", response.data.eth_address, 1);
@@ -84,32 +87,41 @@ class Login extends Component {
               this.triggerAlert("danger", response.data.message);
             }
           })
-          .catch(e => console.log(e));
+          .catch((e) => console.log(e))
+          .then(() => this.setState({ loading: false }));
       } else if (this.state.type === "donor") {
         donorLogin(this.state.username, this.state.password)
-        .then(response => {
-          console.log(response.data)
-          if (response.data.code === 200) {
-            this.setCookie("donor_id", response.data.id, 1);
-            this.setCookie("donor_username", response.data.username, 1);
-            this.setCookie("donor_address", response.data.eth_address, 1);
-            window.history.back();
-          } else {
-            this.triggerAlert("danger", response.data.message);
-          }
-        })
+          .then((response) => {
+            console.log(response.data);
+            if (response.data.code === 200) {
+              this.setCookie("donor_id", response.data.id, 1);
+              this.setCookie("donor_username", response.data.username, 1);
+              this.setCookie("donor_address", response.data.eth_address, 1);
+              window.history.back();
+            } else {
+              this.triggerAlert("danger", response.data.message);
+            }
+          })
+          .catch((e) => {
+            console.log(e);
+          })
+          .then(() => this.setState({ loading: false }));
       } else if (this.state.type === "charity") {
         charityLogin(this.state.username, this.state.password)
-        .then(response => {
-          if (response.data.code === 200) {
-            this.setCookie("charity_id", response.data.id, 1);
-            this.setCookie("charity_username", response.data.username, 1);
-            this.setCookie("charity_address", response.data.eth_address, 1);
-            window.history.back();
-          } else {
-            this.triggerAlert("danger", response.data.message);
-          }
-        })
+          .then((response) => {
+            if (response.data.code === 200) {
+              this.setCookie("charity_id", response.data.id, 1);
+              this.setCookie("charity_username", response.data.username, 1);
+              this.setCookie("charity_address", response.data.eth_address, 1);
+              window.history.back();
+            } else {
+              this.triggerAlert("danger", response.data.message);
+            }
+          })
+          .catch((e) => {
+            console.log(e);
+          })
+          .then(() => this.setState({ loading: false }));
       } else {
         window.location.replace("/home");
       }
@@ -121,7 +133,7 @@ class Login extends Component {
   triggerAlert = (color, message) => {
     this.setState({
       alertColor: color,
-      alertMessage: message
+      alertMessage: message,
     });
     this.onDismiss();
     setTimeout(this.onDismiss, 3000);
@@ -138,95 +150,111 @@ class Login extends Component {
           color={this.state.alertColor}
           isOpen={this.state.alertVisible}
           toggle={this.onDismiss}
-          style={{ position: "fixed", top: "2rem", right: "1rem", zIndex: "999" }}
+          style={{
+            position: "fixed",
+            top: "2rem",
+            right: "1rem",
+            zIndex: "999",
+          }}
         >
           {this.state.alertMessage}
         </Alert>
         <Container>
-          <Row className="justify-content-center">
-            <Col md="8">
-              <CardGroup>
-                <Card className="p-4">
-                  <CardBody>
-                    <Form
-                      onSubmit={e => {
-                        e.preventDefault();
-                        this.login();
-                      }}
-                    >
-                      <h1>Login : {this.state.type}</h1>
-                      <p className="text-muted">Sign In to your account</p>
-                      <InputGroup className="mb-3">
-                        <InputGroupAddon addonType="prepend">
-                          <InputGroupText>
-                            <i className="icon-user"> Username</i>
-                          </InputGroupText>
-                        </InputGroupAddon>
-                        <Input
-                          type="text"
-                          onChange={this.updateValue("username")}
-                        />
-                      </InputGroup>
-                      <InputGroup className="mb-4">
-                        <InputGroupAddon addonType="prepend">
-                          <InputGroupText>
-                            <i className="icon-lock"> Password</i>
-                          </InputGroupText>
-                        </InputGroupAddon>
-                        <Input
-                          type="password"
-                          onChange={this.updateValue("password")}
-                        />
-                      </InputGroup>
-                      <Row>
-                        <Col xs="6">
-                          <Button
-                            color="primary"
-                            className="px-4"
-                            onClick={this.login}
-                          >
-                            Login
-                          </Button>
-                        </Col>
-                        <Col xs="6" className="text-right">
-                          <Button color="link" className="px-0">
-                            Forgot password?
-                          </Button>
-                        </Col>
-                      </Row>
-                    </Form>
-                  </CardBody>
-                </Card>
-                {this.state.type === "admin" ? (
-                  ""
-                ) : (
-                  <Card
-                    className="text-white bg-primary py-5 d-md-down-none"
-                    style={{ width: "44%" }}
-                  >
-                    <CardBody className="text-center">
-                      <div>
-                        <h2>Sign up</h2>
-                        <p>
-                          Welcome to Join TransACT! This is a fully transparent charity funding platform, enpowered by blokchain!
-                        </p>
-                        <Link to={"/register/".concat(this.state.type)}>
-                          <Button
-                            color="primary"
-                            className="mt-3"
-                            active
-                            tabIndex={-1}
-                          >
-                            Register Now!
-                          </Button>
-                        </Link>
-                      </div>
+          <LoadingOverlay
+            active={this.state.loading}
+            spinner
+            text="Loading..."
+            backgroundColor={"gray"}
+            opacity="0.4"
+            style={{ width: "100%" }}
+          >
+            <Row className="justify-content-center">
+              <Col md="8">
+                <CardGroup>
+                  <Card className="p-4">
+                    <CardBody>
+                      <Form
+                        onSubmit={(e) => {
+                          e.preventDefault();
+                          this.login();
+                        }}
+                      >
+                        <h1>Login : {this.state.type}</h1>
+                        <p className="text-muted">Sign In to your account</p>
+                        <InputGroup className="mb-3">
+                          <InputGroupAddon addonType="prepend">
+                            <InputGroupText>
+                              <i className="icon-user"> Username</i>
+                            </InputGroupText>
+                          </InputGroupAddon>
+                          <Input
+                            type="text"
+                            onChange={this.updateValue("username")}
+                          />
+                        </InputGroup>
+                        <InputGroup className="mb-4">
+                          <InputGroupAddon addonType="prepend">
+                            <InputGroupText>
+                              <i className="icon-lock"> Password</i>
+                            </InputGroupText>
+                          </InputGroupAddon>
+                          <Input
+                            type="password"
+                            onChange={this.updateValue("password")}
+                          />
+                        </InputGroup>
+                        <Row>
+                          <Col xs="6">
+                            <Button
+                              color="primary"
+                              className="px-4"
+                              onClick={this.login}
+                            >
+                              Login
+                            </Button>
+                          </Col>
+                          <Col xs="6" className="text-right">
+                            <Button color="link" className="px-0">
+                              Forgot password?
+                            </Button>
+                          </Col>
+                        </Row>
+                      </Form>
                     </CardBody>
                   </Card>
-                )}
-              </CardGroup>
-            </Col>
-          </Row>
+                  {this.state.type === "admin" ? (
+                    ""
+                  ) : (
+                    <Card
+                      className="text-white bg-primary py-5 d-md-down-none"
+                      style={{ width: "44%" }}
+                    >
+                      <CardBody className="text-center">
+                        <div>
+                          <h2>Sign up</h2>
+                          <p>
+                            Welcome to Join TransACT! This is a fully
+                            transparent charity funding platform, enpowered by
+                            blokchain!
+                          </p>
+                          <Link to={"/register/".concat(this.state.type)}>
+                            <Button
+                              color="primary"
+                              className="mt-3"
+                              active
+                              tabIndex={-1}
+                            >
+                              Register Now!
+                            </Button>
+                          </Link>
+                        </div>
+                      </CardBody>
+                    </Card>
+                  )}
+                </CardGroup>
+              </Col>
+            </Row>
+          </LoadingOverlay>
         </Container>
       </div>
     );

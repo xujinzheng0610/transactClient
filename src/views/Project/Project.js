@@ -4,20 +4,14 @@ import {
   Button,
   Card,
   CardBody,
-  CardHeader,
   Container,
-  Form,
-  Input,
-  InputGroup,
-  InputGroupAddon,
-  InputGroupText,
   Row,
   Col,
-  Alert,
   Progress,
 } from "reactstrap";
 import { retrieveAllProjects } from "../../services/axios_api";
 import { FaCalendar } from "react-icons/fa";
+import LoadingOverlay from "react-loading-overlay";
 
 class Project extends Component {
   constructor(props) {
@@ -25,26 +19,37 @@ class Project extends Component {
 
     this.state = {
       projects: [],
+      loading: true,
     };
   }
 
   componentDidMount() {
     retrieveAllProjects()
       .then((response) => {
-        console.log(response)
+        console.log(response);
         this.setState({
           projects: response.data.result,
         });
       })
       .catch((e) => {
         console.log(e);
+      })
+      .then( () => {
+        this.setState({loading:false})
       });
   }
 
   render() {
     return (
-      <div>
-        <Container className="pt-3 mb-3">
+      <LoadingOverlay
+        active={this.state.loading}
+        spinner
+        text="Loading..."
+        backgroundColor={"gray"}
+        opacity="0.4"
+        style={{ width: "100%" }}
+      >
+        <Container className="pt-3 mb-3" style={{minHeight:"89vh"}}>
           <Row style={{ textAlign: "center" }}>
             <h1
               style={{
@@ -85,7 +90,7 @@ class Project extends Component {
                       >
                         {(item.actual_amount / item.fundTarget) * 100}%
                       </Progress>
-                      <p>{item.description}</p>
+                      <p>{item.description.substring(0,284)} ...</p>
                       <Col style={{ textAlign: "center" }}>
                         <Link to={`/project/${item._id}`}>
                           <Button outline color="primary">
@@ -100,7 +105,7 @@ class Project extends Component {
             })}
           </Row>
         </Container>
-      </div>
+      </LoadingOverlay>
     );
   }
 }

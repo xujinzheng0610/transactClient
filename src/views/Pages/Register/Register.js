@@ -1,4 +1,4 @@
-import React, { Component} from "react";
+import React, { Component } from "react";
 import {
   Button,
   Card,
@@ -11,71 +11,59 @@ import {
   InputGroupText,
   Row,
   Col,
-  Alert
+  Alert,
 } from "reactstrap";
 import LoadingOverlay from "react-loading-overlay";
+import {
+  PaymentInputsContainer,
+  PaymentInputsWrapper,
+} from "react-payment-inputs";
+import images from "react-payment-inputs/images";
 
 import { charityRegister, donorRegister } from "../../../services/axios_api";
 
-let donor_attributes = [
+let input_attributes = [
   {
     type: "username",
     logo: "icon-user",
-    display: "Username"
+    display: "Username",
   },
   {
     type: "email",
     logo: "icon-envelope",
-    display: "Email"
+    display: "Email",
   },
   {
     type: "password",
     logo: "icon-lock",
-    display: "Password"
+    display: "Password",
   },
   {
     type: "repeatPassword",
     logo: "icon-lock",
-    display: "Repeat Password"
+    display: "Repeat Password",
   },
   {
     type: "eth_address",
     logo: "icon-key",
-    display: "ETH Address"
-  },
-  {
-    type: "bank_account",
-    logo: "icon-credit-card",
-    display: "Bank Account"
+    display: "ETH Address",
   },
   {
     type: "physical_address",
     logo: "icon-location-pin",
-    display: "Address"
+    display: "Address",
   },
   {
     type: "full_name",
     logo: "icon-notebook",
-    display: "Display Name"
+    display: "Full Name",
   },
   {
     type: "contact_number",
     logo: "icon-phone",
-    display: "Contact Number"
-  },
-  {
-    type: "financial_info",
-    logo: "icon-handbag",
-    display: "Financial Info"
+    display: "Contact Number",
   }
 ];
-
-let charity_attributes = [...donor_attributes];
-charity_attributes.push({
-  type: "description",
-  logo: "icon-grid",
-  display: "Description"
-});
 
 class Register extends Component {
   constructor(props) {
@@ -88,18 +76,19 @@ class Register extends Component {
       password: "",
       repeatPassword: "",
       eth_address: "",
-      bank_account: "",
       physical_address: "",
       full_name: "",
       contact_number: "",
-      financial_info: "",
+      certificate: "",
       description: "",
+      cardNumber: "",
+      expiryDate: "",
       alertVisible: false,
       alertColor: "info",
       alertMessage: "I am an alert message",
       loading: false,
       submitted: false,
-    }; 
+    };
   }
 
   checkType = () => {
@@ -112,16 +101,16 @@ class Register extends Component {
     }
   };
 
-  updateValue = type => e => {
+  updateValue = (type) => (e) => {
     this.setState({
-      [type]: e.target.value
+      [type]: e.target.value,
     });
   };
 
   triggerAlert = (color, message) => {
     this.setState({
       alertColor: color,
-      alertMessage: message
+      alertMessage: message,
     });
     this.onDismiss();
     setTimeout(this.onDismiss, 3000);
@@ -131,42 +120,57 @@ class Register extends Component {
     this.setState({ alertVisible: !this.state.alertVisible });
   };
 
+  uploadCertificate = () => (e) => {
+    this.setState({
+      certificate: e.target.files[0],
+    });
+  };
+
   createAccount = () => {
     if (this.state.password !== this.state.repeatPassword) {
       this.triggerAlert("danger", "Password unmatched!");
     } else if (this.state.username === "") {
       this.triggerAlert("danger", "Username is required!");
-    } else if ( this.state.username.includes(' ')){
-      this.triggerAlert("danger", "Cannot have space in your username");
-    }else if (this.state.email === "") {
+    } else if (this.state.username.includes(" ")) {
+      this.triggerAlert("danger", "Username should not have space!");
+    } else if (this.state.email === "") {
       this.triggerAlert("danger", "Email is required!");
     } else if (this.state.password === "") {
       this.triggerAlert("danger", "Paasword is required!");
     } else if (this.state.eth_address === "") {
       this.triggerAlert("danger", "ETH Address is required!");
+    } else if (this.state.cardNumber === "") {
+      this.triggerAlert("danger", "Bank Card Number is required!");
+    } else if (this.state.type === "charity" && this.state.certificate === "") {
+      this.triggerAlert("danger", "Please upload your certificate!");
     } else {
       var data = new FormData();
       data.set("username", this.state.username);
       data.set("email", this.state.email);
       data.set("password", this.state.password);
       data.set("eth_address", this.state.eth_address);
-      data.set("bank_account", this.state.bank_account);
+      data.set("card_number", this.state.cardNumber);
+      data.set("card_expiry_date", this.state.expiryDate);
       data.set("physical_address", this.state.physical_address);
       data.set("full_name", this.state.full_name);
       data.set("contact_number", this.state.contact_number);
-      data.set("financial_info", this.state.financial_info);
       if (this.state.type === "charity") {
         data.set("description", this.state.description);
+        data.append(
+          "certificate",
+          this.state.certificate,
+          this.state.certificate.name
+        );
         this.setState({ loading: true });
         charityRegister(data)
-          .then(response => {
+          .then((response) => {
             if (response.data["code"] === 200) {
               this.setState({ submitted: true });
             } else {
               this.triggerAlert("danger", response.data["message"]);
             }
           })
-          .catch(e => {
+          .catch((e) => {
             console.log(e);
           })
           .then(() => {
@@ -175,15 +179,15 @@ class Register extends Component {
       } else {
         this.setState({ loading: true });
         donorRegister(data)
-          .then(response => {
+          .then((response) => {
             if (response.data["code"] === 200) {
               this.setState({ submitted: true });
             } else {
-              console.log(response)
+              console.log(response);
               this.triggerAlert("danger", response.data["message"]);
             }
           })
-          .catch(e => {
+          .catch((e) => {
             console.log(e);
           })
           .then(() => {
@@ -194,15 +198,13 @@ class Register extends Component {
   };
 
   render() {
-    const attributes =
-      this.state.type === "donor" ? donor_attributes : charity_attributes;
     return (
       <div className="app ">
         <Alert
           color={this.state.alertColor}
           isOpen={this.state.alertVisible}
           toggle={this.onDismiss}
-          style={{ position: "fixed", top: "2rem", right: "1rem" }}
+          style={{ position: "fixed", top: "2rem", right: "1rem", zIndex:"999" }}
         >
           {this.state.alertMessage}
         </Alert>
@@ -212,7 +214,7 @@ class Register extends Component {
           text="Loading..."
           backgroundColor={"gray"}
           opacity="0.4"
-          style={{width:"100%"}}
+          style={{ width: "100%" }}
         >
           <Container className="mt-4">
             <Row className="justify-content-center">
@@ -236,7 +238,7 @@ class Register extends Component {
                         <p className="text-muted">
                           Create your {this.state.type} account
                         </p>
-                        {attributes.map(item => {
+                        {input_attributes.map((item) => {
                           return (
                             <InputGroup className="mb-3" key={item.type}>
                               <InputGroupAddon addonType="prepend">
@@ -250,16 +252,80 @@ class Register extends Component {
                                     item.type
                                   ) > -1
                                     ? "password"
-                                    : item.type === "description" ? "textarea" : "text"
+                                    : "text"
                                 }
-
                                 rows="9"
                                 onChange={this.updateValue(item.type)}
-                                // placeholder={item.display}
                               />
                             </InputGroup>
                           );
                         })}
+                        <InputGroup className="mb-3" key={"bankcard"}>
+                          <InputGroupAddon addonType="prepend">
+                            <InputGroupText>
+                              <i className="icon-credit-card">
+                                {" "}
+                                Deafault Card Info
+                              </i>
+                            </InputGroupText>
+                          </InputGroupAddon>
+                          <PaymentInputsContainer>
+                            {({
+                              wrapperProps,
+                              getCardImageProps,
+                              getCardNumberProps,
+                              getExpiryDateProps,
+                              getCVCProps,
+                            }) => (
+                              <PaymentInputsWrapper {...wrapperProps}>
+                                <svg {...getCardImageProps({ images })} />
+                                <input
+                                  {...getCardNumberProps({
+                                    onChange: this.updateValue("cardNumber"),
+                                  })}
+                                  value={this.state.cardNumber}
+                                />
+                                <input
+                                  {...getExpiryDateProps({
+                                    onChange: this.updateValue("expiryDate"),
+                                  })}
+                                  value={this.state.expiryDate}
+                                />
+                              </PaymentInputsWrapper>
+                            )}
+                          </PaymentInputsContainer>
+                        </InputGroup>
+                        {this.state.type === "charity" && (
+                          <div>
+                            <InputGroup className="mb-3" key="description" style={{height:"35px"}}>
+                              <InputGroupAddon addonType="prepend">
+                                <InputGroupText>
+                                  <i className="icon-handbag"> Certificate (.pdf)</i>
+                                </InputGroupText>
+                              </InputGroupAddon>
+                              <Input
+                                type="file"
+                                accept=".pdf"
+                                onChange={this.uploadCertificate()}
+                                style={{width:"auto", margin:"auto"}}
+                              />
+                            </InputGroup>
+                            <InputGroup className="mb-3" key="description">
+                              <InputGroupAddon addonType="prepend">
+                                <InputGroupText>
+                                  <i className="icon-grid"> Description</i>
+                                </InputGroupText>
+                              </InputGroupAddon>
+                              <Input
+                                type="textarea"
+                                rows="9"
+                                value= {this.state.description}
+                                onChange={this.updateValue("description")}
+                              />
+                            </InputGroup>
+                          </div>
+                          
+                        )}
                         <Button
                           color="success"
                           block

@@ -1,24 +1,20 @@
 import React, { Component } from "react";
 import LoadingOverlay from "react-loading-overlay";
 import {
-  Badge,
   Button,
   Card,
   CardBody,
-  CardFooter,
   CardHeader,
   Col,
   Row,
-  Collapse,
-  Fade,
   Alert
 } from "reactstrap";
-import { AppSwitch } from "@coreui/react";
 
-import client, {
+import {
   pendingProjectRetrieval,
   projectApproval, 
-  projectReject
+  projectReject,
+  downloadBeneficiaryList
 } from "../../../../services/axios_api";
 class ManageProjects extends Component {
   constructor(props) {
@@ -81,6 +77,10 @@ class ManageProjects extends Component {
       dropdownOpen: newArray,
       collapse: !this.state.collapse
     });
+  }
+
+  downloadBeneficiaryList = id => {
+    downloadBeneficiaryList(id)
   }
 
   onEntering() {
@@ -252,12 +252,30 @@ class ManageProjects extends Component {
                       <li key={project.fundTarget}>
                         Funding Target: {project.fundTarget}
                       </li>
-                      <li key={project.description}>
-                        Description: {project.description}
+                      <li key={project.breakdownList}>
+                        Budget Breakdown: {project.breakdownList}
                       </li>
                       <li key={project.registration_hash}>
                         Registration Hash: {project.registration_hash}
                       </li>
+                      <li>
+                        Beneficiary List: 
+                        <span
+                            style={{
+                              color: "royalblue",
+                              textDecoration: "underline",
+                              cursor: "pointer",
+                              marginLeft: "1rem",
+                            }}
+                            onClick={() => this.downloadBeneficiaryList(project._id)}
+                          >
+                            Download file
+                        </span>
+                      </li>
+                      <li key={project.description}>
+                        Description: {project.description}
+                      </li>
+                      
                     </ul>
                     <Row>
                       <Col sm="6" style={{ textAlign: "center" }}>

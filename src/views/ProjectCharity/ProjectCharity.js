@@ -207,10 +207,21 @@ class ProjectCharity extends Component {
                     this.state.project.image
                   }
                   alt="project cover"
-                  style={{ width: "100%", height: "100%" }}
+                  style={{ width: "100%", height: "100%", marginBottom:"1rem" }}
                 />
               </div>
               <h2>About This Project</h2>
+              <p style={{ marginLeft: "2rem", fontSize: "16px" }}>
+                {this.state.project.description}
+              </p>
+              <hr
+                style={{
+                  color: "primary",
+                  backgroundColor: "primary",
+                  height: 5,
+                }}
+              />
+              <h2>About This Charity</h2>
               <div
                 style={{
                   marginLeft: "2rem",
@@ -226,20 +237,9 @@ class ProjectCharity extends Component {
                     fontSize: "15px",
                   }}
                 >
-                  {this.state.project.description}
+                  {this.state.project.charity_description}
                 </p>
               </div>
-              <hr
-                style={{
-                  color: "primary",
-                  backgroundColor: "primary",
-                  height: 5,
-                }}
-              />
-              <h2>About This Charity</h2>
-              <p style={{ marginLeft: "2rem", fontSize: "16px" }}>
-                {this.state.project.charity_description}
-              </p>
               <hr
                 style={{
                   color: "primary",
@@ -258,35 +258,29 @@ class ProjectCharity extends Component {
                   height: 5,
                 }}
               />
+
               <h2>Recent Donations</h2>
-              <Card>
-                <CardHeader>
-                  <i className="fa fa-align-justify"></i> Donations{" "}
-                  <small className="text-muted">All donations</small>
-                </CardHeader>
-                <CardBody>
-                  <Table responsive hover className="table table-striped">
-                    <thead>
+              <Table responsive hover className="table table-striped">
+                <thead>
+                  <tr>
+                    <th scope="col">User Name</th>
+                    <th scope="col">Amount</th>
+                    <th scope="col">Time</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {this.state.donors.map((item) => {
+                    return (
                       <tr>
-                        <th scope="col">User Name</th>
-                        <th scope="col">Amount</th>
-                        <th scope="col">Time</th>
+                        <td>{item.donor}</td>
+                        <td>${item.amount}</td>
+                        <td>{item.donation_time}</td>
                       </tr>
-                    </thead>
-                    <tbody>
-                      {this.state.donors.map((item) => {
-                        return (
-                          <tr>
-                            <td>{item.donor}</td>
-                            <td>${item.amount}</td>
-                            <td>{item.donation_time}</td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </Table>
-                </CardBody>
-              </Card>
+                    );
+                  })}
+                </tbody>
+              </Table>
+
               <hr
                 style={{
                   color: "primary",
@@ -294,35 +288,27 @@ class ProjectCharity extends Component {
                   height: 5,
                 }}
               />
-              <h2>Recent Confirmations</h2>
-              <Card>
-                <CardHeader>
-                  <i className="fa fa-align-justify"></i> Confirmations{" "}
-                  <small className="text-muted">All Confirmations</small>
-                </CardHeader>
-                <CardBody>
-                  <Table responsive hover className="table table-striped">
-                    <thead>
+              <h2>All Confirmations</h2>
+              <Table responsive hover className="table table-striped">
+                <thead>
+                  <tr>
+                    <th scope="col">Description</th>
+                    <th scope="col">Amount</th>
+                    <th scope="col">Time</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {this.state.confirmations.map((item) => {
+                    return (
                       <tr>
-                        <th scope="col">Description</th>
-                        <th scope="col">Amount</th>
-                        <th scope="col">Time</th>
+                        <td>{item.description}</td>
+                        <td>${item.amount}</td>
+                        <td>{item.confirmation_time}</td>
                       </tr>
-                    </thead>
-                    <tbody>
-                      {this.state.confirmations.map((item) => {
-                        return (
-                          <tr>
-                            <td>{item.description}</td>
-                            <td>${item.amount}</td>
-                            <td>{item.confirmation_time}</td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </Table>
-                </CardBody>
-              </Card>
+                    );
+                  })}
+                </tbody>
+              </Table>
             </Col>
             <Col xs="12" sm="12" md="4">
               <p
