@@ -565,8 +565,15 @@ class Profile extends Component {
                           project.stop == "-1"
                               ? ""
                               : "hidden"
-                          } style={{ color: "grey" }}>
+                          } style={{ color: "blue" }}>
                               Waiting for Approval
+                          </strong>
+                          <strong className={
+                          project.stop == "10"
+                              ? ""
+                              : "hidden"
+                          } style={{ color: "grey" }}>
+                              Rejected
                           </strong>
                         </p>
                         <Progress
@@ -608,10 +615,7 @@ class Profile extends Component {
                                 window.location.replace(
                                   `/project/${project._id}`
                                 );
-                              }}
-                              disabled = { project.stop == "-1"? true : false}
-                              // disabled={this.checkWaiting(project.stop)}
-                              // disabled = { () => {if(project.stop == "-1") return true; else return false;}}
+                              }}  
                             >
                               View More
                             </Button>
@@ -626,7 +630,7 @@ class Profile extends Component {
                                   `/project_charity/${project._id}`
                                 );
                               }}
-                              disabled = {project.stop == "-1"}
+                              disabled = {project.stop == "-1"|| project.stop == "10" ? true : false}
                             >
                               View More
                             </Button>
