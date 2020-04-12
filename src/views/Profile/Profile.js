@@ -304,8 +304,10 @@ class Profile extends Component {
   };
 
   checkWaiting = (stop) =>{
-    if(stop ==="-1")
+    if(stop =="-1"){
+      console.log(stop)
       return false;
+    }
     else
       return true;
   }
@@ -615,8 +617,9 @@ class Profile extends Component {
                                   `/project/${project._id}`
                                 );
                               }}
+                              disabled = { project.stop == "-1"? true : false}
                               // disabled={this.checkWaiting(project.stop)}
-                              disabled = { () => {if(project.stop == "-1") return true; else return false;}}
+                              // disabled = { () => {if(project.stop == "-1") return true; else return false;}}
                             >
                               View More
                             </Button>
@@ -631,9 +634,11 @@ class Profile extends Component {
                                   `/project_charity/${project._id}`
                                 );
                               }}
+                              disabled = {project.stop == "-1"}
                             >
                               View More
                             </Button>
+
                             <Button
                               outline
                               color="primary"
