@@ -7,7 +7,7 @@ export default {
           icon: 'icon-puzzle',
         },
         {
-          name:'Peding Charities',
+          name:'Pending Charities',
           url: '/admin/managecharities',
           icon: 'icon-pencil',
         },

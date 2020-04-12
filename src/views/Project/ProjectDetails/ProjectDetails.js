@@ -86,18 +86,18 @@ class ProjectDetails extends Component {
       anonymous: "false",
       cvc: "",
     });
-    donorProfile(this.getCookie("donor_address"))
-      .then((res) => {
-        let data = res.data;
-        console.log(data);
-        if (data.code === "200") {
-          this.setState({
-            cardNumber: data["card_number"],
-            expiryDate: data["card_expiry_date"],
-          });
-        }
-      })
-      .catch((e) => console.log(e));
+    // donorProfile(this.getCookie("donor_address"))
+    //   .then((res) => {
+    //     let data = res.data;
+    //     console.log(data);
+    //     if (data.code === "200") {
+    //       this.setState({
+    //         cardNumber: data["card_number"],
+    //         expiryDate: data["card_expiry_date"],
+    //       });
+    //     }
+    //   })
+    //   .catch((e) => console.log(e));
   }
   togglePrimary() {
     if (!this.state.primary && !this.getCookie("donor_id")) {
@@ -114,24 +114,24 @@ class ProjectDetails extends Component {
       cvc: "",
       anonymous: "false",
     });
-    donorProfile(this.getCookie("donor_address"))
-      .then((res) => {
-        let data = res.data;
-        console.log(data);
-        if (data.code === "200") {
-          this.setState({
-            cardNumber: data["card_number"],
-            expiryDate: data["card_expiry_date"],
-          });
-        }
-      })
-      .catch((e) => console.log(e));
+    // donorProfile(this.getCookie("donor_address"))
+    //   .then((res) => {
+    //     let data = res.data;
+    //     console.log(data);
+    //     if (data.code === "200") {
+    //       this.setState({
+    //         cardNumber: data["card_number"],
+    //         expiryDate: data["card_expiry_date"],
+    //       });
+    //     }
+    //   })
+    //   .catch((e) => console.log(e));
   }
 
   componentDidMount() {
     retrieveProjectDetails(this.props.match.params.projectId)
       .then((response) => {
-        if(response.data.code =="400"){
+        if(response.data.code === "400"){
             window.history.back();
             return;
         }
