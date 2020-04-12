@@ -303,14 +303,6 @@ class Profile extends Component {
     });
   };
 
-  checkWaiting = (stop) =>{
-    if(stop =="-1"){
-      console.log(stop)
-      return false;
-    }
-    else
-      return true;
-  }
   render() {
     return (
       <div>
