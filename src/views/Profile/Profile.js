@@ -303,9 +303,16 @@ class Profile extends Component {
     });
   };
 
+  checkWaiting = (stop) =>{
+    if(stop ==="-1")
+      return false;
+    else
+      return true;
+  }
   render() {
     return (
       <div>
+        <style type="text/css">{".hidden { display:none; }"}</style>
         <Alert
           color={this.state.alertColor}
           isOpen={this.state.alertVisible}
@@ -523,11 +530,11 @@ class Profile extends Component {
                       <CardBody>
                         <h3>
                           {project.projectName}
-                          {project.approval_hash === ""
+                          {/* {project.approval_hash === ""
                             ? " - Wait for approval"
                             : expirationDate > today
                             ? " - Fundrasing Ongoing"
-                            : " - Claiming Required"}
+                            : " - Claiming Required"} */}
                         </h3>
                         <p className="mb-0">
                           <strong>Target:</strong> ${project.fundTarget}
@@ -540,9 +547,33 @@ class Profile extends Component {
                           </strong>{" "}
                           ${project.actual_amount}
                           <strong className="ml-3">
-                            OUtflow Cliamed:
+                            Outflow Cliamed:
                           </strong>{" "}
                           ${project.confirmed_amount}
+                          <strong className="ml-3">
+                            Project Status: 
+                          </strong>
+                          <strong className={
+                          project.stop == "0"
+                              ? ""
+                              : "hidden"
+                          } style={{ color: "green" }}>
+                              Ongoing
+                          </strong>
+                          <strong className={
+                          project.stop == "1"
+                              ? ""
+                              : "hidden"
+                          } style={{ color: "red" }}>
+                              Stopped
+                          </strong>
+                          <strong className={
+                          project.stop == "-1"
+                              ? ""
+                              : "hidden"
+                          } style={{ color: "grey" }}>
+                              Waiting for Approval
+                          </strong>
                         </p>
                         <Progress
                           animated
@@ -584,6 +615,8 @@ class Profile extends Component {
                                   `/project/${project._id}`
                                 );
                               }}
+                              // disabled={this.checkWaiting(project.stop)}
+                              disabled = { () => {if(project.stop == "-1") return true; else return false;}}
                             >
                               View More
                             </Button>

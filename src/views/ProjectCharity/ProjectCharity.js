@@ -73,6 +73,10 @@ class ProjectCharity extends Component {
   componentDidMount() {
     retrieveProjectDetails(this.state.project_id)
       .then((response) => {
+        if(response.data.code =="400"){
+            window.history.back();
+            return;
+        }
         let breakdownList = JSON.parse(response.data.result.breakdownList);
         let labelList = [];
         let dataList = [];
@@ -407,10 +411,21 @@ class ProjectCharity extends Component {
                 }}
               />
 
-              <div>
+              <div className={
+                    this.state.project.stop == "1"
+                        ? "hidden"
+                        : ""
+                    }>
                 <Button block color="primary" onClick={this.togglePrimary}>
                   Make Confirmation
                 </Button>
+              </div>
+              <div className={
+                    this.state.project.stop == "0"
+                        ? "hidden"
+                        : ""
+                    }>
+                    <h1 style={{ color: "red" }}>Project Closed</h1>
               </div>
 
               <hr

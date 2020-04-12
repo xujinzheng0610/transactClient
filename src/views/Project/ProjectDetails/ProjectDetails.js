@@ -131,6 +131,11 @@ class ProjectDetails extends Component {
   componentDidMount() {
     retrieveProjectDetails(this.props.match.params.projectId)
       .then((response) => {
+        if(response.data.code =="400"){
+            window.history.back();
+            return;
+        }
+
         let breakdownList = JSON.parse(response.data.result.breakdownList);
         let labelList = [];
         let dataList = [];
@@ -475,7 +480,12 @@ class ProjectDetails extends Component {
                   height: 5,
                 }}
               />
-              <div
+              <div className={
+                  this.state.project.stop == "1"
+                    ? "hidden"
+                    : ""
+                }>
+                    <div
                 className={
                   this.state.project.actual_amount >=
                   this.state.project.fundTarget
@@ -551,18 +561,27 @@ class ProjectDetails extends Component {
                   </Col>
                 </Row>
               </div>
-              <div
-                className={
-                  this.state.project.actual_amount >=
-                  this.state.project.fundTarget
-                    ? ""
-                    : "hidden"
-                }
-              >
-                <h2>Donation Closed</h2>
-                <h3 style={{ color: "gray" }}>Thanks For Your Interest!</h3>
-              </div>
+                    <div
+                        className={
+                        this.state.project.actual_amount >=
+                        this.state.project.fundTarget
+                            ? ""
+                            : "hidden"
+                        }
+                    >
+                        <h2>Donation Closed</h2>
+                        <h3 style={{ color: "gray" }}>Thanks For Your Interest!</h3>
+                    </div>
 
+                </div>
+                <div className={
+                    this.state.project.stop == "0"
+                        ? "hidden"
+                        : ""
+                    }>
+                    <h1 style={{ color: "red" }}>Project Closed</h1>
+              </div>
+              
               <Modal
                 isOpen={this.state.primary}
                 toggle={this.togglePrimary}
