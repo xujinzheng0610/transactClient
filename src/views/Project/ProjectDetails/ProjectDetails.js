@@ -251,7 +251,7 @@ class ProjectDetails extends Component {
           this.triggerAlert("danger", response.data.error);
         } else {
           console.log(response);
-          this.triggerAlert("success", "Donation will be processed!");
+          this.triggerAlert("success", "Donation has been received!");
           this.setState({
             // primary: false
             donationFinished: true,

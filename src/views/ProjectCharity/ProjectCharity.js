@@ -138,7 +138,7 @@ class ProjectCharity extends Component {
     data.set("charity_id", this.getCookie("charity_id"));
 
     confirm(data).then((response) => {
-      this.triggerAlert("success", "Confirmation will be processed!");
+      this.triggerAlert("success", "Confirmation has been received!");
       this.setState({
         amount: "",
         description: "",
