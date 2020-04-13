@@ -265,7 +265,7 @@ class Register extends Component {
                             <InputGroupText>
                               <i className="icon-credit-card">
                                 {" "}
-                                Deafault Card Info
+                                Default Card Info
                               </i>
                             </InputGroupText>
                           </InputGroupAddon>

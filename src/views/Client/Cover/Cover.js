@@ -21,7 +21,7 @@ class Cover extends Component {
         let projects = response.data.result
 
         if (projects.length > 3){
-          projects.slice(Math.max(projects.length - 3, 0))
+          projects.slice(0, 3)
         }
         this.setState({
           projects: projects

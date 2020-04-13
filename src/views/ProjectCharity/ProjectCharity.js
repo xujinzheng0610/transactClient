@@ -144,7 +144,7 @@ class ProjectCharity extends Component {
     this.setState({loading: true}); 
 
     confirm(data).then((response) => {
-      this.triggerAlert("success", "Confirmation will be processed!");
+      this.triggerAlert("success", "Confirmation has been received!");
       this.setState({
         amount: "",
         description: "",
