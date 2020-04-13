@@ -21,7 +21,9 @@ class Cover extends Component {
         let projects = response.data.result
 
         if (projects.length > 3){
-          projects.slice(0, 3)
+          console.log(projects.length)
+          projects = projects.slice(0, 3)
+          console.log(projects)
         }
         this.setState({
           projects: projects

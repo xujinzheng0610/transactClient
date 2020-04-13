@@ -643,7 +643,7 @@ class Profile extends Component {
                                   `/project_charity/${project._id}`
                                 );
                               }}
-                              disabled = {project.stop == "-1"|| project.stop == "10" ? true : false}
+                              disabled = {project.stop === "-1"|| project.stop === "10" ? true : false}
                             >
                               View More
                             </Button>
@@ -657,6 +657,7 @@ class Profile extends Component {
                                   `/projectNew/${project._id}`
                                 );
                               }}
+                              disabled = {project.stop === "-1"|| project.stop === "10" ? true : false}
                             >
                               Edit
                             </Button>
