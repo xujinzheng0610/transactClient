@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import LoadingOverlay from "react-loading-overlay";
 import {
   Button,
   Container,
@@ -66,6 +67,7 @@ class ProjectDetails extends Component {
       alertVisible: false,
       alertColor: "info",
       alertMessage: "I am an alert message",
+      loading: false
     };
     this.togglePrimary = this.togglePrimary.bind(this);
     this.handleAnonymous = this.handleAnonymous.bind(this);
@@ -140,6 +142,7 @@ class ProjectDetails extends Component {
         let labelList = [];
         let dataList = [];
         let colorList = [];
+        this.setState({loading: true}); 
         breakdownList.map((item, index) => {
           labelList.push(item.category);
           dataList.push(item.value);
@@ -158,6 +161,7 @@ class ProjectDetails extends Component {
         this.setState({
           project: response.data.result,
           pie: pie,
+          loading: false
         });
       })
       .catch((e) => {
@@ -240,7 +244,9 @@ class ProjectDetails extends Component {
     data.set("donor_id", this.getCookie("donor_id"));
     data.set("donor_address", this.getCookie("donor_address"));
     data.set("anonymous", this.state.anonymous);
-
+    this.setState({
+      loading: true 
+    });
     if (this.state.cardNumber === "") {
       this.triggerAlert("danger", "Card Number Required!");
       return;
@@ -255,6 +261,7 @@ class ProjectDetails extends Component {
           this.setState({
             // primary: false
             donationFinished: true,
+            loading: false 
           });
           this.componentDidMount();
         }

@@ -1,4 +1,5 @@
 import React, { Component, lazy, Suspense } from "react";
+import LoadingOverlay from "react-loading-overlay";
 import {
   Button,
   Card,
@@ -66,6 +67,7 @@ class ProjectCharity extends Component {
       alertVisible: false,
       alertColor: "info",
       alertMessage: "I am an alert message",
+      loading: false
     };
     this.togglePrimary = this.togglePrimary.bind(this);
   }
@@ -81,6 +83,7 @@ class ProjectCharity extends Component {
         let labelList = [];
         let dataList = [];
         let colorList = [];
+        this.setState({loading: true}); 
         breakdownList.map((item, index) => {
           labelList.push(item.category);
           dataList.push(item.value);
@@ -100,6 +103,7 @@ class ProjectCharity extends Component {
         this.setState({
           project: response.data.result,
           pie: pie,
+          loading: false 
         });
       })
       .catch((e) => {
@@ -137,12 +141,15 @@ class ProjectCharity extends Component {
     data.set("description", this.state.description);
     data.set("charity_id", this.getCookie("charity_id"));
 
+    this.setState({loading: true}); 
+
     confirm(data).then((response) => {
       this.triggerAlert("success", "Confirmation will be processed!");
       this.setState({
         amount: "",
         description: "",
         confirmationFinished: true,
+        loading: false 
       });
       this.componentDidMount();
     });
