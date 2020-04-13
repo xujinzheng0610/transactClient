@@ -67,7 +67,8 @@ class ProjectCharity extends Component {
       alertVisible: false,
       alertColor: "info",
       alertMessage: "I am an alert message",
-      loading: false
+      loading: true,
+      modalloading: false 
     };
     this.togglePrimary = this.togglePrimary.bind(this);
   }
@@ -83,7 +84,6 @@ class ProjectCharity extends Component {
         let labelList = [];
         let dataList = [];
         let colorList = [];
-        this.setState({loading: true}); 
         breakdownList.map((item, index) => {
           labelList.push(item.category);
           dataList.push(item.value);
@@ -103,7 +103,6 @@ class ProjectCharity extends Component {
         this.setState({
           project: response.data.result,
           pie: pie,
-          loading: false 
         });
       })
       .catch((e) => {
@@ -114,6 +113,7 @@ class ProjectCharity extends Component {
       .then((response) => {
         this.setState({
           donors: response.data.latestDonors,
+          loading: false
         });
       })
       .catch((e) => {
@@ -125,6 +125,7 @@ class ProjectCharity extends Component {
         this.setState({
           confirmations: response.data.result.confirmations,
           total_confirmation: response.data.result.total_confirmation,
+          loading: false
         });
         console.log(this.state.confirmations);
         console.log(this.state.total_confirmation);
@@ -141,7 +142,7 @@ class ProjectCharity extends Component {
     data.set("description", this.state.description);
     data.set("charity_id", this.getCookie("charity_id"));
 
-    this.setState({loading: true}); 
+    this.setState({modalloading: true}); 
 
     confirm(data).then((response) => {
       this.triggerAlert("success", "Confirmation has been received!");
@@ -149,7 +150,7 @@ class ProjectCharity extends Component {
         amount: "",
         description: "",
         confirmationFinished: true,
-        loading: false 
+        modalloading: false 
       });
       this.componentDidMount();
     });
@@ -198,6 +199,14 @@ class ProjectCharity extends Component {
 
   render() {
     return (
+      <LoadingOverlay
+        active={this.state.loading}
+        spinner
+        text="Loading..."
+        backgroundColor={"gray"}
+        opacity="0.4"
+        style={{width:"100%"}}
+      >
       <div style={{ height: "100%" }}>
         <style>
           {`.custom-tag {
@@ -469,6 +478,14 @@ class ProjectCharity extends Component {
           className={"modal-primary " + "modal-lg " + this.props.className}
           style={{ height: "80vh" }}
         >
+        <LoadingOverlay
+          active={this.state.modalloading}
+          spinner
+          text="Loading..."
+          backgroundColor={"gray"}
+          opacity="0.4"
+          style={{width:"100%"}}
+        >
           <ModalHeader toggle={this.togglePrimary}>Confirmation</ModalHeader>
           <ModalBody>
             <div className={this.state.confirmationFinished ? "hidden" : ""}>
@@ -539,8 +556,10 @@ class ProjectCharity extends Component {
               Close
             </Button>
           </ModalFooter>
+          </LoadingOverlay>
         </Modal>
       </div>
+      </LoadingOverlay>
     );
   }
 }

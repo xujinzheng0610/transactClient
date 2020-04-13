@@ -67,7 +67,8 @@ class ProjectDetails extends Component {
       alertVisible: false,
       alertColor: "info",
       alertMessage: "I am an alert message",
-      loading: false
+      loading: true,
+      modalloading: false 
     };
     this.togglePrimary = this.togglePrimary.bind(this);
     this.handleAnonymous = this.handleAnonymous.bind(this);
@@ -142,7 +143,7 @@ class ProjectDetails extends Component {
         let labelList = [];
         let dataList = [];
         let colorList = [];
-        this.setState({loading: true}); 
+        
         breakdownList.map((item, index) => {
           labelList.push(item.category);
           dataList.push(item.value);
@@ -161,7 +162,6 @@ class ProjectDetails extends Component {
         this.setState({
           project: response.data.result,
           pie: pie,
-          loading: false
         });
       })
       .catch((e) => {
@@ -172,6 +172,7 @@ class ProjectDetails extends Component {
       .then((response) => {
         this.setState({
           donors: response.data.latestDonors,
+          loading: false
         });
       })
       .catch((e) => {
@@ -183,6 +184,7 @@ class ProjectDetails extends Component {
         this.setState({
           confirmations: response.data.result.confirmations,
           total_confirmation: response.data.result.total_confirmation,
+          loading: false
         });
         console.log(this.state.confirmations);
         console.log(this.state.total_confirmation);
@@ -239,14 +241,13 @@ class ProjectDetails extends Component {
 
   makeDonation = () => {
     var data = new FormData();
+    this.setState({modalloading: true});
     data.set("amount", this.state.amount);
     data.set("project_id", this.state.project_id);
     data.set("donor_id", this.getCookie("donor_id"));
     data.set("donor_address", this.getCookie("donor_address"));
     data.set("anonymous", this.state.anonymous);
-    this.setState({
-      loading: true 
-    });
+
     if (this.state.cardNumber === "") {
       this.triggerAlert("danger", "Card Number Required!");
       return;
@@ -255,13 +256,14 @@ class ProjectDetails extends Component {
       .then((response) => {
         if (response.data.code == "400") {
           this.triggerAlert("danger", response.data.error);
+          this.setState({modalloading: false});
         } else {
           console.log(response);
           this.triggerAlert("success", "Donation has been received!");
           this.setState({
             // primary: false
             donationFinished: true,
-            loading: false 
+            modalloading: false 
           });
           this.componentDidMount();
         }
@@ -273,6 +275,14 @@ class ProjectDetails extends Component {
 
   render() {
     return (
+      <LoadingOverlay
+        active={this.state.loading}
+        spinner
+        text="Loading..."
+        backgroundColor={"gray"}
+        opacity="0.4"
+        style={{width:"100%"}}
+      >
       <div style={{ height: "100%" }}>
         <style>
           {`.custom-tag {
@@ -597,6 +607,14 @@ class ProjectDetails extends Component {
                 }
                 style={{ height: "80vh" }}
               >
+                <LoadingOverlay
+                  active={this.state.modalloading}
+                  spinner
+                  text="Loading..."
+                  backgroundColor={"gray"}
+                  opacity="0.4"
+                  style={{width:"100%"}}
+                >
                 <ModalHeader toggle={this.togglePrimary}>Donation</ModalHeader>
                 <ModalBody>
                   <div className={this.state.donationFinished ? "hidden" : ""}>
@@ -713,6 +731,7 @@ class ProjectDetails extends Component {
                     Close
                   </Button>
                 </ModalFooter>
+                </LoadingOverlay>
               </Modal>
               <hr
                 style={{
@@ -742,6 +761,7 @@ class ProjectDetails extends Component {
           </Row>
         </Container>
       </div>
+      </LoadingOverlay>
     );
   }
 }

@@ -140,6 +140,7 @@ class Profile extends Component {
       donorProfile(this.state.address).then(
         (result) => {
           let data = result.data;
+          this.setState({loading: true});
           if (data.code === "200") {
             this.setState({
               username: data["username"],
@@ -152,9 +153,13 @@ class Profile extends Component {
               contact_number: data["contact_number"],
               card_number: data["card_number"],
               card_expiry_date: data["card_expiry_date"],
+              loading: false 
             });
           } else {
             this.triggerAlert("danger", data.message);
+            this.setState({
+              loading: false,
+            });
           }
         },
         (error) => {
@@ -163,14 +168,18 @@ class Profile extends Component {
       );
       getProjectByDonor(this.state.address).then((result) => {
         console.log(result.data);
+        this.setState({loading: true});
         let data = result.data;
-        this.setState({ projectData: data["items"] });
+        this.setState({ 
+          projectData: data["items"],
+          loading: false });
       });
     } else {
       charityProfile(this.state.address).then(
         (result) => {
           let data = result.data;
           console.log(data);
+          this.setState({loading: true})
           if (data.code[0] === 200) {
             this.setState({
               username: data["username"],
@@ -185,6 +194,7 @@ class Profile extends Component {
               description: data["description"],
               card_number: data["card_number"],
               card_expiry_date: data["card_expiry_date"],
+              loading: false 
             });
           } else {
             //window.history.back()
@@ -196,8 +206,11 @@ class Profile extends Component {
         }
       );
       getProjectByCharity(this.state.address).then((result) => {
+        this.setState({loading: true})
         if (result.data.code === 200) {
-          this.setState({ projectData: result.data["items"] });
+          this.setState({ 
+            projectData: result.data["items"],
+            loading: false });
         } else {
           this.triggerAlert("danger", result.data.message);
         }
